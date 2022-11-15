@@ -1,0 +1,927 @@
+<script lang="ts" setup>
+import { ref, reactive, onMounted, watch, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
+import { debounce } from 'lodash-es';
+import { useI18n } from 'vue-i18n';
+
+import { GroupInfo } from '@/shared/@types/type-sig';
+import { getUrlParam, handleUploadImage } from '@/shared';
+
+import {
+  getReposData,
+  getIssueSelectOption,
+  verifySubmitterEmail,
+  createIssue,
+  uploadIssueFile,
+} from '@/api/api-quick-issue';
+import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
+
+import { getSigLandscape } from '@/api/api-sig';
+
+import AppEditor from '@/components/AppEditor.vue';
+import AppContent from '@/components/AppContent.vue';
+import { ElMessage, genFileId } from 'element-plus';
+import type {
+  FormInstance,
+  UploadUserFile,
+  UploadInstance,
+  UploadProps,
+  UploadRawFile,
+} from 'element-plus';
+
+import IconGitee from '~icons/app/icon-gitee.svg';
+import IconDown from '~icons/app/icon-pulldown.svg';
+import IconAdd from '~icons/app/icon-add.svg';
+import IconSearch from '~icons/app/icon-search.svg';
+
+import SigLandscapeFeature from '@/components/SigLandscapeFeature.vue';
+import OIcon from 'opendesign/icon/OIcon.vue';
+
+interface TypesList {
+  id: number;
+  title: string;
+}
+
+const router = useRouter();
+const formRef = ref<FormInstance>();
+const { t } = useI18n();
+const landscapeInfo = ref<GroupInfo[]>([]);
+const isShowMenu = ref(false);
+const titleList = ref([
+  {
+    value: '代码仓管理/技术创新',
+    key: 'tech',
+  },
+  {
+    value: '社区治理运营',
+    key: 'operate',
+  },
+]);
+const content = ref('发送验证码');
+const totalTime = ref(60);
+const tabType = ref(titleList.value[0].key);
+const isGiteeUser = ref(false);
+const fileList = ref<UploadUserFile[]>([]);
+const upload = ref<UploadInstance>();
+
+const reposList = ref<OptionList>({
+  page: 1,
+  data: [],
+  keyword: '',
+});
+const typesList = ref<Array<TypesList>>();
+
+const rules: any = reactive({
+  title: [
+    { required: true, message: '必填项', trigger: 'blur' },
+    { min: 1, max: 100, message: '长度不超过100字符', trigger: 'blur' },
+  ],
+  issue_type_id: [{ required: true, message: '必选项', trigger: 'change' }],
+  repo: [{ required: true, message: '必选项', trigger: 'change' }],
+  privacy: [],
+  email: [],
+  code: [],
+});
+const privacyRules = [{ required: true, message: '必选项', trigger: 'change' }];
+const emailRules = [
+  { required: true, message: '请填写邮箱', trigger: 'change' },
+  {
+    pattern: new RegExp(
+      '^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$'
+    ),
+    message: '请输入正确邮箱',
+    trigger: 'change',
+  },
+];
+const codeRules = [
+  { required: true, message: '请填写验证码', trigger: 'blur' },
+  { pattern: /^\d{6}$/, message: '请填写6位验证码', trigger: 'blur' },
+];
+const repoParams = reactive({
+  page: 1,
+  per_page: 40,
+  keyword: '',
+  sig: '',
+  total: 0,
+});
+
+const issueData: IssueData = reactive({
+  title: decodeURI(getUrlParam('title')) || '',
+  issue_type_id: '',
+  sig: '',
+  project_id: Number(getUrlParam('repo_id')) || 7392228,
+  repo: getUrlParam('repo') || 'openeuler/community-issue',
+  email: '',
+  code: '',
+  description: '',
+  privacy: [],
+});
+
+function getSigValue(val: string) {
+  if (issueData.sig && issueData.sig === val) {
+    isShowMenu.value = false;
+    return false;
+  }
+  issueData.sig = val;
+  isShowMenu.value = false;
+  repoParams.sig = val;
+  repoParams.page = 1;
+  repoParams.keyword = '';
+  reposList.value.keyword = '';
+  reposList.value.data = [];
+  issueData.repo = '';
+}
+
+function getRepoBySigName() {
+  getReposData(repoParams).then((res) => {
+    if (res.data) {
+      reposList.value.total = res.total;
+      reposList.value.data = [...reposList.value.data, ...res.data];
+    } else if (!res.total && !repoParams.keyword) {
+      ElMessage({
+        message: '此SIG下无仓库。默认提交至 openeuler/community-issue 仓库',
+        type: 'warning',
+        duration: 10000,
+      });
+      issueData.repo = 'openeuler/community-issue';
+      issueData.project_id = 7392228;
+    }
+  });
+}
+
+function changeStash() {
+  isGiteeUser.value = !isGiteeUser.value;
+}
+
+async function getCodeByEmail(verify: FormInstance | undefined) {
+  if (!verify) {
+    return;
+  }
+  rules.code = [];
+  rules.privacy = privacyRules;
+  rules.email = emailRules;
+  verify.validate(async (res) => {
+    if (totalTime.value === 60 && res) {
+      verifySubmitterEmail({ email: issueData.email }).then((res) => {
+        if (res?.code === 200) {
+          const clock = window.setInterval(function () {
+            totalTime.value--;
+            content.value = totalTime.value + 's后重新发送';
+            if (totalTime.value < 0) {
+              //当倒计时小于0时清除定时器
+              window.clearInterval(clock);
+              content.value = '重新发送验证码';
+              totalTime.value = 60;
+            }
+          }, 1000);
+          ElMessage({
+            message: res.msg,
+            type: 'success',
+          });
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'error',
+          });
+        }
+      });
+    }
+  });
+}
+async function goGitee(verify: FormInstance | undefined) {
+  if (!verify) {
+    return;
+  }
+  rules.email = [];
+  rules.code = [];
+  rules.privacy = [];
+  verify.validate(async (res: boolean) => {
+    if (res) {
+      const url = `https://gitee.com/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${issueData.issue_type_id}`;
+      // 埋点数据统计
+      const sensors = (window as any)['sensorsDataAnalytic201505'];
+      sensors?.setProfile({
+        profileType: 'toGiteeCreateIssue',
+        ...((window as any)['sensorsCustomBuriedData'] || {}),
+        $utm_source: 'quick_issue',
+        jump_url: url,
+      });
+      window.open(url);
+    }
+  });
+}
+
+async function submitForm(
+  verify: FormInstance | undefined,
+  isGoGitee: boolean
+) {
+  if (!verify) {
+    return;
+  }
+  rules.privacy = privacyRules;
+  rules.email = emailRules;
+  rules.code = codeRules;
+  verify.validate(async (res: boolean) => {
+    if (res) {
+      const parmes = JSON.parse(JSON.stringify(issueData));
+      // 邮箱隐藏
+      const targetEmail = `${
+        issueData.email.split('@')[0]
+      }@***${issueData.email.charAt(issueData.email.length - 1)}`;
+      // 添加提交人邮箱
+      parmes.description = `${issueData.description} \n \n -- submited by ${targetEmail}`;
+
+      createIssue(parmes).then(async (res) => {
+        if (res.code === 201) {
+          if (fileList.value.length && fileList.value[0].raw) {
+            // 携带附件
+            await handleUpload(fileList.value[0].raw, res.data.issue_id)
+              .then((res) => {
+                if (res?.code === 200) {
+                  ElMessage({
+                    message: '附件上传成功',
+                    type: 'success',
+                  });
+                } else {
+                  ElMessage({
+                    message: res.msg,
+                    type: 'error',
+                  });
+                }
+              })
+              .catch(() => {
+                ElMessage({
+                  message: 'Issue 创建成功，附件上传失败！',
+                  type: 'error',
+                });
+              });
+          }
+          // 埋点
+          const sensors = (window as any)['sensorsDataAnalytic201505'];
+          const jump_url = `https://gitee.com/${issueData.repo}/issues/${res.data.number}`;
+          sensors?.setProfile({
+            profileType: 'noGiteeCreateIssue',
+            ...((window as any)['sensorsCustomBuriedData'] || {}),
+            $utm_source: 'quick_issue',
+            jump_url,
+            quick_issue_email: parmes.email,
+          });
+          if (isGoGitee) {
+            window.open(jump_url);
+          }
+          verify.resetFields();
+          fileList.value = [];
+          repoParams.sig = '';
+          issueData.privacy = ['true'];
+          issueData.description = '';
+          verify.scrollToField('title');
+          ElMessage({
+            message: '创建issue成功',
+            type: 'success',
+          });
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'error',
+          });
+        }
+      });
+    } else {
+      verify.scrollToField('title');
+    }
+  });
+}
+function optionClick(item: any) {
+  if (item?.enterprise_number) {
+    issueData.project_id = item.enterprise_number;
+  }
+}
+const handleClick = (path: string) => {
+  if (path.startsWith('https:')) {
+    window.open(path, '_blank');
+  } else {
+    router.push(path);
+  }
+};
+async function handleUpload(file: File, id: string) {
+  // formData 携带附件及 issue_id
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('attach_id', id);
+  return await uploadIssueFile(formData);
+}
+function sigValueChange(val: string) {
+  repoParams.sig = val;
+  repoParams.page = 1;
+  reposList.value.page = 1;
+  reposList.value.keyword = '';
+  reposList.value.data = [];
+  issueData.repo = '';
+}
+
+function onChange(rawFile: UploadUserFile) {
+  if (!rawFile?.size) {
+    return false;
+  }
+  if (rawFile.size / 1024 / 1024 > 10) {
+    ElMessage.warning('附件过大，附件不得超过10MB，请重新选择文件。');
+    fileList.value = [];
+    return false;
+  }
+}
+function getNextPage() {
+  if (reposList.value.total) {
+    reposList.value.total > repoParams.page * repoParams.per_page
+      ? repoParams.page++
+      : '';
+  }
+}
+function changeState(stash: boolean) {
+  if (!stash) {
+    repoParams.page = 1;
+    repoParams.keyword = '';
+  } else {
+    if (reposList.value.keyword) {
+      reposList.value.data = [];
+      repoParams.keyword = reposList.value.keyword;
+    }
+  }
+}
+function scrollClick(tab: any) {
+  document.querySelector(`#${tab.props.name}`)?.scrollIntoView({
+    behavior: 'smooth',
+  });
+}
+// element 单文件上传，新文件覆盖旧文件
+const handleExceed: UploadProps['onExceed'] = (files) => {
+  upload.value?.clearFiles();
+  const file = files[0] as UploadRawFile;
+  file.uid = genFileId();
+  upload.value?.handleStart(file);
+};
+const debounceEvent = debounce(
+  (val) => {
+    if (val === undefined) {
+      return false;
+    }
+    if (val !== repoParams.keyword) {
+      reposList.value.page = 1;
+      reposList.value.data = [];
+      repoParams.page = 1;
+      repoParams.keyword = val;
+    }
+  },
+  500,
+  {
+    trailing: true,
+  }
+);
+
+onMounted(async () => {
+  getRepoBySigName();
+  try {
+    if (getUrlParam('sig')) {
+      issueData.sig = getUrlParam('sig');
+      repoParams.sig = issueData.sig;
+    }
+    await getIssueSelectOption('types', null).then((res) => {
+      typesList.value = res.data;
+    });
+    if (getUrlParam('type') && typesList.value) {
+      issueData.issue_type_id = typesList.value.find((item) => {
+        return item.title === decodeURI(getUrlParam('type'));
+      })?.id;
+    }
+    landscapeInfo.value = await getSigLandscape();
+    const tab = document.querySelector('#tab-tech');
+    const observer = new IntersectionObserver((res) => {
+      if (res[0].intersectionRatio <= 0) return;
+      nextTick(() => {
+        tabType.value = titleList.value[0].key;
+      });
+    });
+    tab && observer.observe(tab);
+  } catch (err: any) {
+    throw new Error(err);
+  }
+});
+watch(
+  () => repoParams,
+  () => {
+    getRepoBySigName();
+  },
+  {
+    deep: true,
+  }
+);
+</script>
+<template>
+  <AppContent class="submit-issue" :pc-top="40">
+    <div class="inline-box" :pc-top="40">
+      <h1 id="create-issue">{{ t('quickIssue.ISSUE_TITLE') }}</h1>
+      <el-form
+        ref="formRef"
+        :model="issueData"
+        :rules="rules"
+        label-position="left"
+        hide-required-asterisk
+        class="issue-form"
+      >
+        <div class="form-liner">
+          <el-form-item
+            :label="t('quickIssue.TITLE')"
+            prop="title"
+            class="fill-width"
+          >
+            <OInput
+              v-model="issueData.title"
+              :placeholder="t('quickIssue.INPUT')"
+            ></OInput>
+          </el-form-item>
+          <el-form-item :label="t('quickIssue.TYPE')" prop="issue_type_id">
+            <OSelect
+              v-model.string="issueData.issue_type_id"
+              :placeholder="t('quickIssue.SELECT')"
+            >
+              <OOption
+                v-for="item in typesList"
+                :key="item.id"
+                :label="item.title"
+                :value="item.id"
+              />
+            </OSelect>
+          </el-form-item>
+        </div>
+        <div class="form-liner">
+          <el-form-item label="SIG" prop="sig" class="fill-width">
+            <OInput
+              v-model="issueData.sig"
+              :placeholder="t('quickIssue.INPUT')"
+              @change="sigValueChange"
+            ></OInput>
+            <OButton
+              class="select-sig-btn"
+              type="primary"
+              size="small"
+              @click="isShowMenu = true"
+              >选择SIG组</OButton
+            >
+          </el-form-item>
+          <!-- 仓库查询 -->
+          <el-form-item :label="t('quickIssue.REPO_NAME')" prop="repo">
+            <OSelect
+              v-model="issueData.repo"
+              :listener-scorll="true"
+              @scorll-bottom="getNextPage()"
+              @visible-change="changeState"
+            >
+              <template #prefix>
+                <OIcon><IconSearch /></OIcon>
+              </template>
+              <div class="search-box">
+                <OSearch
+                  v-model="reposList.keyword"
+                  :placeholder="t('quickIssue.SEARCH_PLACEHOLDER')"
+                  style="padding: 0 8px"
+                  @input="debounceEvent"
+                ></OSearch>
+              </div>
+              <el-scrollbar>
+                <OOption
+                  v-if="!reposList.data.length"
+                  label=""
+                  value=""
+                  :disabled="true"
+                  style="text-align: center"
+                >
+                  <span>no data</span>
+                </OOption>
+                <OOption
+                  v-for="item in reposList.data"
+                  :key="item.repo"
+                  :label="item.repo"
+                  :value="item.repo"
+                  @click="optionClick(item)"
+                />
+              </el-scrollbar>
+            </OSelect>
+          </el-form-item>
+        </div>
+        <div class="is-gitee-user">
+          <div class="gitee-user">
+            <OButton size="small" @click="goGitee(formRef)">
+              <template #prefixIcon>
+                <OIcon>
+                  <IconGitee />
+                </OIcon>
+              </template>
+              {{ t('quickIssue.GITTE_USER') }}
+            </OButton>
+          </div>
+          <div class="unregistered" @click="changeStash">
+            <OButton size="small">{{ t('quickIssue.NOT_GITEE_USER') }}</OButton>
+            <OIcon class="icon-arrow" :class="isGiteeUser ? 'reversal' : ''">
+              <IconDown />
+            </OIcon>
+          </div>
+        </div>
+        <transition-group name="fadeHeight">
+          <div v-if="isGiteeUser" class="not-gitter-user">
+            <div class="form-liner editor">
+              <el-form-item
+                :label="t('quickIssue.DESCRIPTIVE')"
+                class="fill-width"
+              >
+                <AppEditor
+                  v-model="issueData.description"
+                  @upload-image="handleUploadImage"
+                >
+                </AppEditor>
+              </el-form-item>
+            </div>
+            <div class="form-liner verify-email">
+              <el-form-item :label="t('quickIssue.FILE')" class="upload-item">
+                <el-upload
+                  ref="upload"
+                  :on-change="onChange"
+                  :multiple="false"
+                  :auto-upload="false"
+                  :file-list="fileList"
+                  :on-exceed="handleExceed"
+                  class="upload-file"
+                  action=""
+                  :limit="1"
+                >
+                  <template #trigger>
+                    <OIcon>
+                      <IconAdd />
+                    </OIcon>
+                  </template>
+                </el-upload>
+              </el-form-item>
+            </div>
+            <div class="form-liner verify-email">
+              <el-form-item :label="t('quickIssue.EMAIL')" prop="email">
+                <OInput
+                  v-model="issueData.email"
+                  :placeholder="t('quickIssue.INPUT')"
+                ></OInput>
+              </el-form-item>
+              <el-form-item
+                :label="t('quickIssue.CODE')"
+                prop="code"
+                class="verify-code"
+              >
+                <OInput
+                  v-model="issueData.code"
+                  :placeholder="t('quickIssue.INPUT')"
+                ></OInput>
+                <OButton
+                  class="select-sig-btn"
+                  type="primary"
+                  size="small"
+                  :disabled="totalTime !== 60"
+                  @click="getCodeByEmail(formRef)"
+                  >{{ content }}</OButton
+                >
+              </el-form-item>
+            </div>
+            <div class="form-liner form-radio">
+              <el-form-item prop="privacy">
+                <OCheckboxGroup v-model="issueData.privacy">
+                  <OCheckbox value="true">
+                    {{ t('quickIssue.PRIVACY_TEXT') }}
+                    <a
+                      href="https://www.openeuler.org/zh/other/privacy/"
+                      target="_blank"
+                      >{{ t('quickIssue.PRIVACY') }}</a
+                    >
+                  </OCheckbox>
+                </OCheckboxGroup>
+              </el-form-item>
+            </div>
+            <div class="obuton-box">
+              <OButton
+                size="small"
+                type="primary"
+                @click="submitForm(formRef, true)"
+                >{{ t('quickIssue.CREATE') }}</OButton
+              >
+              <OButton
+                size="small"
+                class="center-button"
+                @click="submitForm(formRef, false)"
+                >{{ t('quickIssue.CONTINUE') }}</OButton
+              >
+              <OButton size="small" @click="handleClick('/zh/')">{{
+                t('quickIssue.CANCEL')
+              }}</OButton>
+            </div>
+          </div>
+        </transition-group>
+      </el-form>
+    </div>
+  </AppContent>
+  <div class="mo-content"></div>
+  <ODialog v-model="isShowMenu" :show-close="true">
+    <h1 id="tech"></h1>
+    <OTabs v-model="tabType" @tab-click="scrollClick">
+      <OTab-pane
+        v-for="item in titleList"
+        :key="item.key"
+        :label="item.value"
+        :name="item.key"
+      >
+      </OTab-pane>
+      <div
+        v-for="(group, index) in landscapeInfo"
+        :key="group.groupName"
+        class="landscape-group"
+      >
+        <h1 :id="titleList[index].key"></h1>
+        <SigLandscapeFeature
+          :info="group?.features"
+          @sig-click="getSigValue"
+        ></SigLandscapeFeature>
+      </div>
+    </OTabs>
+  </ODialog>
+</template>
+
+<style lang="scss">
+.fadeHeight-enter-active,
+.fadeHeight-leave-active {
+  transition: all 0.5s;
+  max-height: 530px;
+}
+.fadeHeight-enter,
+.fadeHeight-leave-to {
+  opacity: 0;
+  max-height: 0px;
+}
+.submit-issue {
+  color: var(--o-color-text1);
+  .inline-box {
+    background-color: var(--o-color-bg2);
+    padding: 40px;
+  }
+  .el-input__suffix {
+    height: 34px;
+  }
+  .o-select {
+    .el-input__wrapper {
+      min-width: 250px;
+      box-shadow: 0 0 0 1px var(--o-color-border1) inset;
+      &:hover {
+        box-shadow: 0 0 0 1px var(--o-color-border1) inset;
+      }
+      .o-icon {
+        font-size: var(--o-font-size-h7);
+      }
+    }
+  }
+  h1 {
+    font-size: var(--o-font-size-h3);
+    font-weight: 300;
+  }
+  .issue-form {
+    margin-top: var(--o-spacing-h2);
+    .form-liner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--o-spacing-h4);
+      .el-form-item {
+        display: flex;
+        margin: 0;
+        flex-wrap: nowrap;
+        align-items: center;
+        &.is-error {
+          .el-input__wrapper {
+            box-shadow: 0 0 0 1px var(--o-color-error1) inset;
+            .el-icon {
+              color: var(--o-color-error1);
+            }
+          }
+        }
+        .el-form-item__content {
+          display: flex;
+          flex-wrap: nowrap;
+          min-width: 208px;
+
+          .el-form-item__error {
+            padding-top: var(--o-spacing-h9);
+          }
+          .o-select {
+            .o-icon {
+              padding: 0;
+              color: inherit;
+              font-size: var(--o-font-size-h7);
+            }
+          }
+          .select-sig-btn {
+            position: relative;
+            flex-shrink: 0;
+            margin-left: -1px;
+            padding: 7px 34px;
+            color: #fff;
+            z-index: 1;
+          }
+          .o-icon {
+            cursor: pointer;
+            padding-left: var(--o-spacing-h5);
+            font-size: 32px;
+            color: var(--o-color-brand1);
+          }
+          .upload-file {
+            display: flex;
+            .o-icon {
+              padding: 0;
+              font-size: 24px;
+              color: var(--o-color-text1);
+            }
+          }
+        }
+        .el-form-item__label {
+          width: 52px;
+          text-align: right;
+          justify-content: flex-end;
+          color: var(--o-color-text1);
+          font-size: var(--o-font-size-h7);
+          flex-shrink: 0;
+          padding-right: var(--o-spacing-h5);
+        }
+      }
+      .fill-width {
+        margin-right: var(--o-spacing-h2);
+        width: 100%;
+      }
+    }
+    .verify-email {
+      margin: var(--o-spacing-h2) 0;
+      justify-content: flex-start;
+      .upload-item {
+        width: 100%;
+      }
+      .verify-code {
+        .el-form-item__label {
+          width: 120px;
+        }
+      }
+    }
+    .form-radio {
+      margin: var(--o-spacing-h2);
+      justify-content: center;
+      .o-checkbox-group {
+        .o-checkbox-label {
+          font-size: 16px;
+        }
+      }
+    }
+    .editor {
+      margin-top: var(--o-spacing-h3);
+      .fill-width {
+        margin: 0;
+      }
+    }
+    .obuton-box {
+      display: flex;
+      justify-content: center;
+      .o-button-type-primary {
+        color: #fff;
+      }
+      .center-button {
+        margin: 0 var(--o-spacing-h4);
+      }
+    }
+    .is-gitee-user {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: var(--o-spacing-h2);
+      .o-button {
+        min-width: 190px;
+        padding: 6px 0;
+        align-items: center;
+        justify-content: center;
+      }
+      .gitee-user {
+        position: relative;
+        padding: 1px;
+        overflow: hidden;
+        .o-button {
+          position: relative;
+          border: none;
+          background-color: var(--o-color-bg2);
+        }
+        &::before {
+          position: absolute;
+          content: '';
+          top: 0;
+          left: 0;
+          width: 300%;
+          height: 100%;
+          background: linear-gradient(
+            115deg,
+            #fc756cff,
+            #a767e5,
+            #002fa7ff,
+            rgb(232, 169, 164),
+            #fc756cff
+          );
+          background-size: 50% 100%;
+          animation: rainbowSlide 6s linear infinite;
+
+          @keyframes rainbowSlide {
+            100% {
+              background-position: -400% 0;
+            }
+          }
+        }
+      }
+      .unregistered {
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: var(--o-spacing-h4);
+        color: var(--o-color-brand1);
+        &:hover {
+          color: var(--o-color-brand2);
+        }
+      }
+      .icon-arrow {
+        transition: all 0.3s;
+        margin-top: var(--o-spacing-h6);
+      }
+      .reversal {
+        transform: rotate(180deg);
+      }
+    }
+  }
+}
+.o-dialog {
+  margin-top: 10vh;
+  max-width: 1430px;
+  width: 100%;
+  .el-tabs__header {
+    padding-top: 40px;
+    position: sticky;
+    top: 0;
+    background-color: var(--o-color-bg2);
+    z-index: 1;
+  }
+  .el-dialog__header {
+    padding: 0;
+  }
+  .el-dialog__footer {
+    padding: 0;
+  }
+  .el-dialog__headerbtn {
+    top: var(--o-spacing-h2);
+    right: var(--o-spacing-h2);
+    font-size: var(--o-font-size-h5);
+    width: fit-content;
+    height: fit-content;
+    z-index: 10;
+    .el-dialog__close {
+      color: var(--o-color-text1);
+    }
+  }
+  .el-dialog__body {
+    padding: var(--o-spacing-h2);
+    padding-top: 0;
+    max-height: 80vh;
+    overflow-y: scroll;
+    background-color: var(--o-color-bg2);
+    &::-webkit-scrollbar-track {
+      border-radius: 4px;
+      background-color: var(--o-color-bg2);
+    }
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      background-color: var(--o-color-bg2);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background: var(--o-color-division1);
+    }
+  }
+  .landscape-group {
+    margin-top: var(--o-spacing-h2);
+    overflow: hidden;
+    h1 {
+      &::before {
+        content: '';
+        display: block;
+        height: 80px;
+        margin-top: -80px;
+        visibility: hidden;
+      }
+    }
+  }
+}
+</style>
