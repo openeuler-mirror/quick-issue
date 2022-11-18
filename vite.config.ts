@@ -53,8 +53,8 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/api-issues/': {
-        // target: 'http://119.8.32.82',
-        target: 'https://ipb.osinfra.cn',
+        target: 'http://119.8.32.82',
+        // target: 'https://ipb.osinfra.cn',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api-issues/, ''),
       },
