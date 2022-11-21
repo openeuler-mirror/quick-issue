@@ -28,6 +28,7 @@
   "devDependencies": {
     "@types/lodash-es": "^4.17.6",
     "@types/node": "^18.7.23",
+    "@types/prismjs": "^1.26.0",
     "@vitejs/plugin-vue": "^3.1.0",
     "@vitejs/plugin-vue-jsx": "^2.0.1",
     "@vue/eslint-config-prettier": "^7.0.0",
