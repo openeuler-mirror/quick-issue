@@ -39,7 +39,8 @@ import OIcon from 'opendesign/icon/OIcon.vue';
 
 interface TypesList {
   id: number;
-  title: string;
+  name: string;
+  template: string;
 }
 
 const router = useRouter();
@@ -352,6 +353,10 @@ function scrollClick(tab: any) {
     behavior: 'smooth',
   });
 }
+function handleTypeChange(val: number) {
+  issueData.description =
+    typesList.value?.find((item) => item.id === val)?.template || '';
+}
 // element 单文件上传，新文件覆盖旧文件
 const handleExceed: UploadProps['onExceed'] = (files) => {
   upload.value?.clearFiles();
@@ -389,7 +394,7 @@ onMounted(async () => {
     });
     if (getUrlParam('type') && typesList.value) {
       issueData.issue_type_id = typesList.value.find((item) => {
-        return item.title === decodeURI(getUrlParam('type'));
+        return item.name === decodeURI(getUrlParam('type'));
       })?.id;
     }
     landscapeInfo.value = await getSigLandscape();
@@ -442,11 +447,12 @@ watch(
             <OSelect
               v-model.string="issueData.issue_type_id"
               :placeholder="t('quickIssue.SELECT')"
+              @change="handleTypeChange"
             >
               <OOption
                 v-for="item in typesList"
                 :key="item.id"
-                :label="item.title"
+                :label="item.name"
                 :value="item.id"
               />
             </OSelect>
