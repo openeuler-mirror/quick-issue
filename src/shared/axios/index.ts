@@ -118,6 +118,7 @@ const requestInterceptorId = request.interceptors.request.use(
  * 响应拦截
  */
 const responseInterceptorId = request.interceptors.response.use(
+  // @ts-ignore
   (response: AxiosResponse) => {
     loadingCount--;
     if (loadingCount === 0 && loadingInstance) {
@@ -144,7 +145,7 @@ const responseInterceptorId = request.interceptors.response.use(
       });
     }
     // 非取消请求发生异常，同样将请求移除请求池
-    if (!axios.isCancel(err) && config.url) {
+    if (!axios.isCancel(err) && config?.url) {
       pendingPool.delete(config.url);
     }
 
@@ -156,10 +157,13 @@ const responseInterceptorId = request.interceptors.response.use(
     else {
       // 被取消的请求
       if (axios.isCancel(err)) {
-        throw new axios.Cancel(err.message || `请求'${config.url}'被取消`);
+        throw new axios.Cancel(err.message || `请求'${config?.url}'被取消`);
+        // @ts-ignore
       } else if (err.stack && err.stack.includes('timeout')) {
+        // @ts-ignore
         err.message = '请求超时!';
       } else {
+        // @ts-ignore
         err.message = '连接服务器失败!';
       }
     }
@@ -214,6 +218,5 @@ export {
   request,
   // interface
   AxiosResponse,
-  RequestConfig,
-  RequestInstance,
 };
+export type { RequestConfig, RequestInstance };
