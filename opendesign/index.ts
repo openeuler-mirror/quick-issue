@@ -5,7 +5,7 @@ import './style/variable.scss';
 import { Button } from './button';
 import { Radio, RadioGroup } from './radio';
 import { Checkbox, CheckboxGroup } from './checkbox';
-import { Select, Option } from './select';
+import { Select } from './select';
 
 import { Icon } from './icon';
 import { Card } from './card';
@@ -31,7 +31,6 @@ const components = [
   Checkbox,
   CheckboxGroup,
   Select,
-  Option,
   Icon,
   Card,
   Pagination,

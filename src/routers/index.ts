@@ -21,9 +21,19 @@ export const routes: RouteRecordRaw[] = [
   },
   // en
   {
-    path: '/en/',
-    name: 'en',
+    path: '/en/issues',
+    name: 'issues_en',
     component: () => import('@/views/TheQuickIssue.vue'),
+  },
+  {
+    path: '/en/pulls',
+    name: 'pulls_en',
+    component: () => import('@/views/pull-request/PullRequest.vue'),
+  },
+  {
+    path: '/en/new-issues',
+    name: 'new-issues_en',
+    component: () => import('@/views/submit-issue/SubmitIssue.vue'),
   },
 ];
 
@@ -38,5 +48,7 @@ export const router = createRouter({
 router.beforeEach((to) => {
   // 设置语言
   const langStore = useLangStore();
-  langStore.lang = to.fullPath.includes('en') ? 'en' : 'zh';
+  const lang = to.fullPath.includes('en') ? 'en' : 'zh';
+  // localStorage.setItem('lang', lang);
+  langStore.lang = lang;
 });
