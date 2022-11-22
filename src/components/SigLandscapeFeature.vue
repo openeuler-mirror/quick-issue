@@ -29,6 +29,7 @@ const handleSigClick = (sigName: string) => {
         <li
           v-for="sig in feature.sigs"
           :key="sig"
+          :title="sig"
           class="sig-item"
           @click="handleSigClick(sig)"
         >
@@ -45,6 +46,7 @@ const handleSigClick = (sigName: string) => {
   grid-template-columns: repeat(7, 1fr);
   column-gap: var(--o-spacing-h6);
   .landscape-feature-item {
+    max-width: 180px;
     &:nth-child(1) {
       .feature-item-title {
         background-color: #7f6bbe;
@@ -82,14 +84,19 @@ const handleSigClick = (sigName: string) => {
     }
 
     .feature-item-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 18px;
+      height: 80px;
       font-size: var(--o-font-size-h8);
       line-height: var(--o-line-height-h8);
       color: var(--o-color-white);
       text-align: center;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
+      word-break: break-word;
+    }
+    .feature-item-title-en {
+      font-size: var(--o-font-size-text);
     }
 
     .feature-item-sig {
@@ -98,20 +105,21 @@ const handleSigClick = (sigName: string) => {
         & + .sig-item {
           margin-top: var(--o-spacing-h5);
         }
-
+        cursor: pointer;
+        width: 100%;
         text-align: center;
         padding: 0 23px;
         height: 46px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+
         font-size: var(--o-font-size-text);
-        line-height: var(--o-line-height-text);
+        line-height: 46px;
         color: #002fa7;
         border: 1px solid #002fa7;
         background-color: #ffffff;
         transition: all 0.3s;
-        cursor: pointer;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
 
         &:hover {
           background: #002fa7;

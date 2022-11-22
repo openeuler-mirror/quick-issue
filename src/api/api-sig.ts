@@ -5,13 +5,17 @@ import { FeatureInfo, GroupInfo } from '@/shared/@types/type-sig';
  * 获取sig landscape
  * @returns {Promise<GroupInfo[]>}
  */
-export function getSigLandscape(): Promise<GroupInfo[]> {
+export function getSigLandscape(lang: string): Promise<GroupInfo[]> {
   const url = '/query/sig/scoreAll?community=openeuler';
   return request.get(url).then((res: AxiosResponse) => {
     const data = res.data?.data;
+
     const info: GroupInfo[] = [];
     for (let i = 0, len = data.length; i < len; i++) {
       const item = data[i];
+      lang === 'zh'
+        ? ''
+        : ((item.group = item.en_group), (item.feature = item.en_feature));
       if (item.group === '' && item.feature === '') {
         continue;
       }

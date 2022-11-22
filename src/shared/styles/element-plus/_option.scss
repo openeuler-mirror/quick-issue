@@ -1,14 +1,3 @@
-<script lang="ts" setup>
-// import { useAttrs } from 'vue';
-// const attrs = useAttrs();
-</script>
-<template>
-  <ElOption class="o-option">
-    <slot> </slot>
-  </ElOption>
-</template>
-
-<style lang="scss">
 .el-popper__arrow {
   display: none;
 }
@@ -23,4 +12,3 @@
     background-color: var(--o-color-bg4);
   }
 }
-</style>

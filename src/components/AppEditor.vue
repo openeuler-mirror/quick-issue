@@ -1,9 +1,28 @@
 <script lang="ts" setup>
+import { computed, watch } from 'vue';
+import VueMarkdownEditor from '@kangc/v-md-editor';
+import zhCN from '@kangc/v-md-editor/lib/lang/zh-CN';
+import enUS from '@kangc/v-md-editor/lib/lang/en-US';
+import { useLangStore } from '@/stores';
+
+const lang = computed(() => {
+  return useLangStore().lang;
+});
+
 const toolbar = {
   customToolbar: {},
 };
 const leftToolbar =
   'undo redo clear | h bold italic strikethrough quote | ul ol table hr | link image  preview ';
+watch(
+  () => lang.value,
+  (val) => {
+    val === 'zh'
+      ? VueMarkdownEditor.lang.use('zh-CN', zhCN)
+      : VueMarkdownEditor.lang.use('en-US', enUS);
+  },
+  { immediate: true }
+);
 </script>
 
 <template>

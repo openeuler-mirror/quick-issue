@@ -46,6 +46,23 @@ export default defineConfig({
       },
     },
   },
+
+  build: {
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return id
+              .toString()
+              .split('node_modules/')[1]
+              .split('/')[0]
+              .toString();
+          }
+        },
+      },
+    },
+  },
   server: {
     proxy: {
       '/query/': {
@@ -53,8 +70,8 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/api-issues/': {
-        target: 'http://119.8.32.82',
-        // target: 'https://ipb.osinfra.cn',
+        // target: 'http://119.8.32.82',
+        target: 'https://ipb.osinfra.cn',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api-issues/, ''),
       },

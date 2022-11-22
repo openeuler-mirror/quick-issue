@@ -1,4 +1,5 @@
 .el-message {
+  display: flex;
   justify-content: center;
   top: 104px !important;
   height: 112px;
@@ -37,10 +38,5 @@
     .el-message__content {
       font-size: var(--o-font-size-tip);
     }
-  }
-}
-.home-loading {
-  .el-loading-mask {
-    display: none;
   }
 }
