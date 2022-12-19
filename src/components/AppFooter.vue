@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { useLangStore } from '@/stores';
+
 import AppContent from '@/components/AppContent.vue';
 
 import LogoFooter from '@/assets/footer/footer-logo2.png';
@@ -33,7 +35,9 @@ import CodeImgZgz from '@/assets/footer/code-zgz.png';
 
 const { t } = useI18n();
 const router = useRouter();
-const lang = ref('zh');
+const lang = computed(() => {
+  return useLangStore().lang;
+});
 // 友情链接
 const linksData = {
   zh: [
@@ -124,34 +128,59 @@ const linksData = {
   ],
 };
 // 隐私链接
-const linksData2 = [
-  {
-    NAME: '品牌',
-    URL: 'https://www.openeuler.org/zh/other/brand/',
-  },
-  {
-    NAME: '隐私政策',
-    URL: 'https://www.openeuler.org/zh/other/privacy/',
-  },
-  {
-    NAME: '法律声明',
-    URL: 'https://www.openeuler.org/zh/other/legal/',
-  },
-  {
-    NAME: '服务状态',
-    URL: 'https://status.openeuler.org/',
-  },
-];
-
+const linksData2 = {
+  zh: [
+    {
+      NAME: '品牌',
+      URL: 'https://www.openeuler.org/zh/other/brand/',
+    },
+    {
+      NAME: '隐私政策',
+      URL: 'https://www.openeuler.org/zh/other/privacy/',
+    },
+    {
+      NAME: '法律声明',
+      URL: 'https://www.openeuler.org/zh/other/legal/',
+    },
+    {
+      NAME: '服务状态',
+      URL: 'https://status.openeuler.org/',
+    },
+  ],
+  en: [
+    {
+      NAME: 'Trademark',
+      URL: 'https://www.openeuler.org/en/other/brand/',
+    },
+    {
+      NAME: 'Privacy Policy',
+      URL: 'https://www.openeuler.org/en/other/privacy/',
+    },
+    {
+      NAME: 'Legal Notice',
+      URL: 'https://www.openeuler.org/en/other/legal/',
+    },
+    {
+      NAME: 'Service Status',
+      URL: 'https://status.openeuler.org/',
+    },
+  ],
+};
 const footerLinks = computed(() => {
-  return linksData.zh;
-  // if (lang.value === 'en') {
-  //   return linksData.en;
-  // } else if (lang.value === 'ru') {
-  //   return linksData.ru;
-  // } else {
-
-  // }
+  if (lang.value === 'en') {
+    return linksData.en;
+  } else if (lang.value === 'ru') {
+    return linksData.ru;
+  } else {
+    return linksData.zh;
+  }
+});
+const footerLinks2 = computed(() => {
+  if (lang.value === 'en') {
+    return linksData2.en;
+  } else {
+    return linksData2.zh;
+  }
 });
 
 // 公众号、小助手
@@ -213,7 +242,7 @@ const footBg = {
           <div class="footer-option">
             <div class="footer-option-item">
               <a
-                v-for="link in linksData2"
+                v-for="link in footerLinks2"
                 :key="link.URL"
                 href="javascript:;"
                 class="link"
@@ -367,7 +396,7 @@ $color: #fff;
       padding: 18px 0 32px;
       position: relative;
       min-height: 118px;
-      @media (max-width: 1400px) {
+      @media (max-width: 1436px) {
         padding: var(--o-spacing-h4) 0;
         flex-direction: column;
         justify-content: space-between;
@@ -386,7 +415,7 @@ $color: #fff;
     .show-mo {
       display: none;
     }
-    @media (max-width: 1400px) {
+    @media (max-width: 1436px) {
       text-align: center;
       margin: 16px 0;
       .show-pc {
@@ -403,7 +432,7 @@ $color: #fff;
     font-size: var(--o-font-size-text);
     color: $color;
     margin-top: var(--o-spacing-h5);
-    @media (max-width: 1400px) {
+    @media (max-width: 1436px) {
       font-size: var(--o-font-size-tip);
       line-height: var(--o-line-height-tip);
       margin-top: var(--o-spacing-h8);
@@ -421,13 +450,13 @@ $color: #fff;
       &:last-child {
         border-right: 0;
       }
-      @media (max-width: 1400px) {
+      @media (max-width: 1436px) {
         font-size: var(--o-font-size-tip);
         line-height: var(--o-line-height-tip);
         padding: 0 var(--o-spacing-h9);
       }
     }
-    @media (max-width: 1400px) {
+    @media (max-width: 1436px) {
       order: -1;
     }
   }
@@ -500,7 +529,7 @@ $color: #fff;
           }
         }
       }
-      @media (max-width: 1400px) {
+      @media (max-width: 1436px) {
         justify-content: center;
       }
       @media (max-width: 1100px) {
@@ -560,7 +589,7 @@ $color: #fff;
   .email {
     color: $color;
     font-size: var(--o-font-size-text);
-    @media (max-width: 1400px) {
+    @media (max-width: 1436px) {
       font-size: var(--o-font-size-tip);
     }
   }

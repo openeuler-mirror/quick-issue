@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch, CSSProperties } from 'vue';
+import { ref, reactive, onMounted, watch, computed, CSSProperties } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { debounce } from 'lodash-es';
 import { useLabelColor } from '@/stores/index';
+
+import { useLangStore } from '@/stores';
 
 import ISSUE_CONFIG from '@/data/quick-issue/quick-issue';
 import {
@@ -39,6 +41,9 @@ const totalPage = ref(0);
 const checkAll = ref(false);
 const isIndeterminate = ref(true);
 const layout = ref('sizes, prev, pager, next, slot, jumper');
+const lang = computed(() => {
+  return useLangStore().lang;
+});
 
 const keyArr = [
   'authorsList',
@@ -259,8 +264,13 @@ watch(
         @change="searchValchange"
       ></OSearch>
     </div>
-    <OTable class="quick-issue-table" :data="issueData" style="width: 100%">
-      <el-table-column width="100">
+    <OTable
+      class="quick-issue-table"
+      :class="lang === 'en' ? 'en-table' : ''"
+      :data="issueData"
+      style="width: 100%"
+    >
+      <el-table-column width="90">
         <template #header>
           <span>{{ t('quickIssue.ID') }}</span>
         </template>
@@ -270,7 +280,7 @@ watch(
           </span>
         </template>
       </el-table-column>
-      <el-table-column width="100">
+      <el-table-column width="110">
         <template #header>
           <span :class="queryData.repo ? 'active' : ''">{{
             queryData.repo || t('quickIssue.REPO_NAME')
@@ -350,10 +360,10 @@ watch(
               }}</ODropdownItem>
               <ODropdownItem
                 v-for="item in filterList.get('typesList').data"
-                :key="item"
-                :command="item"
-                :class="queryData.issue_type === item ? 'is-active' : ''"
-                >{{ item }}</ODropdownItem
+                :key="item.name"
+                :command="item.name"
+                :class="queryData.issue_type === item.name ? 'is-active' : ''"
+                >{{ item.name }}</ODropdownItem
               >
             </template>
           </ODropdown>
@@ -474,7 +484,7 @@ watch(
           </span>
         </template>
       </el-table-column>
-      <el-table-column width="100">
+      <el-table-column width="110">
         <template #header>
           <span :class="queryData.assignee ? 'active' : ''">{{
             queryData.assignee || t('quickIssue.ASSIGNER')
@@ -568,7 +578,7 @@ watch(
           </span>
         </template>
       </el-table-column>
-      <el-table-column width="150">
+      <el-table-column width="180">
         <template #header>
           <div
             class="filter-box"
@@ -749,13 +759,13 @@ watch(
       <span class="slot-content">{{ currentPage }}/{{ totalPage }}</span>
     </OPagination>
     <ODialog v-model="isShowLabel" :show-close="true" :lock-scroll="true">
-      <h1 class="title">标签</h1>
+      <h1 class="title">{{ t('quickIssue.LABEL') }}</h1>
       <div class="label-select">
-        <span class="label">选择标签</span>
+        <span class="label">{{ t('quickIssue.SELECT_LABEL') }}</span>
         <OSelect
           v-model="queryData.label"
           multiple
-          placeholder="请选择"
+          :placeholder="t('quickIssue.SELECT')"
           popper-class="remove-scrollbar"
           :listener-scorll="true"
           @scorll-bottom="getNextPage"
@@ -768,7 +778,7 @@ watch(
             @input="valueChangeDebounced"
           ></OSearch>
           <el-scrollbar class="Escrollbar">
-            <OOption
+            <ElOption
               v-if="!filterList.get('labelsList').data.length"
               :key="''"
               :label="'no date'"
@@ -776,7 +786,7 @@ watch(
               :disabled="true"
               style="text-align: center"
             />
-            <OOption
+            <ElOption
               v-for="item in filterList.get('labelsList').data"
               :key="item"
               :label="item"
@@ -788,13 +798,13 @@ watch(
           <IconRefresh> </IconRefresh>
         </OIcon>
       </div>
-      <p class="label-tip">同时包括所有“选中标签”的PR将会被筛选出来</p>
+      <p class="label-tip">{{ t('quickIssue.LABER_TIP') }}</p>
       <div class="label-select">
-        <span class="label">排除标签</span>
+        <span class="label">{{ t('quickIssue.EXCLUDE') }}</span>
         <OSelect
           v-model="queryData.exclusion"
           multiple
-          placeholder="请选择"
+          :placeholder="t('quickIssue.SELECT')"
           popper-class="remove-scrollbar"
           :listener-scorll="true"
           @scorll-bottom="getNextPage"
@@ -806,7 +816,7 @@ watch(
             style="padding: 0 8px"
             @input="valueChangeDebounced"
           ></OSearch>
-          <OOption
+          <ElOption
             v-if="!filterList.get('exLabelsList').data.length"
             :key="''"
             :label="'no date'"
@@ -814,7 +824,7 @@ watch(
             :disabled="true"
             style="text-align: center"
           />
-          <OOption
+          <ElOption
             v-for="item in filterList.get('exLabelsList').data"
             :key="item"
             :label="item"
@@ -825,7 +835,7 @@ watch(
           <IconRefresh> </IconRefresh>
         </OIcon>
       </div>
-      <p class="label-tip">包含“排除标签”的PR不会被筛选出来</p>
+      <p class="label-tip">{{ t('quickIssue.LABER_TIP1') }}</p>
     </ODialog>
   </AppContent>
 </template>
@@ -934,6 +944,23 @@ watch(
     }
   }
 }
+:deep(.en-table) {
+  thead {
+    tr {
+      .cell {
+        font-size: 12px;
+        .o-icon {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+  tr {
+    .cell {
+      padding: 0 12px;
+    }
+  }
+}
 .input-container {
   @media screen and (max-width: 768px) {
     margin-bottom: var(--o-spacing-h5);
@@ -1019,6 +1046,8 @@ watch(
       justify-content: flex-start;
       .label {
         margin-right: var(--o-spacing-h6);
+        word-break: break-word;
+        min-width: 58px;
       }
       .icon-refresh {
         cursor: pointer;
