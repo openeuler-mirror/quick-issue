@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted, watch, nextTick } from 'vue';
+import { ref, reactive, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { debounce } from 'lodash-es';
 import { useI18n } from 'vue-i18n';
 
+import { useLangStore } from '@/stores';
 import { GroupInfo } from '@/shared/@types/type-sig';
 import { getUrlParam, handleUploadImage } from '@/shared';
 
@@ -20,6 +21,8 @@ import { getSigLandscape } from '@/api/api-sig';
 
 import AppEditor from '@/components/AppEditor.vue';
 import AppContent from '@/components/AppContent.vue';
+import SigLandscapeFeature from '@/components/SigLandscapeFeature.vue';
+import OIcon from 'opendesign/icon/OIcon.vue';
 import { ElMessage, genFileId } from 'element-plus';
 import type {
   FormInstance,
@@ -34,9 +37,6 @@ import IconDown from '~icons/app/icon-pulldown.svg';
 import IconAdd from '~icons/app/icon-add.svg';
 import IconSearch from '~icons/app/icon-search.svg';
 
-import SigLandscapeFeature from '@/components/SigLandscapeFeature.vue';
-import OIcon from 'opendesign/icon/OIcon.vue';
-
 interface TypesList {
   id: number;
   name: string;
@@ -46,19 +46,37 @@ interface TypesList {
 const router = useRouter();
 const formRef = ref<FormInstance>();
 const { t } = useI18n();
+
 const landscapeInfo = ref<GroupInfo[]>([]);
 const isShowMenu = ref(false);
+
 const titleList = ref([
   {
-    value: '代码仓管理/技术创新',
+    value: computed(() => {
+      return t('sig.SIG_LANDSCAPE[0].CATEGORY_NAME');
+    }),
     key: 'tech',
   },
   {
-    value: '社区治理运营',
+    value: computed(() => {
+      return t('sig.SIG_LANDSCAPE[1].CATEGORY_NAME');
+    }),
     key: 'operate',
   },
 ]);
-const content = ref('发送验证码');
+const lang = computed(() => {
+  return useLangStore().lang;
+});
+const content = ref(t('quickIssue.SEND_CODE'));
+
+watch(
+  () => lang.value,
+  async (val) => {
+    landscapeInfo.value = await getSigLandscape(val);
+    content.value = val === 'en' ? 'Send Verification Code' : '发送验证码';
+  }
+);
+
 const totalTime = ref(60);
 const tabType = ref(titleList.value[0].key);
 const isGiteeUser = ref(false);
@@ -74,29 +92,86 @@ const typesList = ref<Array<TypesList>>();
 
 const rules: any = reactive({
   title: [
-    { required: true, message: '必填项', trigger: 'blur' },
-    { min: 1, max: 100, message: '长度不超过100字符', trigger: 'blur' },
+    {
+      required: true,
+      message: computed(() => {
+        return t('quickIssue.MANDATORY1');
+      }),
+      trigger: 'blur',
+    },
+    {
+      min: 1,
+      max: 100,
+      message: computed(() => {
+        return t('quickIssue.TITLE_LIMIT');
+      }),
+      trigger: 'blur',
+    },
   ],
-  issue_type_id: [{ required: true, message: '必选项', trigger: 'change' }],
-  repo: [{ required: true, message: '必选项', trigger: 'change' }],
+  issue_type_id: [
+    {
+      required: true,
+      message: computed(() => {
+        return t('quickIssue.MANDATORY1');
+      }),
+      trigger: 'change',
+    },
+  ],
+  repo: [
+    {
+      required: true,
+      message: computed(() => {
+        return t('quickIssue.MANDATORY1');
+      }),
+      trigger: 'change',
+    },
+  ],
   privacy: [],
   email: [],
   code: [],
 });
-const privacyRules = [{ required: true, message: '必选项', trigger: 'change' }];
+const privacyRules = [
+  {
+    required: true,
+    message: computed(() => {
+      return t('quickIssue.MANDATORY1');
+    }),
+    trigger: 'change',
+  },
+];
 const emailRules = [
-  { required: true, message: '请填写邮箱', trigger: 'change' },
+  {
+    required: true,
+    message: computed(() => {
+      return t('quickIssue.EMAIL_ADRESS');
+    }),
+    trigger: 'change',
+  },
   {
     pattern: new RegExp(
       '^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$'
     ),
-    message: '请输入正确邮箱',
+    message: computed(() => {
+      return t('quickIssue.RIGHT_EMAIL_ADRESS');
+    }),
     trigger: 'change',
   },
 ];
 const codeRules = [
-  { required: true, message: '请填写验证码', trigger: 'blur' },
-  { pattern: /^\d{6}$/, message: '请填写6位验证码', trigger: 'blur' },
+  {
+    required: true,
+    message: computed(() => {
+      return t('quickIssue.VER_CODE');
+    }),
+    trigger: 'blur',
+  },
+  {
+    pattern: /^\d{6}$/,
+    message: computed(() => {
+      return t('quickIssue.VER_CODE1');
+    }),
+    trigger: 'blur',
+  },
 ];
 const repoParams = reactive({
   page: 1,
@@ -140,7 +215,9 @@ function getRepoBySigName() {
       reposList.value.data = [...reposList.value.data, ...res.data];
     } else if (!res.total && !repoParams.keyword) {
       ElMessage({
-        message: '此SIG下无仓库。默认提交至 openeuler/community-issue 仓库',
+        message: computed(() => {
+          return t('quickIssue.EMPTY_REPO');
+        }).value,
         type: 'warning',
         duration: 10000,
       });
@@ -167,16 +244,31 @@ async function getCodeByEmail(verify: FormInstance | undefined) {
         if (res?.code === 200) {
           const clock = window.setInterval(function () {
             totalTime.value--;
-            content.value = totalTime.value + 's后重新发送';
+            content.value =
+              lang.value === 'zh'
+                ? `${totalTime.value}s${
+                    computed(() => {
+                      return t('quickIssue.RESEND1');
+                    }).value
+                  }`
+                : `${
+                    computed(() => {
+                      return t('quickIssue.RESEND1');
+                    }).value
+                  } ${totalTime.value}s`;
             if (totalTime.value < 0) {
               //当倒计时小于0时清除定时器
               window.clearInterval(clock);
-              content.value = '重新发送验证码';
+              content.value = computed(() => {
+                return t('quickIssue.RESEND');
+              }).value;
               totalTime.value = 60;
             }
           }, 1000);
           ElMessage({
-            message: res.msg,
+            message: computed(() => {
+              return t('quickIssue.SUCCESS_SEND_MAIL');
+            }).value,
             type: 'success',
           });
         } else {
@@ -240,7 +332,9 @@ async function submitForm(
               .then((res) => {
                 if (res?.code === 200) {
                   ElMessage({
-                    message: '附件上传成功',
+                    message: computed(() => {
+                      return t('quickIssue.SUCCESS_UPLOAD');
+                    }).value,
                     type: 'success',
                   });
                 } else {
@@ -252,7 +346,9 @@ async function submitForm(
               })
               .catch(() => {
                 ElMessage({
-                  message: 'Issue 创建成功，附件上传失败！',
+                  message: computed(() => {
+                    return t('quickIssue.SUCCESS_UPLOAD1');
+                  }).value,
                   type: 'error',
                 });
               });
@@ -277,7 +373,9 @@ async function submitForm(
           issueData.description = '';
           verify.scrollToField('title');
           ElMessage({
-            message: '创建issue成功',
+            message: computed(() => {
+              return t('quickIssue.SUCCESS_CREATED');
+            }).value,
             type: 'success',
           });
         } else {
@@ -325,7 +423,11 @@ function onChange(rawFile: UploadUserFile) {
     return false;
   }
   if (rawFile.size / 1024 / 1024 > 10) {
-    ElMessage.warning('附件过大，附件不得超过10MB，请重新选择文件。');
+    ElMessage.warning(
+      computed(() => {
+        return t('quickIssue.SIZE_LIMIT');
+      }).value
+    );
     fileList.value = [];
     return false;
   }
@@ -392,20 +494,14 @@ onMounted(async () => {
     await getIssueSelectOption('types', null).then((res) => {
       typesList.value = res.data;
     });
-    if (getUrlParam('type') && typesList.value) {
-      issueData.issue_type_id = typesList.value.find((item) => {
+    if (getUrlParam('type')) {
+      const targetType = typesList.value?.find((item) => {
         return item.name === decodeURI(getUrlParam('type'));
-      })?.id;
-    }
-    landscapeInfo.value = await getSigLandscape();
-    const tab = document.querySelector('#tab-tech');
-    const observer = new IntersectionObserver((res) => {
-      if (res[0].intersectionRatio <= 0) return;
-      nextTick(() => {
-        tabType.value = titleList.value[0].key;
       });
-    });
-    tab && observer.observe(tab);
+      issueData.issue_type_id = targetType?.id;
+      issueData.description = targetType?.template || '';
+    }
+    landscapeInfo.value = await getSigLandscape(lang.value);
   } catch (err: any) {
     throw new Error(err);
   }
@@ -431,6 +527,7 @@ watch(
         label-position="left"
         hide-required-asterisk
         class="issue-form"
+        :class="lang === 'en' ? 'en-form' : ''"
       >
         <div class="form-liner">
           <el-form-item
@@ -449,7 +546,7 @@ watch(
               :placeholder="t('quickIssue.SELECT')"
               @change="handleTypeChange"
             >
-              <OOption
+              <ElOption
                 v-for="item in typesList"
                 :key="item.id"
                 :label="item.name"
@@ -470,7 +567,7 @@ watch(
               type="primary"
               size="small"
               @click="isShowMenu = true"
-              >选择SIG组</OButton
+              >{{ t('quickIssue.SELECT_SIG') }}</OButton
             >
           </el-form-item>
           <!-- 仓库查询 -->
@@ -493,7 +590,7 @@ watch(
                 ></OSearch>
               </div>
               <el-scrollbar>
-                <OOption
+                <ElOption
                   v-if="!reposList.data.length"
                   label=""
                   value=""
@@ -501,8 +598,8 @@ watch(
                   style="text-align: center"
                 >
                   <span>no data</span>
-                </OOption>
-                <OOption
+                </ElOption>
+                <ElOption
                   v-for="item in reposList.data"
                   :key="item.repo"
                   :label="item.repo"
@@ -598,7 +695,7 @@ watch(
                   <OCheckbox value="true">
                     {{ t('quickIssue.PRIVACY_TEXT') }}
                     <a
-                      href="https://www.openeuler.org/zh/other/privacy/"
+                      :href="`https://www.openeuler.org/${lang}/other/privacy/`"
                       target="_blank"
                       >{{ t('quickIssue.PRIVACY') }}</a
                     >
@@ -619,7 +716,7 @@ watch(
                 @click="submitForm(formRef, false)"
                 >{{ t('quickIssue.CONTINUE') }}</OButton
               >
-              <OButton size="small" @click="handleClick('/zh/')">{{
+              <OButton size="small" @click="handleClick(`/${lang}/issues/`)">{{
                 t('quickIssue.CANCEL')
               }}</OButton>
             </div>
@@ -763,6 +860,7 @@ watch(
         width: 100%;
       }
     }
+
     .verify-email {
       margin: var(--o-spacing-h2) 0;
       justify-content: flex-start;
@@ -807,7 +905,7 @@ watch(
       align-items: center;
       margin-top: var(--o-spacing-h2);
       .o-button {
-        min-width: 190px;
+        min-width: 200px;
         padding: 6px 0;
         align-items: center;
         justify-content: center;
@@ -863,6 +961,24 @@ watch(
       }
       .reversal {
         transform: rotate(180deg);
+      }
+    }
+  }
+  .en-form {
+    .form-liner {
+      .el-form-item {
+        .el-form-item__label {
+          width: 105px;
+          justify-content: flex-start;
+        }
+      }
+    }
+    .verify-email {
+      .verify-code {
+        .el-form-item__label {
+          width: 180px;
+          justify-content: flex-end;
+        }
       }
     }
   }

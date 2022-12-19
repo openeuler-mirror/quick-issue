@@ -11,6 +11,11 @@ export const useLangStore = defineStore('lang', {
       lang: '',
     };
   },
+  actions: {
+    setLangStore(val: string) {
+      this.lang = val;
+    },
+  },
 });
 // 标签颜色
 export const useLabelColor = defineStore('color', {

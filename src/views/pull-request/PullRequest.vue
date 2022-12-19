@@ -3,6 +3,7 @@ import { ref, reactive, onMounted, watch, CSSProperties, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { debounce } from 'lodash-es';
 
+import { useLangStore } from '@/stores';
 import ISSUE_CONFIG from '@/data/quick-issue/quick-issue';
 import { getPrSelectOption, getRepoPull } from '@/api/api-quick-issue';
 import { OptionList } from '@/shared/@types/type-quick-issue';
@@ -32,6 +33,9 @@ const currentPage = ref(1);
 const totalPage = ref(0);
 const layout = ref('sizes, prev, pager, next, slot, jumper');
 
+const lang = computed(() => {
+  return useLangStore().lang;
+});
 const keyArr = [
   'authorsList',
   'assigneesList',
@@ -243,7 +247,12 @@ watch(
         @change="searchValchange"
       ></OSearch>
     </div>
-    <OTable class="quick-issue-table" :data="issueData" style="width: 100%">
+    <OTable
+      class="quick-issue-table"
+      :class="lang === 'en' ? 'en-table' : ''"
+      :data="issueData"
+      style="width: 100%"
+    >
       <el-table-column width="150">
         <template #header>
           <span :class="queryData.sig ? 'active' : ''">{{
@@ -692,13 +701,13 @@ watch(
       <span class="slot-content">{{ currentPage }}/{{ totalPage }}</span>
     </OPagination>
     <ODialog v-model="isShowLabel" :show-close="true" :lock-scroll="true">
-      <h1 class="title">标签</h1>
+      <h1 class="title">{{ t('quickIssue.LABEL') }}</h1>
       <div class="label-select">
-        <span class="label">选择标签</span>
+        <span class="label">{{ t('quickIssue.SELECT_LABEL') }}</span>
         <OSelect
           v-model="queryData.label"
           multiple
-          placeholder="请选择"
+          :placeholder="t('quickIssue.SELECT')"
           popper-class="remove-scrollbar"
           :listener-scorll="true"
           @scorll-bottom="getNextPage"
@@ -711,7 +720,7 @@ watch(
             @input="valueChangeDebounced"
           ></OSearch>
           <el-scrollbar class="Escrollbar">
-            <OOption
+            <ElOption
               v-if="!filterList.get('labelsList').data.length"
               :key="''"
               :label="'no date'"
@@ -719,7 +728,7 @@ watch(
               :disabled="true"
               style="text-align: center"
             />
-            <OOption
+            <ElOption
               v-for="item in filterList.get('labelsList').data"
               :key="item"
               :label="item"
@@ -731,13 +740,13 @@ watch(
           <IconRefresh> </IconRefresh>
         </OIcon>
       </div>
-      <p class="label-tip">同时包括所有“选中标签”的PR将会被筛选出来</p>
+      <p class="label-tip">{{ t('quickIssue.LABER_TIP') }}</p>
       <div class="label-select">
-        <span class="label">排除标签</span>
+        <span class="label">{{ t('quickIssue.EXCLUDE') }}</span>
         <OSelect
           v-model="queryData.exclusion"
           multiple
-          placeholder="请选择"
+          :placeholder="t('quickIssue.SELECT')"
           popper-class="remove-scrollbar"
           :listener-scorll="true"
           @scorll-bottom="getNextPage"
@@ -749,7 +758,7 @@ watch(
             style="padding: 0 8px"
             @input="valueChangeDebounced"
           ></OSearch>
-          <OOption
+          <ElOption
             v-if="!filterList.get('exLabelsList').data.length"
             :key="''"
             :label="'no date'"
@@ -757,7 +766,7 @@ watch(
             :disabled="true"
             style="text-align: center"
           />
-          <OOption
+          <ElOption
             v-for="item in filterList.get('exLabelsList').data"
             :key="item"
             :label="item"
@@ -768,7 +777,7 @@ watch(
           <IconRefresh> </IconRefresh>
         </OIcon>
       </div>
-      <p class="label-tip">包含“排除标签”的PR不会被筛选出来</p>
+      <p class="label-tip">{{ t('quickIssue.LABER_TIP1') }}</p>
     </ODialog>
   </AppContent>
 </template>
@@ -798,69 +807,6 @@ watch(
     box-shadow: 0 0 0 1px var(--o-color-border1) inset;
     &:hover {
       box-shadow: 0 0 0 1px var(--o-color-border1) inset;
-    }
-  }
-}
-:deep(.el-dialog) {
-  max-width: 500px;
-  width: 100%;
-  border-radius: 0;
-  .el-dialog__header {
-    padding: 0;
-    .el-dialog__headerbtn {
-      top: var(--o-spacing-h4);
-      right: var(--o-spacing-h4);
-      font-size: var(--o-font-size-h5);
-      width: fit-content;
-      height: fit-content;
-      z-index: 10;
-      .el-dialog__close {
-        color: var(--o-color-text1);
-      }
-    }
-  }
-  .el-dialog__body {
-    padding: var(--o-spacing-h4);
-    .title {
-      font-weight: 500;
-      line-height: var(--o-line-height-h8);
-      font-size: var(--o-font-size-h8);
-    }
-    .label-select {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      .label {
-        margin-right: var(--o-spacing-h6);
-      }
-      .icon-refresh {
-        cursor: pointer;
-        margin-left: var(--o-spacing-h8);
-        font-size: var(--o-font-size-h7);
-        color: var(--o-color-text1);
-      }
-    }
-    .label-tip {
-      margin: 12px 0 0 68px;
-      color: var(--o-color-brand1);
-    }
-    .label-select:nth-of-type(1) {
-      margin-top: var(--o-spacing-h4);
-    }
-    .label-tip:nth-of-type(1) {
-      margin-bottom: 24px;
-    }
-    .o-select {
-      .el-input__wrapper {
-        min-width: 350px;
-        box-shadow: 0 0 0 1px var(--o-color-border1) inset;
-        &:hover {
-          box-shadow: 0 0 0 1px var(--o-color-border1) inset;
-        }
-        .o-icon {
-          font-size: var(--o-font-size-h7);
-        }
-      }
     }
   }
 }
@@ -937,6 +883,23 @@ watch(
           color: var(--o-color-text1);
         }
       }
+    }
+  }
+}
+:deep(.en-table) {
+  thead {
+    tr {
+      .cell {
+        font-size: 12px;
+        .o-icon {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+  tr {
+    .cell {
+      padding: 0 12px;
     }
   }
 }
@@ -1025,6 +988,8 @@ watch(
       justify-content: flex-start;
       .label {
         margin-right: var(--o-spacing-h6);
+        word-break: break-word;
+        min-width: 58px;
       }
       .icon-refresh {
         cursor: pointer;
