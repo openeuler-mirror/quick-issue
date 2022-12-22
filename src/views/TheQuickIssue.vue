@@ -611,7 +611,7 @@ watch(
         <template #default="scope">
           <span class="detail-page">
             <p
-              v-for="item in scope.row.labels.split(',')"
+              v-for="item in scope.row.labels?.split(',')"
               :key="item"
               :title="item"
               :style="getLabelColor(item)"
@@ -704,8 +704,8 @@ watch(
         </template>
         <template #default="scope">
           <span class="detail-page">
-            <p>{{ scope.row.created_at.split(' ')[0] }}</p>
-            <p>{{ scope.row.created_at.split(' ')[1] }}</p>
+            <p>{{ scope.row.created_at?.split(' ')[0] }}</p>
+            <p>{{ scope.row.created_at?.split(' ')[1] }}</p>
           </span>
         </template>
       </el-table-column>
@@ -738,8 +738,8 @@ watch(
         </template>
         <template #default="scope">
           <span class="detail-page">
-            <p>{{ scope.row.updated_at.split(' ')[0] }}</p>
-            <p>{{ scope.row.updated_at.split(' ')[1] }}</p>
+            <p>{{ scope.row.updated_at?.split(' ')[0] }}</p>
+            <p>{{ scope.row.updated_at?.split(' ')[1] }}</p>
           </span>
         </template>
       </el-table-column>

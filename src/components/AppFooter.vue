@@ -39,7 +39,7 @@ const lang = computed(() => {
   return useLangStore().lang;
 });
 // 友情链接
-const linksData = {
+const linksData: any = {
   zh: [
     {
       path: 'https://my.oschina.net/openeuler',
@@ -99,36 +99,9 @@ const linksData = {
       id: 'youtube',
     },
   ],
-  ru: [
-    {
-      path: 'https://www.reddit.com/r/openEuler/',
-      logo: LogoRedditSquare,
-      id: 'reddit-square',
-    },
-    {
-      path: 'https://www.linkedin.com/company/openeuler',
-      logo: LogoLinkedin,
-      id: 'linkedin',
-    },
-    {
-      path: 'https://twitter.com/openEuler',
-      logo: LogoTwitter,
-      id: 'twitter',
-    },
-    {
-      path: 'https://space.bilibili.com/527064077/channel/series',
-      logo: LogoBilibili2,
-      id: 'bilibili',
-    },
-    {
-      path: 'https://www.youtube.com/channel/UCPzSqXqCgmJmdIicbY7GAeA',
-      logo: LogoYoutube,
-      id: 'youtube',
-    },
-  ],
 };
 // 隐私链接
-const linksData2 = {
+const linksData2: any = {
   zh: [
     {
       NAME: '品牌',
@@ -166,22 +139,6 @@ const linksData2 = {
     },
   ],
 };
-const footerLinks = computed(() => {
-  if (lang.value === 'en') {
-    return linksData.en;
-  } else if (lang.value === 'ru') {
-    return linksData.ru;
-  } else {
-    return linksData.zh;
-  }
-});
-const footerLinks2 = computed(() => {
-  if (lang.value === 'en') {
-    return linksData2.en;
-  } else {
-    return linksData2.zh;
-  }
-});
 
 // 公众号、小助手
 const footerCodeList = [
@@ -242,7 +199,7 @@ const footBg = {
           <div class="footer-option">
             <div class="footer-option-item">
               <a
-                v-for="link in footerLinks2"
+                v-for="link in linksData2[lang]"
                 :key="link.URL"
                 href="javascript:;"
                 class="link"
@@ -269,7 +226,7 @@ const footBg = {
             </div>
             <div class="footer-links" :class="{ iszh: lang === 'zh' }">
               <a
-                v-for="item in footerLinks"
+                v-for="item in linksData[lang]"
                 :key="item.id"
                 :href="item.path"
                 class="links-logo"
