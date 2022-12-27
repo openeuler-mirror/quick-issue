@@ -2,7 +2,8 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { router } from './routers';
 import i18n from './i18n';
-
+import '@/shared/allow_sensor/sensorsdata.min.js';
+import '@/shared/allow_sensor/sensors.js';
 import '@/shared/styles/index.scss';
 // import '@/shared/styles/element-plus/index.scss';
 
