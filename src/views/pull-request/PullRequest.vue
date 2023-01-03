@@ -15,6 +15,7 @@ import IconTraingleDown from '~icons/app/icon-arrow-traingle-down.svg';
 import IconFilter from '~icons/app/icon-filter.svg';
 import IconTag from '~icons/app/icon-tag';
 import IconRefresh from '~icons/app/icon-refresh';
+import IconSetting from '~icons/app/icon-setting';
 
 import AppContent from '@/components/AppContent.vue';
 import ODropdown from 'opendesign/dropdown/ODropdown.vue';
@@ -79,7 +80,97 @@ const optionQuery = reactive({
   keyword: '',
   sig: activeSig,
 });
-
+const titleList = ref(
+  new Map([
+    [
+      'sig',
+      {
+        value: 'SIG',
+      },
+    ],
+    [
+      'repo',
+      {
+        value: computed(() => {
+          return t('quickIssue.REPO_NAME');
+        }),
+      },
+    ],
+    [
+      'title',
+      {
+        value: computed(() => {
+          return t('quickIssue.TITLE');
+        }),
+      },
+    ],
+    [
+      'branch',
+      {
+        value: computed(() => {
+          return t('quickIssue.BRANCH');
+        }),
+      },
+    ],
+    [
+      'state',
+      {
+        value: computed(() => {
+          return t('quickIssue.STATE');
+        }),
+      },
+    ],
+    [
+      'author',
+      {
+        value: computed(() => {
+          return t('quickIssue.SUBMITTER');
+        }),
+      },
+    ],
+    [
+      'assignee',
+      {
+        value: computed(() => {
+          return t('quickIssue.ASSIGNER');
+        }),
+      },
+    ],
+    [
+      'label',
+      {
+        value: computed(() => {
+          return t('quickIssue.LABEL');
+        }),
+      },
+    ],
+    [
+      'created_at',
+      {
+        value: computed(() => {
+          return t('quickIssue.CREATED_AT');
+        }),
+      },
+    ],
+    [
+      'updated_at',
+      {
+        value: computed(() => {
+          return t('quickIssue.UPDATE_AT');
+        }),
+      },
+    ],
+  ])
+);
+const checkedTitle = ref([
+  'repo',
+  'title',
+  'branch',
+  'author',
+  'label',
+  'created_at',
+  'updated_at',
+]);
 const handleSizeChange = (val: number) => {
   queryData.per_page = val;
   totalPage.value = Math.ceil(total.value / val);
@@ -188,6 +279,14 @@ function sortClick(sort: string) {
   }
   queryData.sort = sort;
 }
+const handleTitleClick = (title: string) => {
+  if (checkedTitle.value.includes(title)) {
+    const index = checkedTitle.value.indexOf(title);
+    checkedTitle.value.splice(index, 1);
+  } else {
+    checkedTitle.value.push(title);
+  }
+};
 function labelClick() {
   getOption('exLabels');
   isShowLabel.value = true;
@@ -207,6 +306,11 @@ function getOption(type: string) {
 }
 
 onMounted(() => {
+  if (window.localStorage?.getItem('pr-title')) {
+    checkedTitle.value = JSON.parse(
+      window.localStorage.getItem('pr-title') as any
+    );
+  }
   getRepoIssueData();
   getOption('authors');
   getOption('assignees');
@@ -215,7 +319,15 @@ onMounted(() => {
   getOption('repos');
   getOption('sigs');
 });
-
+watch(
+  () => checkedTitle,
+  () => {
+    window.localStorage.setItem('pr-title', JSON.stringify(checkedTitle.value));
+  },
+  {
+    deep: true,
+  }
+);
 watch(
   () => queryData,
   () => {
@@ -253,7 +365,11 @@ watch(
       :data="issueData"
       style="width: 100%"
     >
-      <el-table-column width="150">
+      <el-table-column
+        v-if="checkedTitle.includes('sig')"
+        key="sig"
+        min-width="150"
+      >
         <template #header>
           <span :class="queryData.sig ? 'active' : ''">{{
             queryData.sig || 'SIG'
@@ -302,7 +418,11 @@ watch(
           </span>
         </template>
       </el-table-column>
-      <el-table-column width="150">
+      <el-table-column
+        v-if="checkedTitle.includes('repo')"
+        key="repo"
+        min-width="150"
+      >
         <template #header>
           <span :class="queryData.repo ? 'active' : ''">{{
             queryData.repo || t('quickIssue.REPO_NAME')
@@ -350,7 +470,11 @@ watch(
           </span>
         </template>
       </el-table-column>
-      <el-table-column>
+      <el-table-column
+        v-if="checkedTitle.includes('title')"
+        key="title"
+        min-width="350"
+      >
         <template #header>
           <span>{{ t('quickIssue.TITLE') }}</span>
         </template>
@@ -360,7 +484,11 @@ watch(
           </span>
         </template>
       </el-table-column>
-      <el-table-column width="100">
+      <el-table-column
+        v-if="checkedTitle.includes('branch')"
+        key="branch"
+        min-width="100"
+      >
         <template #header>
           <span :class="queryData.ref ? 'active' : ''">{{
             queryData.ref || t('quickIssue.BRANCH')
@@ -408,12 +536,17 @@ watch(
           </span>
         </template>
       </el-table-column>
-      <el-table-column width="100">
+      <el-table-column
+        v-if="checkedTitle.includes('state')"
+        key="state"
+        min-width="100"
+      >
         <template #header>
           <span :class="queryData.state.length ? 'active' : ''">
             <template v-if="queryData.state.length">
               <span v-for="item in queryData.state" :key="item">
-                {{ stateChange(item) }}
+                {{ stateChange(item)
+                }}<i v-show="queryData.state.length > 1">, </i>
               </span>
             </template>
             <template v-else>
@@ -451,7 +584,11 @@ watch(
           </span>
         </template>
       </el-table-column>
-      <el-table-column width="130">
+      <el-table-column
+        v-if="checkedTitle.includes('author')"
+        key="author"
+        min-width="130"
+      >
         <template #header>
           <span :class="queryData.author ? 'active' : ''">{{
             queryData.author || t('quickIssue.SUBMITTER')
@@ -510,7 +647,11 @@ watch(
           </span>
         </template>
       </el-table-column>
-      <el-table-column width="130">
+      <el-table-column
+        v-if="checkedTitle.includes('assignee')"
+        key="assignee"
+        min-width="130"
+      >
         <template #header>
           <span :class="queryData.assignee ? 'active' : ''">{{
             queryData.assignee || t('quickIssue.ASSIGNER')
@@ -571,7 +712,11 @@ watch(
           </span>
         </template>
       </el-table-column>
-      <el-table-column width="200">
+      <el-table-column
+        v-if="checkedTitle.includes('label')"
+        key="label"
+        min-width="200"
+      >
         <template #header>
           <div
             class="filter-box"
@@ -617,7 +762,11 @@ watch(
           </span>
         </template>
       </el-table-column>
-      <el-table-column width="120">
+      <el-table-column
+        v-if="checkedTitle.includes('created_at')"
+        key="created_at"
+        min-width="120"
+      >
         <template #header>
           <span>{{ t('quickIssue.CREATED_AT') }}</span>
           <div class="sort-time" @click="sortClick('created_at')">
@@ -651,7 +800,11 @@ watch(
           </span>
         </template>
       </el-table-column>
-      <el-table-column width="120">
+      <el-table-column
+        v-if="checkedTitle.includes('updated_at')"
+        key="updated_at"
+        min-width="120"
+      >
         <template #header>
           <span>{{ t('quickIssue.UPDATE_AT') }}</span>
           <div class="sort-time" @click="sortClick('updated_at')">
@@ -683,6 +836,34 @@ watch(
             <p>{{ scope.row.updated_at?.split(' ')[0] }}</p>
             <p>{{ scope.row.updated_at?.split(' ')[1] }}</p>
           </span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        key="setting"
+        width="40"
+        fixed="right"
+        class-name="setting-title"
+      >
+        <template #header>
+          <el-popover width="286" trigger="click">
+            <template #reference>
+              <OIcon :class="queryData.assignee ? 'active' : ''">
+                <IconSetting></IconSetting>
+              </OIcon>
+            </template>
+            <div class="filter-title">
+              <OTag
+                v-for="(item, index) in titleList"
+                :key="index"
+                checkable
+                checked
+                :type="checkedTitle.includes(item[0]) ? 'primary' : 'text'"
+                @click="handleTitleClick(item[0])"
+              >
+                {{ item[1].value }}
+              </OTag>
+            </div>
+          </el-popover>
         </template>
       </el-table-column>
     </OTable>
@@ -783,6 +964,13 @@ watch(
 </template>
 
 <style lang="scss" scoped>
+.filter-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 260px;
+  background-color: #fff;
+}
 .el-popper.el-select__popper {
   --el-popper-border-radius: 0;
   .el-input {
@@ -825,6 +1013,7 @@ watch(
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  word-spacing: 100vw;
   color: var(--o-color-brand1);
   .label-title {
     overflow: hidden;
@@ -839,6 +1028,13 @@ watch(
 }
 :deep(.quick-issue-table) {
   margin-top: var(--o-spacing-h2);
+  .el-table__body-wrapper {
+    transform: scaleY(-1);
+
+    .el-scrollbar__view {
+      transform: scaleY(-1);
+    }
+  }
   tr {
     .cell {
       display: flex;
@@ -883,6 +1079,17 @@ watch(
           color: var(--o-color-text1);
         }
       }
+    }
+  }
+  .setting-title {
+    .cell {
+      justify-content: center;
+      padding: 0;
+    }
+
+    .o-icon {
+      cursor: pointer;
+      font-size: 20px;
     }
   }
 }

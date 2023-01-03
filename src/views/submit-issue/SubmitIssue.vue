@@ -82,6 +82,7 @@ const tabType = ref(titleList.value[0].key);
 const isGiteeUser = ref(false);
 const fileList = ref<UploadUserFile[]>([]);
 const upload = ref<UploadInstance>();
+const clock = ref();
 
 const reposList = ref<OptionList>({
   page: 1,
@@ -230,7 +231,15 @@ function getRepoBySigName() {
 function changeStash() {
   isGiteeUser.value = !isGiteeUser.value;
 }
-
+function changeEmail() {
+  if (totalTime.value !== 60) {
+    window.clearInterval(clock.value);
+    content.value = computed(() => {
+      return t('quickIssue.SEND_CODE');
+    }).value;
+    totalTime.value = 60;
+  }
+}
 async function getCodeByEmail(verify: FormInstance | undefined) {
   if (!verify) {
     return;
@@ -242,7 +251,7 @@ async function getCodeByEmail(verify: FormInstance | undefined) {
     if (totalTime.value === 60 && res) {
       verifySubmitterEmail({ email: issueData.email }).then((res) => {
         if (res?.code === 200) {
-          const clock = window.setInterval(function () {
+          clock.value = window.setInterval(function () {
             totalTime.value--;
             content.value =
               lang.value === 'zh'
@@ -258,7 +267,7 @@ async function getCodeByEmail(verify: FormInstance | undefined) {
                   } ${totalTime.value}s`;
             if (totalTime.value < 0) {
               //当倒计时小于0时清除定时器
-              window.clearInterval(clock);
+              window.clearInterval(clock.value);
               content.value = computed(() => {
                 return t('quickIssue.RESEND');
               }).value;
@@ -668,6 +677,7 @@ watch(
                 <OInput
                   v-model="issueData.email"
                   :placeholder="t('quickIssue.INPUT')"
+                  @input="changeEmail()"
                 ></OInput>
               </el-form-item>
               <el-form-item
