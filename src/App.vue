@@ -10,7 +10,9 @@ import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from '@/components/AppFooter.vue';
 
 import QuickIssueImg from '@/assets/category/quick-issue/quick-bg.png';
+import { refreshInfo } from '@/shared/login';
 
+refreshInfo();
 const { locale } = useI18n();
 const langStore = useLangStore();
 const labelColor = useLabelColor();

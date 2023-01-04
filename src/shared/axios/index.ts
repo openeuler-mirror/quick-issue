@@ -12,6 +12,7 @@ import handleError from './handleError';
 import setConfig from './setConfig';
 import { ElLoading, ElMessage } from 'element-plus';
 import { LoadingInstance } from 'element-plus/lib/components/loading/src/loading';
+import { tokenFailIndicateLogin } from '../login';
 
 interface RequestConfig<D = any> extends AxiosRequestConfig {
   data?: D;
@@ -151,6 +152,10 @@ const responseInterceptorId = request.interceptors.response.use(
 
     if (err.response) {
       err = handleError(err);
+      // 无效token跳转登录
+      if (err.code === '401') {
+        tokenFailIndicateLogin();
+      }
     }
     // 没有response(没有状态码)的情况
     // 如: 超时；断网；请求重复被取消；主动取消请求；

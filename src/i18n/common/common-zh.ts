@@ -1,4 +1,6 @@
 export default {
+  USER_CENTER: '个人中心',
+  LOGOUT: '退出登录',
   FOOTER: {
     ATOM_TEXT:
       'openEuler 是由开放原子开源基金会（OpenAtom Foundation）孵化及运营的开源项目',
