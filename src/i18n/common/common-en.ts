@@ -1,4 +1,6 @@
 export default {
+  USER_CENTER: 'User Center',
+  LOGOUT: 'Logout',
   FOOTER: {
     ATOM_TEXT:
       'openEuler is an open source project incubated and operated by the OpenAtom Foundation.',
