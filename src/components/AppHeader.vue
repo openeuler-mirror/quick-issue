@@ -7,10 +7,11 @@ import ONav from '@/components/ONav.vue';
 import OIcon from 'opendesign/icon/OIcon.vue';
 
 import { useI18n } from 'vue-i18n';
-
+import { showGuard, logout, getUserAuth, useStoreData } from '@/shared/login';
 import communityLogoWhite from '@/assets/openeuler-logo.png';
 import QuickIssueLogo from '@/assets/quickissue-logo.png';
 import IconDown from '~icons/app/icon-chevron-down.svg';
+import IconLogin from '~icons/app/icon-login.svg';
 import { router } from '@/routers';
 
 const { t, locale } = useI18n({ useScope: 'global' });
@@ -18,6 +19,9 @@ const { t, locale } = useI18n({ useScope: 'global' });
 const lang = computed(() => {
   return useLangStore().lang;
 });
+
+const { token } = getUserAuth();
+const { guardAuthClient } = useStoreData();
 
 const navList = computed(() => {
   return [
@@ -57,6 +61,11 @@ watch(
     useLangStore().setLangStore(val);
   }
 );
+const jumpToUserZone = () => {
+  const language = lang.value === 'zh' ? 'zh' : 'en';
+  const origin = import.meta.env.VITE_LOGIN_ORIGIN;
+  window.open(`${origin}/${language}/profile`, '_black');
+};
 </script>
 
 <template>
@@ -71,6 +80,28 @@ watch(
       </div>
       <div class="out-box">
         <ONav :nav-items="navList"></ONav>
+      </div>
+      <div class="opt-user">
+        <div v-if="token">
+          <div class="opt-info">
+            <img
+              v-if="guardAuthClient.photo"
+              :src="guardAuthClient.photo"
+              class="opt-img"
+            />
+            <div v-else class="opt-img"></div>
+            <p class="opt-name">{{ guardAuthClient.username }}</p>
+          </div>
+          <ul class="menu-list">
+            <li @click="jumpToUserZone()">{{ t('common.USER_CENTER') }}</li>
+            <li @click="logout()">{{ t('common.LOGOUT') }}</li>
+          </ul>
+        </div>
+        <div v-else class="login" @click="showGuard()">
+          <OIcon class="icon">
+            <IconLogin />
+          </OIcon>
+        </div>
       </div>
       <div class="language">
         <el-dropdown popper-class="language-change" @command="handleCommand">
@@ -168,6 +199,89 @@ watch(
   }
   .quickissue-logo {
     height: 32px;
+  }
+}
+.opt-user {
+  margin-right: 40px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+  .opt-info {
+    display: flex;
+    align-items: center;
+    .opt-img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      vertical-align: middle;
+      @media (max-width: 1100px) {
+        width: 28px;
+        height: 28px;
+      }
+    }
+    .opt-name {
+      color: var(--o-color-text2);
+      margin-left: 8px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      width: 72px;
+      line-height: var(--o-line-height-h8);
+      @media (max-width: 1100px) {
+        display: none;
+      }
+    }
+  }
+  &:hover {
+    .menu-list {
+      display: block;
+    }
+  }
+  .menu-list {
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    @media (max-width: 1100px) {
+      top: 48px;
+      left: -60px;
+    }
+    background: var(--o-color-bg2);
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: var(--o-shadow-l1);
+    min-width: 78px;
+    li {
+      line-height: var(--o-line-height-h3);
+      text-align: center;
+      font-size: var(--o-font-size-text);
+      color: var(--o-color-text1);
+      border-bottom: 1px solid var(--o-color-division1);
+      padding: 0 var(--o-spacing-h5);
+      white-space: nowrap;
+      &:last-child {
+        border-bottom: 0 none;
+      }
+
+      &:hover {
+        background: var(--o-color-brand1);
+        color: var(--o-color-text2);
+      }
+      &.active {
+        color: var(--o-color-brand1);
+        background: none;
+        cursor: default;
+      }
+    }
+  }
+}
+.login {
+  .icon {
+    font-size: var(--o-font-size-h6);
+    color: var(--o-color-text2);
+    cursor: pointer;
   }
 }
 </style>

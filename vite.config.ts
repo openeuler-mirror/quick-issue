@@ -69,6 +69,11 @@ export default defineConfig({
         target: 'https://omapi.osinfra.cn/',
         changeOrigin: true,
       },
+      '/api-omapi/': {
+        target: 'https://omapi.osinfra.cn/',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api-omapi/, ''),
+      },
       '/api-issues/': {
         // target: 'http://119.8.32.82',
         target: 'https://ipb.osinfra.cn',
