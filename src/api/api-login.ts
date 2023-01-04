@@ -40,6 +40,7 @@ export function queryPermission(params: queryPermissionParams) {
 /**
  * 获取idtoken用于退出
  */
+
 export function queryIDToken() {
   const url = '/api-omapi/oneid/logout';
   const { token } = getUserAuth();
