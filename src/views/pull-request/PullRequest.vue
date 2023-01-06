@@ -165,11 +165,11 @@ const titleList = ref(
 const checkedTitle = ref([
   'repo',
   'title',
+  'state',
   'branch',
   'author',
   'label',
   'created_at',
-  'updated_at',
 ]);
 const handleSizeChange = (val: number) => {
   queryData.per_page = val;
@@ -840,7 +840,7 @@ watch(
       </el-table-column>
       <el-table-column
         key="setting"
-        width="40"
+        width="50"
         fixed="right"
         class-name="setting-title"
       >
