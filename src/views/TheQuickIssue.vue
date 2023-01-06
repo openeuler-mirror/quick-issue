@@ -161,6 +161,7 @@ const titleList = ref(
   ])
 );
 const checkedTitle = ref([
+  'id',
   'repo',
   'type',
   'title',
@@ -168,7 +169,6 @@ const checkedTitle = ref([
   'author',
   'label',
   'create_at',
-  'updata_at',
 ]);
 
 const queryData = reactive({
@@ -580,7 +580,7 @@ watch(
         <el-table-column
           v-if="checkedTitle.includes('author')"
           key="author"
-          min-width="100"
+          min-width="130"
         >
           <template #header>
             <span :class="queryData.author ? 'active' : ''">{{
@@ -936,7 +936,7 @@ watch(
         </el-table-column>
         <el-table-column
           key="setting"
-          width="40"
+          width="50"
           fixed="right"
           class-name="setting-title"
         >
