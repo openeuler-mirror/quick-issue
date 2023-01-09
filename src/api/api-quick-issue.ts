@@ -13,11 +13,13 @@ export function getRepoIssue(params: IssueQueryData) {
   if (
     typeof params.label === 'object' &&
     typeof params.issue_state === 'object' &&
-    typeof params.exclusion === 'object'
+    typeof params.exclusion === 'object' &&
+    typeof params.milestone === 'object'
   ) {
     params.exclusion = params.exclusion.join(',');
     params.label = params.label.join(',');
     params.issue_state = params.issue_state.join(',');
+    params.milestone = params.milestone.join(',');
   }
   return request
     .get(url, { params })

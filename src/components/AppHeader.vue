@@ -12,7 +12,6 @@ import communityLogoWhite from '@/assets/openeuler-logo.png';
 import QuickIssueLogo from '@/assets/quickissue-logo.png';
 import IconDown from '~icons/app/icon-chevron-down.svg';
 import IconLogin from '~icons/app/icon-login.svg';
-import { router } from '@/routers';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -51,8 +50,9 @@ const handleCommand = (command: any): void => {
   const newHref = pathname.split('/');
   newHref[1] = command.value;
   useLangStore().setLangStore(command.value);
-  router.push(newHref.join('/'));
+  window.location.href = newHref.join('/');
 };
+
 watch(
   () => {
     return locale.value as string;
@@ -61,6 +61,7 @@ watch(
     useLangStore().setLangStore(val);
   }
 );
+
 const jumpToUserZone = () => {
   const language = lang.value === 'zh' ? 'zh' : 'en';
   const origin = import.meta.env.VITE_LOGIN_ORIGIN;
@@ -81,6 +82,7 @@ const jumpToUserZone = () => {
       <div class="out-box">
         <ONav :nav-items="navList"></ONav>
       </div>
+
       <div class="opt-user">
         <div v-if="token">
           <div class="opt-info">
@@ -90,7 +92,9 @@ const jumpToUserZone = () => {
               class="opt-img"
             />
             <div v-else class="opt-img"></div>
-            <p class="opt-name">{{ guardAuthClient.username }}</p>
+            <p class="opt-name" :title="guardAuthClient?.username">
+              {{ guardAuthClient.username }}
+            </p>
           </div>
           <ul class="menu-list">
             <li @click="jumpToUserZone()">{{ t('common.USER_CENTER') }}</li>
@@ -103,6 +107,13 @@ const jumpToUserZone = () => {
           </OIcon>
         </div>
       </div>
+      <a
+        href="https://github.com/opensourceways/issue_pr_board/blob/main/doc/apis.md"
+        class="api-docs"
+        target="_blank"
+      >
+        API
+      </a>
       <div class="language">
         <el-dropdown popper-class="language-change" @command="handleCommand">
           <span class="el-dropdown-link">
@@ -123,6 +134,7 @@ const jumpToUserZone = () => {
           </template>
         </el-dropdown>
       </div>
+
       <a :href="`/${lang}/new-issues/`" class="new-issue">
         <OButton>{{ t('quickIssue.SUBMIT_ISSUE') }} </OButton>
       </a>
@@ -154,7 +166,7 @@ const jumpToUserZone = () => {
     .language {
       display: flex;
       justify-content: flex-end;
-      margin-right: 48px;
+      margin-right: 40px;
       width: 100px;
       text-align: right;
       .el-dropdown {
@@ -169,6 +181,11 @@ const jumpToUserZone = () => {
           margin-left: 5px;
         }
       }
+    }
+    .api-docs {
+      margin-right: 40px;
+      font-size: var(--o-font-size-h8);
+      color: #fff;
     }
   }
   &.isabout {
