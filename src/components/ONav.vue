@@ -23,8 +23,8 @@ const props = defineProps({
 const { navItems } = toRefs(props);
 const activeItem = ref(route.path);
 
-const navClick = (path: string) => {
-  router.push(path);
+const navClick = (path: string, windowOpen: boolean) => {
+  windowOpen ? window.open(path) : router.push(path);
 };
 watch(
   () => {
@@ -43,7 +43,7 @@ watch(
       :key="item.id"
       :class="[activeItem === item.link ? 'active' : '']"
       class="nav-item"
-      @click="navClick(item.link)"
+      @click="navClick(item.link, item.windowOpen)"
     >
       {{ item.label }}
     </div>

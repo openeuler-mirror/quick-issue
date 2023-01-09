@@ -13,6 +13,7 @@ export interface IssueQueryData {
   branch: string;
   repo: string;
   issue_state: Array<string> | string;
+  milestone: Array<string> | string;
 }
 
 export interface OptionList {
