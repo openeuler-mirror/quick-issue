@@ -20,6 +20,7 @@ export default {
   TYPE: 'Type',
   PRIORITY: 'Priority',
   SUBMITTER: 'Creator',
+  MILESTONE: 'Milestone',
   ASSIGNER: 'Assignees',
   LABEL: 'Labels',
   SELECT_LABEL: 'Include Labels',

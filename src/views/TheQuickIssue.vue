@@ -54,6 +54,7 @@ const keyArr = [
   'reposList',
   'typesList',
   'exLabelsList',
+  'milestonesList',
 ];
 
 const filterList = ref(new Map());
@@ -127,6 +128,14 @@ const titleList = ref(
       },
     ],
     [
+      'milestone',
+      {
+        value: computed(() => {
+          return t('quickIssue.MILESTONE');
+        }),
+      },
+    ],
+    [
       'label',
       {
         value: computed(() => {
@@ -186,6 +195,7 @@ const queryData = reactive({
   branch: '',
   repo: '',
   issue_state: [],
+  milestone: [],
   exclusion: [],
 });
 
@@ -193,7 +203,6 @@ const optionQuery = reactive({
   page: 1,
   per_page: 40,
   keyword: '',
-  mode: 'local',
 });
 
 const handleTitleClick = (title: string) => {
@@ -354,6 +363,7 @@ onMounted(() => {
   getOption('branches');
   getOption('types');
   getOption('repos');
+  getOption('milestones');
 });
 watch(
   () => checkedTitle,
@@ -574,6 +584,70 @@ watch(
           <template #default="scope">
             <span class="detail-page">
               {{ scope.row.issue_state }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="checkedTitle.includes('milestone')"
+          key="milestone"
+          min-width="200"
+        >
+          <template #header>
+            <span
+              :class="queryData.milestone.length ? 'active' : ''"
+              :title="queryData.milestone.join(', ')"
+              >{{
+                queryData.milestone.join(', ') || t('quickIssue.MILESTONE')
+              }}</span
+            >
+            <ODropdown
+              :max-height="250"
+              :listener-scorll="true"
+              @scorll-bottom="getNextPage"
+              @visible-change="(val: boolean) => visibleChange(val, 'milestones')"
+              @command="(val: string) => handleCommand(val, 'milestone')"
+            >
+              <OIcon
+                class="filter-icon"
+                :class="queryData.issue_state.length ? 'active' : ''"
+              >
+                <IconFilter></IconFilter>
+              </OIcon>
+              <template #dropdown>
+                <div class="search-box">
+                  <ODropdownItem
+                    v-if="queryData.milestone.length"
+                    :command="[]"
+                    >{{ t('quickIssue.CANCEL') }}</ODropdownItem
+                  >
+                  <OSearch
+                    v-model="filterList.get('milestonesList').keyword"
+                    :placeholder="t('quickIssue.SEARCH_PLACEHOLDER')"
+                    @input="valueChangeDebounced"
+                  ></OSearch>
+                </div>
+                <OCheckboxGroup
+                  v-if="filterList.get('milestonesList').data.length"
+                  v-model="queryData.milestone"
+                  @change="handleCheckedValueChange"
+                >
+                  <OCheckbox
+                    v-for="item in filterList.get('milestonesList').data"
+                    :key="item"
+                    :value="item"
+                  >
+                    {{ item }}
+                  </OCheckbox>
+                </OCheckboxGroup>
+                <ODropdownItem v-else disabled class="empty-option"
+                  >No Data</ODropdownItem
+                >
+              </template>
+            </ODropdown>
+          </template>
+          <template #default="scope">
+            <span class="detail-page">
+              {{ scope.row.milestone }}
             </span>
           </template>
         </el-table-column>
@@ -1303,13 +1377,13 @@ watch(
   .o-checkbox {
     display: flex;
     align-items: center;
-    margin: 5px 16px;
+    margin: 4px 8px;
   }
 
   .el-checkbox {
     display: flex;
     align-items: center;
-    margin: 5px 16px;
+    margin: 4px 8px;
     height: 22px;
 
     :deep(.el-checkbox__label) {

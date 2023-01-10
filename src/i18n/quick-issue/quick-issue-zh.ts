@@ -25,7 +25,7 @@ export default {
   SELECT_LABEL: '选择标签',
   BRANCH: '分支',
   RELATION_BRANCH: '关联分支',
-  MILEPOST: '里程碑',
+  MILESTONE: '里程碑',
   CREATED_AT: '提交时间',
   UPDATE_AT: '更新时间',
   CANCEL: '取消选项',
