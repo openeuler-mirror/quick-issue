@@ -3,36 +3,22 @@ import { useLangStore } from '@/stores';
 
 export const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/zh/issues' },
-  // zh
   {
     path: '/zh/issues',
     name: 'issues',
+    alias: '/en/issues',
     component: () => import('@/views/TheQuickIssue.vue'),
   },
   {
     path: '/zh/pulls',
     name: 'pulls',
+    alias: '/en/pulls',
     component: () => import('@/views/pull-request/PullRequest.vue'),
   },
   {
     path: '/zh/new-issues',
     name: 'new-issues',
-    component: () => import('@/views/submit-issue/SubmitIssue.vue'),
-  },
-  // en
-  {
-    path: '/en/issues',
-    name: 'issues_en',
-    component: () => import('@/views/TheQuickIssue.vue'),
-  },
-  {
-    path: '/en/pulls',
-    name: 'pulls_en',
-    component: () => import('@/views/pull-request/PullRequest.vue'),
-  },
-  {
-    path: '/en/new-issues',
-    name: 'new-issues_en',
+    alias: '/en/new-issues',
     component: () => import('@/views/submit-issue/SubmitIssue.vue'),
   },
 ];
