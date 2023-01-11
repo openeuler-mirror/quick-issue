@@ -42,7 +42,6 @@ interface TypesList {
   name: string;
   template: string;
 }
-
 const router = useRouter();
 const formRef = ref<FormInstance>();
 const { t } = useI18n();
@@ -431,6 +430,7 @@ function onChange(rawFile: UploadUserFile) {
   if (!rawFile?.size) {
     return false;
   }
+
   if (rawFile.size / 1024 / 1024 > 10) {
     ElMessage.warning(
       computed(() => {
@@ -440,6 +440,7 @@ function onChange(rawFile: UploadUserFile) {
     fileList.value = [];
     return false;
   }
+  fileList.value[0] = rawFile;
 }
 function getNextPage() {
   if (reposList.value.total) {
@@ -526,8 +527,8 @@ watch(
 );
 </script>
 <template>
-  <AppContent class="submit-issue" :pc-top="40">
-    <div class="inline-box" :pc-top="40">
+  <AppContent class="submit-issue">
+    <div class="inline-box">
       <h1 id="create-issue">{{ t('quickIssue.ISSUE_TITLE') }}</h1>
       <el-form
         ref="formRef"
@@ -794,7 +795,7 @@ watch(
     }
   }
   h1 {
-    font-size: var(--o-font-size-h3);
+    font-size: var(--o-font-size-h4);
     font-weight: 300;
   }
   .issue-form {

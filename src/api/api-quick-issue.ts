@@ -52,7 +52,11 @@ export function getIssueSelectOption(type: string, params: object | null) {
 export function uploadIssueImage(params: object) {
   const url = '/api-issues/image/';
   return request
-    .post(url, params)
+    .post(url, params, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
       throw new Error(e);
@@ -110,7 +114,11 @@ export function createIssue(params: object) {
 export function uploadIssueFile(params: object) {
   const url = '/api-issues/attachment/';
   return request
-    .post(url, params)
+    .post(url, params, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
       throw new Error(e);
