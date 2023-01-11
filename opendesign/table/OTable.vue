@@ -16,6 +16,7 @@ const attrs = useAttrs();
     --el-table-header-bg-color: var(--o-color-bg4);
     --el-table-row-hover-bg-color: var(--o-color-bg3);
     --el-table-border-color: var(--o-color-division1);
+    --el-table-fixed-right-column: none;
     box-shadow: var(--o-shadow-l1);
     color: var(--o-color-text4);
     --el-table-border: none;
