@@ -42,7 +42,6 @@ interface TypesList {
   name: string;
   template: string;
 }
-
 const router = useRouter();
 const formRef = ref<FormInstance>();
 const { t } = useI18n();
@@ -431,6 +430,7 @@ function onChange(rawFile: UploadUserFile) {
   if (!rawFile?.size) {
     return false;
   }
+
   if (rawFile.size / 1024 / 1024 > 10) {
     ElMessage.warning(
       computed(() => {
@@ -440,6 +440,7 @@ function onChange(rawFile: UploadUserFile) {
     fileList.value = [];
     return false;
   }
+  fileList.value[0] = rawFile;
 }
 function getNextPage() {
   if (reposList.value.total) {
