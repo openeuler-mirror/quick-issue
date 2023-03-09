@@ -4,14 +4,21 @@ import AppContent from '@/components/AppContent.vue';
 import DocAnchor from '@/components/DocAnchor.vue';
 import { useStoreData } from '@/shared/login';
 
+import { hiddenMail } from '@/shared/utils';
+
 const { guardAuthClient } = useStoreData();
 
 function getNameList(arr: any) {
-  const targetArr: any = [];
-  arr.forEach((item: any) => {
-    targetArr.push(item.login_name);
-  });
-  return targetArr.join(',');
+  try {
+    const giteeName = arr?.filter((item: any) => {
+      return item.identity === 'gitee';
+    })[0]?.login_name;
+    if (giteeName) {
+      return giteeName;
+    }
+  } catch (error) {
+    return false;
+  }
 }
 </script>
 <template>
@@ -21,7 +28,7 @@ function getNameList(arr: any) {
         v-if="
           (guardAuthClient?.identities &&
             guardAuthClient?.identities[0]?.login_name) ||
-          guardAuthClient?.email
+          hiddenMail(guardAuthClient?.email)
         "
       />
       <AppIssue
@@ -33,7 +40,7 @@ function getNameList(arr: any) {
         issue-type="pending"
         :user-name="
           `${getNameList(guardAuthClient?.identities)}` ||
-          guardAuthClient?.email
+          hiddenMail(guardAuthClient?.email)
         "
       />
       <AppIssue
@@ -45,7 +52,7 @@ function getNameList(arr: any) {
         issue-type="submitted"
         :user-name="
           `${getNameList(guardAuthClient?.identities)}` ||
-          guardAuthClient?.email
+          hiddenMail(guardAuthClient?.email)
         "
       />
 
@@ -53,7 +60,7 @@ function getNameList(arr: any) {
         :user-name="
           (guardAuthClient?.identities &&
             guardAuthClient?.identities[0]?.login_name) ||
-          guardAuthClient?.email
+          hiddenMail(guardAuthClient?.email)
         "
         issue-type="all"
       />

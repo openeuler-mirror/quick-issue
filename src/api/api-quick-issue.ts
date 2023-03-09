@@ -11,10 +11,10 @@ export function getRepoIssue(params: IssueQueryData) {
   const url = '/api-issues/issues/';
   params = JSON.parse(JSON.stringify(params));
   if (
-    typeof params.label === 'object' &&
-    typeof params.issue_state === 'object' &&
-    typeof params.exclusion === 'object' &&
-    typeof params.milestone === 'object'
+    Array.isArray(params.label) &&
+    Array.isArray(params.issue_state) &&
+    Array.isArray(params.exclusion) &&
+    Array.isArray(params.milestone)
   ) {
     params.exclusion = params.exclusion.join(',');
     params.label = params.label.join(',');
@@ -97,7 +97,7 @@ export function getReposData(params: object) {
  * @return {String}
  */
 export function createIssue(params: object) {
-  const url = `/api-issues/issues/`;
+  const url = `/api-issues/issue/`;
   return request
     .post(url, params)
     .then((res: AxiosResponse) => res.data)
