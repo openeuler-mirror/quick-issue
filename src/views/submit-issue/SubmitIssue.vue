@@ -639,7 +639,7 @@ watch(
           </div>
         </div>
         <transition-group name="fadeHeight">
-          <div v-if="isGiteeUser" class="not-gitter-user">
+          <div v-if="isGiteeUser" class="not-gitee-user">
             <div class="form-liner editor">
               <el-form-item
                 :label="t('quickIssue.DESCRIPTIVE')"
