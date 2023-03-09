@@ -13,7 +13,7 @@ import QuickIssueLogo from '@/assets/quickissue-logo.png';
 import IconDown from '~icons/app/icon-chevron-down.svg';
 import IconLogin from '~icons/app/icon-login.svg';
 
-const { t, locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n();
 
 const lang = computed(() => {
   return useLangStore().lang;
