@@ -64,7 +64,6 @@ $color: #ffffff;
     margin: 0 24px;
     font-size: 16px;
     line-height: 24px;
-    font-family: HarmonyOS_Sans_SC_Medium;
     color: #979797;
     cursor: pointer;
 
