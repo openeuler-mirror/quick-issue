@@ -97,7 +97,7 @@ export function getReposData(params: object) {
  * @return {String}
  */
 export function createIssue(params: object) {
-  const url = `/api-issues/issue/`;
+  const url = `/api-issues/new-issue/`;
   return request
     .post(url, params)
     .then((res: AxiosResponse) => res.data)
