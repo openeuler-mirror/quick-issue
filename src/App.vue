@@ -31,14 +31,12 @@ watch(
 </script>
 
 <template>
-  <div id="app">
-    <header><AppHeader /></header>
-    <main><RouterView></RouterView></main>
-    <footer><AppFooter /></footer>
-  </div>
+  <header><AppHeader /></header>
+  <main><RouterView></RouterView></main>
+  <footer><AppFooter /></footer>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
