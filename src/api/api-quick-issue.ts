@@ -1,7 +1,16 @@
 import { request } from '@/shared/axios';
 import type { AxiosResponse } from '@/shared/axios';
 import { IssueQueryData } from '@/shared/@types/type-quick-issue';
+import { getAuthorization } from '@/shared/utils';
 
+function getHeaderConfig() {
+  const headersConfig = {
+    headers: {
+      authorization: getAuthorization(),
+    },
+  };
+  return headersConfig;
+}
 /**
  * 获取issue 数据
  * @name getRepoIssue
@@ -55,6 +64,7 @@ export function uploadIssueImage(params: object) {
     .post(url, params, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        authorization: getAuthorization(),
       },
     })
     .then((res: AxiosResponse) => res.data)
@@ -70,8 +80,9 @@ export function uploadIssueImage(params: object) {
  */
 export function verifySubmitterEmail(params: object) {
   const url = '/api-issues/verify/';
+
   return request
-    .post(url, params)
+    .post(url, params, getHeaderConfig())
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
       throw new Error(e);
@@ -99,7 +110,7 @@ export function getReposData(params: object) {
 export function createIssue(params: object) {
   const url = `/api-issues/new-issue/`;
   return request
-    .post(url, params)
+    .post(url, params, getHeaderConfig())
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
       throw new Error(e);
@@ -117,6 +128,7 @@ export function uploadIssueFile(params: object) {
     .post(url, params, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        authorization: getAuthorization(),
       },
     })
     .then((res: AxiosResponse) => res.data)

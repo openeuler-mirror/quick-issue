@@ -7,7 +7,7 @@ export default {
     ATOM_PC: '/atom-pc.png',
     ATOM_MO: '/atom-mo.png',
     MAIL: 'contact@openeuler.io',
-    COPY_RIGHT: 'Copyright © 2022 openEuler. All rights reserved.',
+    COPY_RIGHT: 'Copyright © 2023 openEuler. All rights reserved.',
     RIGHT_LIST: [
       {
         NAME: 'Trademark',

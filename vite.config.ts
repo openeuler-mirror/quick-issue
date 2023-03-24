@@ -65,9 +65,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/query/': {
-        target: 'https://omapi.osinfra.cn/',
+      '/api-dsapi/': {
+        target: 'https://dsapi.osinfra.cn/',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api-dsapi/, ''),
       },
       '/api-omapi/': {
         target: 'https://omapi.osinfra.cn/',
