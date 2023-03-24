@@ -3,6 +3,8 @@ import { useLangStore } from '@/stores';
 
 export const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/zh/issues' },
+  { path: '/zh/', redirect: '/zh/issues' },
+  { path: '/en/', redirect: '/en/issues' },
   {
     path: '/zh/issues',
     name: 'issues',

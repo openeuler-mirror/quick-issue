@@ -177,6 +177,8 @@ const repoParams = reactive({
   page: 1,
   per_page: 40,
   keyword: '',
+  public: true,
+  status: '开始',
   sig: '',
   total: 0,
 });

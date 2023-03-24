@@ -9,14 +9,12 @@ import { getLabelColors } from '@/api/api-quick-issue';
 import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from '@/components/AppFooter.vue';
 
-import QuickIssueImg from '@/assets/category/quick-issue/quick-bg.png';
 import { refreshInfo } from '@/shared/login';
 
 refreshInfo();
 const { locale } = useI18n();
 const langStore = useLangStore();
 const labelColor = useLabelColor();
-const QuickIssueBg = `url(${QuickIssueImg})`;
 onMounted(async () => {
   await getLabelColors().then((res) => {
     labelColor.setLabelColor(res?.data);
@@ -40,7 +38,7 @@ watch(
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: v-bind('QuickIssueBg');
+  background-image: url(@/assets/category/quick-issue/quick-bg.png);
   background-position: center top;
   background-size: 100% auto;
   background-repeat: repeat;
