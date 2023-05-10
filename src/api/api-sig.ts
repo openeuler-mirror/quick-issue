@@ -6,7 +6,7 @@ import { FeatureInfo, GroupInfo } from '@/shared/@types/type-sig';
  * @returns {Promise<GroupInfo[]>}
  */
 export function getSigLandscape(lang: string): Promise<GroupInfo[]> {
-  const url = '/query/sig/scoreAll?community=openeuler';
+  const url = '/api-dsapi/query/sig/scoreAll?community=openeuler';
   return request.get(url).then((res: AxiosResponse) => {
     const data = res.data?.data;
 
