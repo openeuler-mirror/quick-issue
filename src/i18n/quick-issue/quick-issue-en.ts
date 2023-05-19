@@ -60,4 +60,8 @@ export default {
   SUCCESS_UPLOAD: 'Attachment uploaded successfully',
   SUCCESS_UPLOAD1:
     'The issue is created but the attachment fails to be uploaded',
+  SWIPE_RIGHT: 'Swipe right to complete the verification.',
+  SWIPER: 'Slide for verification',
+  VERIFY_FAIL: 'Verification failed.',
+  VERIFY_SUCCESS: 'Verification succeeds in',
 };
