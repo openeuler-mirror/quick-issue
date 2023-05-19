@@ -20,6 +20,7 @@ import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
 import { getSigLandscape } from '@/api/api-sig';
 
 import AppEditor from '@/components/AppEditor.vue';
+import AppSlideVerify from '@/components/AppSlideVerify.vue';
 import AppContent from '@/components/AppContent.vue';
 import SigLandscapeFeature from '@/components/SigLandscapeFeature.vue';
 import OIcon from 'opendesign/icon/OIcon.vue';
@@ -47,7 +48,8 @@ const formRef = ref<FormInstance>();
 const { t } = useI18n();
 
 const landscapeInfo = ref<GroupInfo[]>([]);
-const isShowMenu = ref(false);
+const isMenuShown = ref(false);
+const isSlideVerifyShown = ref(false);
 
 const titleList = ref([
   {
@@ -197,11 +199,11 @@ const issueData: IssueData = reactive({
 
 function getSigValue(val: string) {
   if (issueData.sig && issueData.sig === val) {
-    isShowMenu.value = false;
+    isMenuShown.value = false;
     return false;
   }
   issueData.sig = val;
-  isShowMenu.value = false;
+  isMenuShown.value = false;
   repoParams.sig = val;
   repoParams.page = 1;
   repoParams.keyword = '';
@@ -250,43 +252,48 @@ async function getCodeByEmail(verify: FormInstance | undefined) {
   rules.email = emailRules;
   verify.validate(async (res) => {
     if (totalTime.value === 60 && res) {
-      verifySubmitterEmail({ email: issueData.email }).then((res) => {
-        if (res?.code === 200) {
-          clock.value = window.setInterval(function () {
-            totalTime.value--;
-            content.value =
-              lang.value === 'zh'
-                ? `${totalTime.value}s${
-                    computed(() => {
-                      return t('quickIssue.RESEND1');
-                    }).value
-                  }`
-                : `${
-                    computed(() => {
-                      return t('quickIssue.RESEND1');
-                    }).value
-                  } ${totalTime.value}s`;
-            if (totalTime.value < 0) {
-              //当倒计时小于0时清除定时器
-              window.clearInterval(clock.value);
-              content.value = computed(() => {
-                return t('quickIssue.RESEND');
-              }).value;
-              totalTime.value = 60;
-            }
-          }, 1000);
-          ElMessage({
-            message: computed(() => {
-              return t('quickIssue.SUCCESS_SEND_MAIL');
-            }).value,
-            type: 'success',
-          });
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'error',
-          });
+      isSlideVerifyShown.value = true;
+    }
+  });
+}
+
+function sendVerifyEmail() {
+  isSlideVerifyShown.value = false;
+  verifySubmitterEmail({ email: issueData.email }).then((res) => {
+    if (res?.code === 200) {
+      clock.value = window.setInterval(function () {
+        totalTime.value--;
+        content.value =
+          lang.value === 'zh'
+            ? `${totalTime.value}s${
+                computed(() => {
+                  return t('quickIssue.RESEND1');
+                }).value
+              }`
+            : `${
+                computed(() => {
+                  return t('quickIssue.RESEND1');
+                }).value
+              } ${totalTime.value}s`;
+        if (totalTime.value < 0) {
+          //当倒计时小于0时清除定时器
+          window.clearInterval(clock.value);
+          content.value = computed(() => {
+            return t('quickIssue.RESEND');
+          }).value;
+          totalTime.value = 60;
         }
+      }, 1000);
+      ElMessage({
+        message: computed(() => {
+          return t('quickIssue.SUCCESS_SEND_MAIL');
+        }).value,
+        type: 'success',
+      });
+    } else {
+      ElMessage({
+        message: res.msg,
+        type: 'error',
       });
     }
   });
@@ -578,7 +585,7 @@ watch(
               class="select-sig-btn"
               type="primary"
               size="small"
-              @click="isShowMenu = true"
+              @click="isMenuShown = true"
               >{{ t('quickIssue.SELECT_SIG') }}</OButton
             >
           </el-form-item>
@@ -739,7 +746,7 @@ watch(
     </div>
   </AppContent>
   <div class="mo-content"></div>
-  <ODialog v-model="isShowMenu" :show-close="true">
+  <ODialog v-model="isMenuShown" class="menu-dialog" :show-close="true">
     <h1 id="tech"></h1>
     <OTabs v-model="tabType" @tab-click="scrollClick">
       <OTab-pane
@@ -761,6 +768,10 @@ watch(
         ></SigLandscapeFeature>
       </div>
     </OTabs>
+  </ODialog>
+  <ODialog v-model="isSlideVerifyShown" class="slide-dialog" :show-close="true">
+    <AppSlideVerify v-show="isSlideVerifyShown" @succuss="sendVerifyEmail">
+    </AppSlideVerify>
   </ODialog>
 </template>
 
@@ -824,7 +835,6 @@ watch(
           display: flex;
           flex-wrap: nowrap;
           min-width: 208px;
-
           .el-form-item__error {
             padding-top: var(--o-spacing-h9);
           }
@@ -996,7 +1006,7 @@ watch(
     }
   }
 }
-.o-dialog {
+.menu-dialog {
   margin-top: 10vh;
   max-width: 1430px;
   width: 100%;
@@ -1057,6 +1067,16 @@ watch(
         visibility: hidden;
       }
     }
+  }
+}
+.slide-dialog {
+  margin-top: 30vh;
+  width: fit-content;
+  .el-dialog__header {
+    padding: 12px 0;
+  }
+  .el-dialog__footer {
+    padding: 0;
   }
 }
 </style>
