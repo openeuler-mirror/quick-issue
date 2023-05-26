@@ -80,7 +80,7 @@ const pendingPool: Map<string, any> = new Map();
  * 请求拦截
  */
 const requestInterceptorId = request.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config) => {
     if (loadingCount === 0) {
       loadingInstance = ElLoading.service({
         fullscreen: true,
