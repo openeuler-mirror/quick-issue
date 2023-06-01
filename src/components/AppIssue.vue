@@ -436,12 +436,7 @@ watch(
         @change="searchValchange"
       ></OSearch>
     </div>
-    <OTable
-      class="quick-issue-table"
-      :class="lang === 'en' ? 'en-table' : ''"
-      :data="issueData"
-      style="width: 100%"
-    >
+    <OTable class="quick-issue-table" :data="issueData" style="width: 100%">
       <transition-group name="hello">
         <el-table-column
           v-if="checkedTitle.includes('id')"
@@ -1386,26 +1381,6 @@ watch(
     .o-icon {
       cursor: pointer;
       font-size: 20px;
-    }
-  }
-}
-
-:deep(.en-table) {
-  thead {
-    tr {
-      .cell {
-        font-size: 12px;
-
-        .o-icon {
-          font-size: 14px;
-        }
-      }
-    }
-  }
-
-  tr {
-    .cell {
-      padding: 0 12px;
     }
   }
 }
