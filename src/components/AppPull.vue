@@ -3,7 +3,6 @@ import { ref, reactive, onMounted, watch, CSSProperties, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { debounce } from 'lodash-es';
 
-import { useLangStore } from '@/stores';
 import ISSUE_CONFIG from '@/data/quick-issue/quick-issue';
 import { getPrSelectOption, getRepoPull } from '@/api/api-quick-issue';
 import { OptionList } from '@/shared/@types/type-quick-issue';
@@ -49,10 +48,6 @@ const total = ref(0);
 const currentPage = ref(1);
 const totalPage = ref(0);
 const layout = ref('sizes, prev, pager, next, slot, jumper');
-
-const lang = computed(() => {
-  return useLangStore().lang;
-});
 
 const keyArr = [
   'authorsList',
@@ -384,12 +379,7 @@ watch(
         @change="searchValchange"
       ></OSearch>
     </div>
-    <OTable
-      class="quick-issue-table"
-      :class="lang === 'en' ? 'en-table' : ''"
-      :data="issueData"
-      style="width: 100%"
-    >
+    <OTable class="quick-issue-table" :data="issueData" style="width: 100%">
       <el-table-column
         v-if="checkedTitle.includes('sig')"
         key="sig"
@@ -1172,23 +1162,7 @@ watch(
     }
   }
 }
-:deep(.en-table) {
-  thead {
-    tr {
-      .cell {
-        font-size: 12px;
-        .o-icon {
-          font-size: 14px;
-        }
-      }
-    }
-  }
-  tr {
-    .cell {
-      padding: 0 12px;
-    }
-  }
-}
+
 .input-container {
   display: flex;
   .table-title {
