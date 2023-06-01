@@ -53,15 +53,11 @@ const isSlideVerifyShown = ref(false);
 
 const titleList = ref([
   {
-    value: computed(() => {
-      return t('sig.SIG_LANDSCAPE[0].CATEGORY_NAME');
-    }),
+    value: t('sig.SIG_LANDSCAPE[0].CATEGORY_NAME'),
     key: 'tech',
   },
   {
-    value: computed(() => {
-      return t('sig.SIG_LANDSCAPE[1].CATEGORY_NAME');
-    }),
+    value: t('sig.SIG_LANDSCAPE[1].CATEGORY_NAME'),
     key: 'operate',
   },
 ]);
@@ -96,35 +92,27 @@ const rules: any = reactive({
   title: [
     {
       required: true,
-      message: computed(() => {
-        return t('quickIssue.MANDATORY1');
-      }),
+      message: t('quickIssue.MANDATORY1'),
       trigger: 'blur',
     },
     {
       min: 1,
       max: 100,
-      message: computed(() => {
-        return t('quickIssue.TITLE_LIMIT');
-      }),
+      message: t('quickIssue.TITLE_LIMIT'),
       trigger: 'blur',
     },
   ],
   issue_type_id: [
     {
       required: true,
-      message: computed(() => {
-        return t('quickIssue.MANDATORY1');
-      }),
+      message: t('quickIssue.MANDATORY1'),
       trigger: 'change',
     },
   ],
   repo: [
     {
       required: true,
-      message: computed(() => {
-        return t('quickIssue.MANDATORY1');
-      }),
+      message: t('quickIssue.MANDATORY1'),
       trigger: 'change',
     },
   ],
@@ -135,43 +123,33 @@ const rules: any = reactive({
 const privacyRules = [
   {
     required: true,
-    message: computed(() => {
-      return t('quickIssue.MANDATORY1');
-    }),
+    message: t('quickIssue.MANDATORY1'),
     trigger: 'change',
   },
 ];
 const emailRules = [
   {
     required: true,
-    message: computed(() => {
-      return t('quickIssue.EMAIL_ADRESS');
-    }),
+    message: t('quickIssue.EMAIL_ADRESS'),
     trigger: 'change',
   },
   {
     pattern: new RegExp(
       '^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$'
     ),
-    message: computed(() => {
-      return t('quickIssue.RIGHT_EMAIL_ADRESS');
-    }),
+    message: t('quickIssue.RIGHT_EMAIL_ADRESS'),
     trigger: 'change',
   },
 ];
 const codeRules = [
   {
     required: true,
-    message: computed(() => {
-      return t('quickIssue.VER_CODE');
-    }),
+    message: t('quickIssue.VER_CODE'),
     trigger: 'blur',
   },
   {
     pattern: /^\d{6}$/,
-    message: computed(() => {
-      return t('quickIssue.VER_CODE1');
-    }),
+    message: t('quickIssue.VER_CODE1'),
     trigger: 'blur',
   },
 ];
@@ -219,9 +197,7 @@ function getRepoBySigName() {
       reposList.value.data = [...reposList.value.data, ...res.data];
     } else if (!res.total && !repoParams.keyword) {
       ElMessage({
-        message: computed(() => {
-          return t('quickIssue.EMPTY_REPO');
-        }).value,
+        message: t('quickIssue.EMPTY_REPO'),
         type: 'warning',
         duration: 10000,
       });
@@ -237,9 +213,7 @@ function changeStash() {
 function changeEmail() {
   if (totalTime.value !== 60) {
     window.clearInterval(clock.value);
-    content.value = computed(() => {
-      return t('quickIssue.SEND_CODE');
-    }).value;
+    content.value = t('quickIssue.SEND_CODE');
     totalTime.value = 60;
   }
 }
@@ -265,29 +239,17 @@ function sendVerifyEmail() {
         totalTime.value--;
         content.value =
           lang.value === 'zh'
-            ? `${totalTime.value}s${
-                computed(() => {
-                  return t('quickIssue.RESEND1');
-                }).value
-              }`
-            : `${
-                computed(() => {
-                  return t('quickIssue.RESEND1');
-                }).value
-              } ${totalTime.value}s`;
+            ? `${totalTime.value}s${t('quickIssue.RESEND1')}`
+            : `${t('quickIssue.RESEND1')} ${totalTime.value}s`;
         if (totalTime.value < 0) {
           //当倒计时小于0时清除定时器
           window.clearInterval(clock.value);
-          content.value = computed(() => {
-            return t('quickIssue.RESEND');
-          }).value;
+          content.value = t('quickIssue.RESEND');
           totalTime.value = 60;
         }
       }, 1000);
       ElMessage({
-        message: computed(() => {
-          return t('quickIssue.SUCCESS_SEND_MAIL');
-        }).value,
+        message: t('quickIssue.SUCCESS_SEND_MAIL'),
         type: 'success',
       });
     } else {
@@ -441,11 +403,7 @@ function onChange(rawFile: UploadUserFile) {
   }
 
   if (rawFile.size / 1024 / 1024 > 10) {
-    ElMessage.warning(
-      computed(() => {
-        return t('quickIssue.SIZE_LIMIT');
-      }).value
-    );
+    ElMessage.warning(t('quickIssue.SIZE_LIMIT'));
     fileList.value = [];
     return false;
   }

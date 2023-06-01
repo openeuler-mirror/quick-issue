@@ -8,7 +8,7 @@ import AppContent from '@/components/AppContent.vue';
 
 import LogoFooter from '@/assets/footer/footer-logo2.png';
 import LogoFooter1 from '@/assets/footer-logo1.png';
-import LogoAtom from '@/assets/footer/atom-logo.png';
+import LogoAtom from '@/assets/footer/atom-logo.svg';
 import FooterBg from '@/assets/footer/footer-bg.png';
 import FooterBgMo from '@/assets/footer/footer-bg-mo.png';
 
@@ -208,6 +208,10 @@ const footBg = {
               >
             </div>
             <p class="copyright">{{ t('common.FOOTER.COPY_RIGHT') }}</p>
+            <p class="license">
+              <span>{{ t('common.FOOTER.LICENSED_1') }}</span>
+              {{ t('common.FOOTER.LICENSED_2') }}
+            </p>
           </div>
           <div class="footer-right">
             <div v-if="lang === 'zh'" class="code-box">
@@ -272,19 +276,10 @@ $color: #fff;
     z-index: 999;
     box-shadow: var(--o-shadow-l1);
     text-align: center;
-    &.ru {
-      line-height: 16px;
-      display: inline-block;
-      padding: 4px 0;
-    }
     @media screen and (max-width: 1000px) {
       font-size: 12px;
       line-height: 20px;
       display: inline-block;
-      &.ru {
-        line-height: 10px;
-        height: auto;
-      }
     }
     a {
       cursor: pointer;
@@ -333,7 +328,7 @@ $color: #fff;
       }
     }
     &-logo {
-      height: 40px;
+      height: 48px;
       margin-top: 16px;
       @media (max-width: 1100px) {
         height: 30px;
@@ -390,6 +385,19 @@ $color: #fff;
     color: $color;
     margin-top: var(--o-spacing-h5);
     @media (max-width: 1436px) {
+      font-size: var(--o-font-size-tip);
+      line-height: var(--o-line-height-tip);
+      margin-top: var(--o-spacing-h8);
+    }
+  }
+  .license {
+    font-size: var(--o-font-size-text);
+    color: $color;
+    margin-top: var(--o-spacing-h5);
+    span {
+      color: var(--o-color-text-secondary);
+    }
+    @media (max-width: 1400px) {
       font-size: var(--o-font-size-tip);
       line-height: var(--o-line-height-tip);
       margin-top: var(--o-spacing-h8);
