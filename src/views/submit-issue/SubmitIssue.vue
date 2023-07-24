@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 
 import { useLangStore } from '@/stores';
 import { GroupInfo } from '@/shared/@types/type-sig';
-import { getUrlParam, handleUploadImage } from '@/shared';
+import { getUrlParam, handleUploadImage, statisticalPoint } from '@/shared';
 
 import {
   getReposData,
@@ -15,6 +15,7 @@ import {
   createIssue,
   uploadIssueFile,
 } from '@/api/api-quick-issue';
+
 import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
 
 import { getSigLandscape } from '@/api/api-sig';
@@ -65,14 +66,6 @@ const lang = computed(() => {
   return useLangStore().lang;
 });
 const content = ref(t('quickIssue.SEND_CODE'));
-
-watch(
-  () => lang.value,
-  async (val) => {
-    landscapeInfo.value = await getSigLandscape(val);
-    content.value = val === 'en' ? 'Send Verification Code' : '发送验证码';
-  }
-);
 
 const totalTime = ref(60);
 const tabType = ref(titleList.value[0].key);
@@ -237,10 +230,7 @@ function sendVerifyEmail() {
     if (res?.code === 200) {
       clock.value = window.setInterval(function () {
         totalTime.value--;
-        content.value =
-          lang.value === 'zh'
-            ? `${totalTime.value}s${t('quickIssue.RESEND1')}`
-            : `${t('quickIssue.RESEND1')} ${totalTime.value}s`;
+        content.value = t('quickIssue.RESEND1', [`${totalTime.value}s`]);
         if (totalTime.value < 0) {
           //当倒计时小于0时清除定时器
           window.clearInterval(clock.value);
@@ -296,79 +286,85 @@ async function submitForm(
   verify.validate(async (res: boolean) => {
     if (res) {
       const parmes = JSON.parse(JSON.stringify(issueData));
-      // 邮箱隐藏
-      const targetEmail = `${
-        issueData.email.split('@')[0]
-      }@***${issueData.email.charAt(issueData.email.length - 1)}`;
-      // 添加提交人邮箱
-      parmes.description = `${issueData.description} \n \n -- submited by ${targetEmail}`;
-
-      createIssue(parmes).then(async (res) => {
-        if (res.code === 201) {
-          if (fileList.value.length && fileList.value[0].raw) {
-            // 携带附件
-            await handleUpload(fileList.value[0].raw, res.data.issue_id)
-              .then((res) => {
-                if (res?.code === 200) {
-                  ElMessage({
-                    message: computed(() => {
-                      return t('quickIssue.SUCCESS_UPLOAD');
-                    }).value,
-                    type: 'success',
-                  });
-                } else {
-                  ElMessage({
-                    message: res.msg,
-                    type: 'error',
-                  });
-                }
-              })
-              .catch(() => {
-                ElMessage({
-                  message: computed(() => {
-                    return t('quickIssue.SUCCESS_UPLOAD1');
-                  }).value,
-                  type: 'error',
-                });
-              });
-          }
-          // 埋点
-          const sensors = (window as any)['sensorsDataAnalytic201505'];
-          const jump_url = `https://gitee.com/${issueData.repo}/issues/${res.data.number}`;
-          sensors?.setProfile({
-            profileType: 'noGiteeCreateIssue',
-            ...((window as any)['sensorsCustomBuriedData'] || {}),
-            $utm_source: 'quick_issue',
-            jump_url,
-            quick_issue_email: parmes.email,
-          });
-          if (isGoGitee) {
-            window.open(jump_url);
-          }
-          verify.resetFields();
-          fileList.value = [];
-          repoParams.sig = '';
-          issueData.privacy = ['true'];
-          issueData.description = '';
-          verify.scrollToField('title');
-          ElMessage({
-            message: computed(() => {
-              return t('quickIssue.SUCCESS_CREATED');
-            }).value,
-            type: 'success',
-          });
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'error',
-          });
-        }
-      });
+      // 邮箱隐藏 添加提交人邮箱
+      parmes.description = `${
+        issueData.description
+      } \n \n -- submited by ${getHiddenEmail(issueData.email)}`;
+      handelCreatIssue(parmes, isGoGitee, verify);
     } else {
       verify.scrollToField('title');
     }
   });
 }
+
+function getHiddenEmail(email: string): string {
+  return `${email.split('@')[0]}@***${email.charAt(email.length - 1)}`;
+}
+
+function handelCreatIssue(
+  parmes: IssueData,
+  isGoGitee: boolean,
+  verify: FormInstance
+) {
+  createIssue(parmes).then(async (res) => {
+    if (res.code === 201) {
+      if (fileList.value.length && fileList.value[0].raw) {
+        // 携带附件
+        await handleUpload(fileList.value[0].raw, res.data.issue_id)
+          .then((res) => {
+            if (res?.code === 200) {
+              ElMessage({
+                message: computed(() => {
+                  return t('quickIssue.SUCCESS_UPLOAD');
+                }).value,
+                type: 'success',
+              });
+            } else {
+              ElMessage({
+                message: res.msg,
+                type: 'error',
+              });
+            }
+          })
+          .catch(() => {
+            ElMessage({
+              message: computed(() => {
+                return t('quickIssue.SUCCESS_UPLOAD1');
+              }).value,
+              type: 'error',
+            });
+          });
+      }
+      const jump_url = `https://gitee.com/${issueData.repo}/issues/${res.data.number}`;
+      // 埋点
+      statisticalPoint(jump_url, parmes.email);
+      if (isGoGitee) {
+        window.open(jump_url);
+      }
+      // 重置表单
+      resetForm(verify);
+      ElMessage({
+        message: t('quickIssue.SUCCESS_CREATED'),
+        type: 'success',
+      });
+    } else {
+      ElMessage({
+        message: res.msg,
+        type: 'error',
+      });
+    }
+  });
+}
+
+function resetForm(verify: FormInstance) {
+  verify.resetFields();
+  fileList.value = [];
+  repoParams.sig = '';
+  issueData.privacy = ['true'];
+  issueData.description = '';
+  verify.scrollToField('title');
+}
+
 function optionClick(item: any) {
   if (item?.enterprise_number) {
     issueData.project_id = item.enterprise_number;
@@ -382,7 +378,6 @@ const handleClick = (path: string) => {
   }
 };
 async function handleUpload(file: File, id: string) {
-  // formData 携带附件及 issue_id
   const formData = new FormData();
   formData.append('file', file);
   formData.append('attach_id', id);
@@ -480,7 +475,7 @@ onMounted(async () => {
     }
     landscapeInfo.value = await getSigLandscape(lang.value);
   } catch (err: any) {
-    throw new Error(err);
+    console.error(err);
   }
 });
 watch(
