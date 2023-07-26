@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch, computed, CSSProperties } from 'vue';
+import { ref, reactive, onMounted, watch, CSSProperties } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { debounce } from 'lodash-es';
 import { useLabelColor } from '@/stores/index';
-
-import { useLangStore } from '@/stores';
 
 import ISSUE_CONFIG from '@/data/quick-issue/quick-issue';
 import {
@@ -55,9 +53,6 @@ const totalPage = ref(0);
 const checkAll = ref(false);
 const isIndeterminate = ref(true);
 const layout = ref('sizes, prev, pager, next, slot, jumper');
-const lang = computed(() => {
-  return useLangStore().lang;
-});
 
 const keyArr = [
   'authorsList',
@@ -87,101 +82,78 @@ const titleList = ref(
     [
       'repo',
       {
-        value: computed(() => {
-          return t('quickIssue.REPO_NAME');
-        }),
+        value: t('quickIssue.REPO_NAME'),
       },
     ],
     [
       'title',
       {
-        value: computed(() => {
-          return t('quickIssue.TITLE');
-        }),
+        value: t('quickIssue.TITLE'),
       },
     ],
     [
       'state',
       {
-        value: computed(() => {
-          return t('quickIssue.STATE');
-        }),
+        value: t('quickIssue.STATE'),
       },
     ],
     [
       'type',
       {
-        value: computed(() => {
-          return t('quickIssue.TYPE');
-        }),
+        value: t('quickIssue.TYPE'),
       },
     ],
     [
       'author',
       {
-        value: computed(() => {
-          return t('quickIssue.SUBMITTER');
-        }),
+        value: t('quickIssue.SUBMITTER'),
       },
     ],
     [
       'assignee',
       {
-        value: computed(() => {
-          return t('quickIssue.ASSIGNER');
-        }),
+        value: t('quickIssue.ASSIGNER'),
       },
     ],
     [
       'priority',
       {
-        value: computed(() => {
-          return t('quickIssue.PRIORITY');
-        }),
+        value: t('quickIssue.PRIORITY'),
       },
     ],
     [
       'milestone',
       {
-        value: computed(() => {
-          return t('quickIssue.MILESTONE');
-        }),
+        value: t('quickIssue.MILESTONE'),
       },
     ],
     [
       'label',
       {
-        value: computed(() => {
-          return t('quickIssue.LABEL');
-        }),
+        value: t('quickIssue.LABEL'),
       },
     ],
     [
       'branch',
       {
-        value: computed(() => {
-          return t('quickIssue.BRANCH');
-        }),
+        value: t('quickIssue.BRANCH'),
       },
     ],
     [
       'create_at',
       {
-        value: computed(() => {
-          return t('quickIssue.CREATED_AT');
-        }),
+        value: t('quickIssue.CREATED_AT'),
       },
     ],
     [
       'updata_at',
       {
-        value: computed(() => {
-          return t('quickIssue.UPDATE_AT');
-        }),
+        value: t('quickIssue.UPDATE_AT'),
       },
     ],
   ])
 );
+// 控制表格列
 const checkedTitle = ref([
   'id',
   'repo',

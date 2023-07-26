@@ -6,7 +6,15 @@ import { useI18n } from 'vue-i18n';
 
 import { useLangStore } from '@/stores';
 import { GroupInfo } from '@/shared/@types/type-sig';
-import { getUrlParam, handleUploadImage, statisticalPoint } from '@/shared';
+import {
+  getUrlParam,
+  handleUploadImage,
+  statisticalPoint,
+  rules,
+  emailRules,
+  privacyRules,
+  codeRules,
+} from '@/shared';
 
 import {
   getReposData,
@@ -32,6 +40,7 @@ import type {
   UploadInstance,
   UploadProps,
   UploadRawFile,
+  TabsPaneContext,
 } from 'element-plus';
 
 import IconGitee from '~icons/app/icon-gitee.svg';
@@ -81,71 +90,6 @@ const reposList = ref<OptionList>({
 });
 const typesList = ref<Array<TypesList>>();
 
-const rules: any = reactive({
-  title: [
-    {
-      required: true,
-      message: t('quickIssue.MANDATORY1'),
-      trigger: 'blur',
-    },
-    {
-      min: 1,
-      max: 100,
-      message: t('quickIssue.TITLE_LIMIT'),
-      trigger: 'blur',
-    },
-  ],
-  issue_type_id: [
-    {
-      required: true,
-      message: t('quickIssue.MANDATORY1'),
-      trigger: 'change',
-    },
-  ],
-  repo: [
-    {
-      required: true,
-      message: t('quickIssue.MANDATORY1'),
-      trigger: 'change',
-    },
-  ],
-  privacy: [],
-  email: [],
-  code: [],
-});
-const privacyRules = [
-  {
-    required: true,
-    message: t('quickIssue.MANDATORY1'),
-    trigger: 'change',
-  },
-];
-const emailRules = [
-  {
-    required: true,
-    message: t('quickIssue.EMAIL_ADRESS'),
-    trigger: 'change',
-  },
-  {
-    pattern: new RegExp(
-      '^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$'
-    ),
-    message: t('quickIssue.RIGHT_EMAIL_ADRESS'),
-    trigger: 'change',
-  },
-];
-const codeRules = [
-  {
-    required: true,
-    message: t('quickIssue.VER_CODE'),
-    trigger: 'blur',
-  },
-  {
-    pattern: /^\d{6}$/,
-    message: t('quickIssue.VER_CODE1'),
-    trigger: 'blur',
-  },
-];
 const repoParams = reactive({
   page: 1,
   per_page: 40,
@@ -310,13 +254,11 @@ function handelCreatIssue(
     if (res.code === 201) {
       if (fileList.value.length && fileList.value[0].raw) {
         // 携带附件
-        await handleUpload(fileList.value[0].raw, res.data.issue_id)
-          .then((res) => {
+        await handleUpload(fileList.value[0].raw, res.data.issue_id).then(
+          (res) => {
             if (res?.code === 200) {
               ElMessage({
-                message: computed(() => {
-                  return t('quickIssue.SUCCESS_UPLOAD');
-                }).value,
+                message: t('quickIssue.SUCCESS_UPLOAD'),
                 type: 'success',
               });
             } else {
@@ -325,15 +267,8 @@ function handelCreatIssue(
                 type: 'error',
               });
             }
-          })
-          .catch(() => {
-            ElMessage({
-              message: computed(() => {
-                return t('quickIssue.SUCCESS_UPLOAD1');
-              }).value,
-              type: 'error',
-            });
-          });
+          }
+        );
       }
       const jump_url = `https://gitee.com/${issueData.repo}/issues/${res.data.number}`;
       // 埋点
@@ -422,7 +357,7 @@ function changeState(stash: boolean) {
     }
   }
 }
-function scrollClick(tab: any) {
+function scrollClick(tab: TabsPaneContext) {
   document.querySelector(`#${tab.props.name}`)?.scrollIntoView({
     behavior: 'smooth',
   });
