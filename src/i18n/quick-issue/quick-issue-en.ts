@@ -53,7 +53,7 @@ export default {
   EMPTY_REPO:
     'This SIG does not have a repository. The issue will be submitted to openeuler/community-issue',
   RESEND: 'Resend Verification Code',
-  RESEND1: 'Resend Verification Code in',
+  RESEND1: 'Resend Verification Code in {0}',
   SUCCESS_CREATED: 'Issue created successfully',
   SUCCESS_SEND_MAIL: 'Sent verification email successfully',
   SIZE_LIMIT: 'Attachment size cannot exceed 10 MB',

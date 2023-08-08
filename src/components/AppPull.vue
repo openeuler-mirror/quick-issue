@@ -104,77 +104,60 @@ const titleList = ref(
     [
       'repo',
       {
-        value: computed(() => {
-          return t('quickIssue.REPO_NAME');
-        }),
+        value: t('quickIssue.REPO_NAME'),
       },
     ],
     [
       'title',
       {
-        value: computed(() => {
-          return t('quickIssue.TITLE');
-        }),
+        value: t('quickIssue.TITLE'),
       },
     ],
     [
       'branch',
       {
-        value: computed(() => {
-          return t('quickIssue.BRANCH');
-        }),
+        value: t('quickIssue.BRANCH'),
       },
     ],
     [
       'state',
       {
-        value: computed(() => {
-          return t('quickIssue.STATE');
-        }),
+        value: t('quickIssue.STATE'),
       },
     ],
     [
       'author',
       {
-        value: computed(() => {
-          return t('quickIssue.SUBMITTER');
-        }),
+        value: t('quickIssue.SUBMITTER'),
       },
     ],
     [
       'assignee',
       {
-        value: computed(() => {
-          return t('quickIssue.ASSIGNER');
-        }),
+        value: t('quickIssue.ASSIGNER'),
       },
     ],
     [
       'label',
       {
-        value: computed(() => {
-          return t('quickIssue.LABEL');
-        }),
+        value: t('quickIssue.LABEL'),
       },
     ],
     [
       'created_at',
       {
-        value: computed(() => {
-          return t('quickIssue.CREATED_AT');
-        }),
+        value: t('quickIssue.CREATED_AT'),
       },
     ],
     [
       'updated_at',
       {
-        value: computed(() => {
-          return t('quickIssue.UPDATE_AT');
-        }),
+        value: t('quickIssue.UPDATE_AT'),
       },
     ],
   ])
 );
+// 控制表格列
 const checkedTitle = ref([
   'repo',
   'title',
