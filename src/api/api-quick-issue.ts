@@ -34,7 +34,7 @@ export function getRepoIssue(params: IssueQueryData) {
     .get(url, { params })
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
-      throw new Error(e);
+      console.error(e);
     });
 }
 /**
@@ -49,7 +49,7 @@ export function getIssueSelectOption(type: string, params: object | null) {
     .get(url, { params })
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
-      throw new Error(e);
+      console.error(e);
     });
 }
 
@@ -69,7 +69,7 @@ export function uploadIssueImage(params: object) {
     })
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
-      throw new Error(e);
+      console.error(e);
     });
 }
 
@@ -85,7 +85,7 @@ export function verifySubmitterEmail(params: object) {
     .post(url, params, getHeaderConfig())
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
-      throw new Error(e);
+      console.error(e);
     });
 }
 /**
@@ -99,7 +99,7 @@ export function getReposData(params: object) {
     .get(url, { params })
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
-      throw new Error(e);
+      console.error(e);
     });
 }
 /**
@@ -113,7 +113,7 @@ export function createIssue(params: object) {
     .post(url, params, getHeaderConfig())
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
-      throw new Error(e);
+      console.error(e);
     });
 }
 
@@ -133,7 +133,7 @@ export function uploadIssueFile(params: object) {
     })
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
-      throw new Error(e);
+      console.error(e);
     });
 }
 /**
@@ -147,7 +147,7 @@ export function getLabelColors() {
     .get(url)
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
-      throw new Error(e);
+      console.error(e);
     });
 }
 /**
@@ -167,7 +167,7 @@ export function getRepoPull(params: any) {
     .get(url, { params })
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
-      throw new Error(e);
+      console.error(e);
     });
 }
 /**
@@ -182,6 +182,6 @@ export function getPrSelectOption(type: string, params: object | null) {
     .get(url, { params })
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
-      throw new Error(e);
+      console.error(e);
     });
 }

@@ -6,7 +6,14 @@ import { useI18n } from 'vue-i18n';
 
 import { useLangStore } from '@/stores';
 import { GroupInfo } from '@/shared/@types/type-sig';
-import { getUrlParam, handleUploadImage } from '@/shared';
+import {
+  getUrlParam,
+  handleUploadImage,
+  rules,
+  emailRules,
+  privacyRules,
+  codeRules,
+} from '@/shared';
 
 import {
   getReposData,
@@ -15,6 +22,7 @@ import {
   createIssue,
   uploadIssueFile,
 } from '@/api/api-quick-issue';
+
 import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
 
 import { getSigLandscape } from '@/api/api-sig';
@@ -31,6 +39,7 @@ import type {
   UploadInstance,
   UploadProps,
   UploadRawFile,
+  TabsPaneContext,
 } from 'element-plus';
 
 import IconGitee from '~icons/app/icon-gitee.svg';
@@ -66,14 +75,6 @@ const lang = computed(() => {
 });
 const content = ref(t('quickIssue.SEND_CODE'));
 
-watch(
-  () => lang.value,
-  async (val) => {
-    landscapeInfo.value = await getSigLandscape(val);
-    content.value = val === 'en' ? 'Send Verification Code' : '发送验证码';
-  }
-);
-
 const totalTime = ref(60);
 const tabType = ref(titleList.value[0].key);
 const isGiteeUser = ref(false);
@@ -88,71 +89,6 @@ const reposList = ref<OptionList>({
 });
 const typesList = ref<Array<TypesList>>();
 
-const rules: any = reactive({
-  title: [
-    {
-      required: true,
-      message: t('quickIssue.MANDATORY1'),
-      trigger: 'blur',
-    },
-    {
-      min: 1,
-      max: 100,
-      message: t('quickIssue.TITLE_LIMIT'),
-      trigger: 'blur',
-    },
-  ],
-  issue_type_id: [
-    {
-      required: true,
-      message: t('quickIssue.MANDATORY1'),
-      trigger: 'change',
-    },
-  ],
-  repo: [
-    {
-      required: true,
-      message: t('quickIssue.MANDATORY1'),
-      trigger: 'change',
-    },
-  ],
-  privacy: [],
-  email: [],
-  code: [],
-});
-const privacyRules = [
-  {
-    required: true,
-    message: t('quickIssue.MANDATORY1'),
-    trigger: 'change',
-  },
-];
-const emailRules = [
-  {
-    required: true,
-    message: t('quickIssue.EMAIL_ADRESS'),
-    trigger: 'change',
-  },
-  {
-    pattern: new RegExp(
-      '^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$'
-    ),
-    message: t('quickIssue.RIGHT_EMAIL_ADRESS'),
-    trigger: 'change',
-  },
-];
-const codeRules = [
-  {
-    required: true,
-    message: t('quickIssue.VER_CODE'),
-    trigger: 'blur',
-  },
-  {
-    pattern: /^\d{6}$/,
-    message: t('quickIssue.VER_CODE1'),
-    trigger: 'blur',
-  },
-];
 const repoParams = reactive({
   page: 1,
   per_page: 40,
@@ -237,10 +173,7 @@ function sendVerifyEmail() {
     if (res?.code === 200) {
       clock.value = window.setInterval(function () {
         totalTime.value--;
-        content.value =
-          lang.value === 'zh'
-            ? `${totalTime.value}s${t('quickIssue.RESEND1')}`
-            : `${t('quickIssue.RESEND1')} ${totalTime.value}s`;
+        content.value = t('quickIssue.RESEND1', [`${totalTime.value}s`]);
         if (totalTime.value < 0) {
           //当倒计时小于0时清除定时器
           window.clearInterval(clock.value);
@@ -270,14 +203,6 @@ async function goGitee(verify: FormInstance | undefined) {
   verify.validate(async (res: boolean) => {
     if (res) {
       const url = `https://gitee.com/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${issueData.issue_type_id}`;
-      // 埋点数据统计
-      const sensors = (window as any)['sensorsDataAnalytic201505'];
-      sensors?.setProfile({
-        profileType: 'toGiteeCreateIssue',
-        ...((window as any)['sensorsCustomBuriedData'] || {}),
-        $utm_source: 'quick_issue',
-        jump_url: url,
-      });
       window.open(url);
     }
   });
@@ -296,79 +221,74 @@ async function submitForm(
   verify.validate(async (res: boolean) => {
     if (res) {
       const parmes = JSON.parse(JSON.stringify(issueData));
-      // 邮箱隐藏
-      const targetEmail = `${
-        issueData.email.split('@')[0]
-      }@***${issueData.email.charAt(issueData.email.length - 1)}`;
-      // 添加提交人邮箱
-      parmes.description = `${issueData.description} \n \n -- submited by ${targetEmail}`;
-
-      createIssue(parmes).then(async (res) => {
-        if (res.code === 201) {
-          if (fileList.value.length && fileList.value[0].raw) {
-            // 携带附件
-            await handleUpload(fileList.value[0].raw, res.data.issue_id)
-              .then((res) => {
-                if (res?.code === 200) {
-                  ElMessage({
-                    message: computed(() => {
-                      return t('quickIssue.SUCCESS_UPLOAD');
-                    }).value,
-                    type: 'success',
-                  });
-                } else {
-                  ElMessage({
-                    message: res.msg,
-                    type: 'error',
-                  });
-                }
-              })
-              .catch(() => {
-                ElMessage({
-                  message: computed(() => {
-                    return t('quickIssue.SUCCESS_UPLOAD1');
-                  }).value,
-                  type: 'error',
-                });
-              });
-          }
-          // 埋点
-          const sensors = (window as any)['sensorsDataAnalytic201505'];
-          const jump_url = `https://gitee.com/${issueData.repo}/issues/${res.data.number}`;
-          sensors?.setProfile({
-            profileType: 'noGiteeCreateIssue',
-            ...((window as any)['sensorsCustomBuriedData'] || {}),
-            $utm_source: 'quick_issue',
-            jump_url,
-            quick_issue_email: parmes.email,
-          });
-          if (isGoGitee) {
-            window.open(jump_url);
-          }
-          verify.resetFields();
-          fileList.value = [];
-          repoParams.sig = '';
-          issueData.privacy = ['true'];
-          issueData.description = '';
-          verify.scrollToField('title');
-          ElMessage({
-            message: computed(() => {
-              return t('quickIssue.SUCCESS_CREATED');
-            }).value,
-            type: 'success',
-          });
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'error',
-          });
-        }
-      });
+      // 邮箱隐藏 添加提交人邮箱
+      parmes.description = `${
+        issueData.description
+      } \n \n -- submited by ${getHiddenEmail(issueData.email)}`;
+      handelCreatIssue(parmes, isGoGitee, verify);
     } else {
       verify.scrollToField('title');
     }
   });
 }
+
+function getHiddenEmail(email: string): string {
+  return `${email.split('@')[0]}@***${email.charAt(email.length - 1)}`;
+}
+
+function handelCreatIssue(
+  parmes: IssueData,
+  isGoGitee: boolean,
+  verify: FormInstance
+) {
+  createIssue(parmes).then(async (res) => {
+    if (res.code === 201) {
+      if (fileList.value.length && fileList.value[0].raw) {
+        // 携带附件
+        await handleUpload(fileList.value[0].raw, res.data.issue_id).then(
+          (res) => {
+            if (res?.code === 200) {
+              ElMessage({
+                message: t('quickIssue.SUCCESS_UPLOAD'),
+                type: 'success',
+              });
+            } else {
+              ElMessage({
+                message: res.msg,
+                type: 'error',
+              });
+            }
+          }
+        );
+      }
+      const jump_url = `https://gitee.com/${issueData.repo}/issues/${res.data.number}`;
+      if (isGoGitee) {
+        window.open(jump_url);
+      }
+      // 重置表单
+      resetForm(verify);
+      ElMessage({
+        message: t('quickIssue.SUCCESS_CREATED'),
+        type: 'success',
+      });
+    } else {
+      ElMessage({
+        message: res.msg,
+        type: 'error',
+      });
+    }
+  });
+}
+
+function resetForm(verify: FormInstance) {
+  verify.resetFields();
+  fileList.value = [];
+  repoParams.sig = '';
+  issueData.privacy = ['true'];
+  issueData.description = '';
+  verify.scrollToField('title');
+}
+
 function optionClick(item: any) {
   if (item?.enterprise_number) {
     issueData.project_id = item.enterprise_number;
@@ -382,7 +302,6 @@ const handleClick = (path: string) => {
   }
 };
 async function handleUpload(file: File, id: string) {
-  // formData 携带附件及 issue_id
   const formData = new FormData();
   formData.append('file', file);
   formData.append('attach_id', id);
@@ -427,7 +346,7 @@ function changeState(stash: boolean) {
     }
   }
 }
-function scrollClick(tab: any) {
+function scrollClick(tab: TabsPaneContext) {
   document.querySelector(`#${tab.props.name}`)?.scrollIntoView({
     behavior: 'smooth',
   });
@@ -480,7 +399,7 @@ onMounted(async () => {
     }
     landscapeInfo.value = await getSigLandscape(lang.value);
   } catch (err: any) {
-    throw new Error(err);
+    console.error(err);
   }
 });
 watch(

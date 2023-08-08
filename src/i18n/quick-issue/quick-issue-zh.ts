@@ -53,7 +53,7 @@ export default {
   VER_CODE1: '请填写6位数字验证码',
   EMPTY_REPO: '此SIG下无仓库。默认提交至 openeuler/community-issue 仓库',
   RESEND: '重新发送验证码',
-  RESEND1: '后重新发送',
+  RESEND1: '{0}后重新发送',
   SUCCESS_CREATED: '创建issue成功',
   SUCCESS_SEND_MAIL: '成功发送验证邮件',
   SIZE_LIMIT: '附件不得超过10MB，请重新选择文件。',

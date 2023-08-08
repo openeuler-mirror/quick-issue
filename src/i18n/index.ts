@@ -23,6 +23,7 @@ const i18n = createI18n({
   locale: 'zh',
   legacy: false,
   messages,
+  global: true,
 });
 
 export default i18n;

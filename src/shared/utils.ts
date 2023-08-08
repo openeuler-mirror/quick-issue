@@ -26,7 +26,6 @@ export function hiddenMail(mail: string) {
  * @word 要加密的内容
  * @keyWord String  服务器随机返回的关键字
  *  */
-// export function aesEncrypt(word,keyWord="XwKsGlMcdPMEhR1B"){
 export function aesEncrypt(word: string, keyWord: string) {
   const key = CryptoJS.enc.Utf8.parse(keyWord);
   const srcs = CryptoJS.enc.Utf8.parse(word);
