@@ -9,6 +9,7 @@ import { GroupInfo } from '@/shared/@types/type-sig';
 import {
   getUrlParam,
   handleUploadImage,
+  statisticalPoint,
   rules,
   emailRules,
   privacyRules,
@@ -203,6 +204,14 @@ async function goGitee(verify: FormInstance | undefined) {
   verify.validate(async (res: boolean) => {
     if (res) {
       const url = `https://gitee.com/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${issueData.issue_type_id}`;
+      // 埋点数据统计
+      const sensors = (window as any)['sensorsDataAnalytic201505'];
+      sensors?.setProfile({
+        profileType: 'toGiteeCreateIssue',
+        ...((window as any)['sensorsCustomBuriedData'] || {}),
+        $utm_source: 'quick_issue',
+        jump_url: url,
+      });
       window.open(url);
     }
   });
@@ -262,6 +271,8 @@ function handelCreatIssue(
         );
       }
       const jump_url = `https://gitee.com/${issueData.repo}/issues/${res.data.number}`;
+      // 埋点
+      statisticalPoint(jump_url, parmes.email);
       if (isGoGitee) {
         window.open(jump_url);
       }
