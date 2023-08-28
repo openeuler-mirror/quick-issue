@@ -59,6 +59,19 @@ export async function handleUploadImage(
     }
   });
 }
+
+export function statisticalPoint(jump_url: string, quick_issue_email: string) {
+  const sensors = (window as any)['sensorsDataAnalytic201505'];
+  sensors?.setProfile({
+    profileType: 'noGiteeCreateIssue',
+    ...((window as any)['sensorsCustomBuriedData'] || {}),
+    $utm_source: 'quick_issue',
+    jump_url,
+    quick_issue_email,
+  });
+}
+
+//
 export const rules: any = reactive({
   title: [
     {
