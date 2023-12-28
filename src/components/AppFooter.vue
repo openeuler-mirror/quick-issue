@@ -175,7 +175,11 @@ const footBg = {
     <AppContent :pc-top="0" :mobile-top="0">
       <div class="atom">
         <p class="atom-text">{{ t('common.FOOTER.ATOM_TEXT') }}</p>
-        <a href="https://openatom.cn" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://openatom.cn/home"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <img :src="LogoAtom" class="atom-logo" alt="" />
         </a>
       </div>
