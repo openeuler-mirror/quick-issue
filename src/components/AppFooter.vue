@@ -115,10 +115,6 @@ const linksData2: any = {
       NAME: '法律声明',
       URL: 'https://www.openeuler.org/zh/other/legal/',
     },
-    {
-      NAME: '服务状态',
-      URL: 'https://status.openeuler.org/',
-    },
   ],
   en: [
     {
@@ -132,10 +128,6 @@ const linksData2: any = {
     {
       NAME: 'Legal Notice',
       URL: 'https://www.openeuler.org/en/other/legal/',
-    },
-    {
-      NAME: 'Service Status',
-      URL: 'https://status.openeuler.org/',
     },
   ],
 };
