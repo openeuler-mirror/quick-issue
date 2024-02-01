@@ -2,6 +2,11 @@
   "name": "quick-issue",
   "version": "0.0.1",
   "type": "module",
+  "pnpm": {
+    "overrides": {
+      "glob-parent": "5.1.2"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
