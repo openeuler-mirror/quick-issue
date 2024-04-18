@@ -32,17 +32,4 @@ export default {
     QR_CODE: 'openEuler公众号',
     QR_ASSISTANT: 'openEuler小助手',
   },
-  BUILDING: {
-    BUILDING: '建设中',
-    BUILDINGMES: '敬请期待...',
-  },
-  SEARCH: {
-    BROWSEHISTORY: '历史记录',
-    CLEAN: '清除',
-    TOPSEARCH: '热门搜索',
-    CHANGE: '换一批',
-    PLEACHOLDER: '请输入内容',
-  },
-  PREV: '上一页',
-  NEXT: '下一页',
 };

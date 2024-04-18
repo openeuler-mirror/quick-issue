@@ -31,17 +31,4 @@ export default {
     QR_CODE: 'WeChat Subscription',
     QR_ASSISTANT: 'WeChat Assistant',
   },
-  BUILDING: {
-    BUILDING: 'Building',
-    BUILDINGMES: 'Coming soon…',
-  },
-  SEARCH: {
-    BROWSEHISTORY: 'History',
-    CLEAN: 'Clean up',
-    TOPSEARCH: 'Top search',
-    CHANGE: 'Change',
-    PLEACHOLDER: 'Please enter the content',
-  },
-  PREV: 'pre',
-  NEXT: 'next',
 };

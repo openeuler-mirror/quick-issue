@@ -47,7 +47,7 @@ function getNameList(arr: any) {
         v-if="
           (guardAuthClient?.identities &&
             guardAuthClient?.identities[0]?.login_name) ||
-          hiddenMail(guardAuthClient?.email)
+          guardAuthClient?.email
         "
         issue-type="submitted"
         :user-name="

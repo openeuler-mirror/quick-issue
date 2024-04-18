@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted, watch, computed } from 'vue';
+import { ref, reactive, onMounted, watch, computed, provide } from 'vue';
 import { useRouter } from 'vue-router';
 import { debounce } from 'lodash-es';
 import { useI18n } from 'vue-i18n';
@@ -18,9 +18,7 @@ import {
 import {
   getReposData,
   getIssueSelectOption,
-  verifySubmitterEmail,
   createIssue,
-  uploadIssueFile,
 } from '@/api/api-quick-issue';
 
 import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
@@ -28,23 +26,15 @@ import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
 import { getSigLandscape } from '@/api/api-sig';
 
 import AppEditor from '@/components/AppEditor.vue';
-import AppSlideVerify from '@/components/AppSlideVerify.vue';
+import Verify from '@/components/verifition/Verify.vue';
 import AppContent from '@/components/AppContent.vue';
 import SigLandscapeFeature from '@/components/SigLandscapeFeature.vue';
 import OIcon from 'opendesign/icon/OIcon.vue';
-import { ElMessage, genFileId } from 'element-plus';
-import type {
-  FormInstance,
-  UploadUserFile,
-  UploadInstance,
-  UploadProps,
-  UploadRawFile,
-  TabsPaneContext,
-} from 'element-plus';
+import { ElMessage } from 'element-plus';
+import type { FormInstance, TabsPaneContext } from 'element-plus';
 
 import IconGitee from '~icons/app/icon-gitee.svg';
 import IconDown from '~icons/app/icon-pulldown.svg';
-import IconAdd from '~icons/app/icon-add.svg';
 import IconSearch from '~icons/app/icon-search.svg';
 
 interface TypesList {
@@ -58,7 +48,20 @@ const { t } = useI18n();
 
 const landscapeInfo = ref<GroupInfo[]>([]);
 const isMenuShown = ref(false);
-const isSlideVerifyShown = ref(false);
+const editRef = ref();
+
+function getVerifyImgSize() {
+  let width = 400;
+  const height = 200;
+  const innerWidth = window.innerWidth;
+  if (innerWidth - 28 < 400) {
+    width = innerWidth - 30;
+  }
+  return {
+    width: width + 'px',
+    height: height + 'px',
+  };
+}
 
 const titleList = ref([
   {
@@ -78,9 +81,8 @@ const content = ref(t('quickIssue.SEND_CODE'));
 const totalTime = ref(60);
 const tabType = ref(titleList.value[0].key);
 const isGiteeUser = ref(false);
-const fileList = ref<UploadUserFile[]>([]);
-const upload = ref<UploadInstance>();
 const clock = ref();
+const verifyRef = ref();
 
 const reposList = ref<OptionList>({
   page: 1,
@@ -110,6 +112,11 @@ const issueData: IssueData = reactive({
   description: '',
   privacy: [],
 });
+
+provide(
+  'email',
+  computed(() => issueData.email)
+);
 
 function getSigValue(val: string) {
   if (issueData.sig && issueData.sig === val) {
@@ -162,35 +169,25 @@ async function getCodeByEmail(verify: FormInstance | undefined) {
   rules.email = emailRules;
   verify.validate(async (res) => {
     if (totalTime.value === 60 && res) {
-      isSlideVerifyShown.value = true;
+      verifyRef.value.show();
     }
   });
 }
 
 function sendVerifyEmail() {
-  isSlideVerifyShown.value = false;
-  verifySubmitterEmail({ email: issueData.email }).then((res) => {
-    if (res?.code === 200) {
-      clock.value = window.setInterval(function () {
-        totalTime.value--;
-        content.value = t('quickIssue.RESEND1', [`${totalTime.value}s`]);
-        if (totalTime.value < 0) {
-          //当倒计时小于0时清除定时器
-          window.clearInterval(clock.value);
-          content.value = t('quickIssue.RESEND');
-          totalTime.value = 60;
-        }
-      }, 1000);
-      ElMessage({
-        message: t('quickIssue.SUCCESS_SEND_MAIL'),
-        type: 'success',
-      });
-    } else {
-      ElMessage({
-        message: res.msg,
-        type: 'error',
-      });
+  clock.value = window.setInterval(function () {
+    totalTime.value--;
+    content.value = t('quickIssue.RESEND1', [`${totalTime.value}s`]);
+    if (totalTime.value < 0) {
+      //当倒计时小于0时清除定时器
+      window.clearInterval(clock.value);
+      content.value = t('quickIssue.RESEND');
+      totalTime.value = 60;
     }
+  }, 1000);
+  ElMessage({
+    message: t('quickIssue.SUCCESS_SEND_MAIL'),
+    type: 'success',
   });
 }
 async function goGitee(verify: FormInstance | undefined) {
@@ -243,24 +240,6 @@ function handelCreatIssue(
 ) {
   createIssue(parmes).then(async (res) => {
     if (res.code === 201) {
-      if (fileList.value.length && fileList.value[0].raw) {
-        // 携带附件
-        await handleUpload(fileList.value[0].raw, res.data.issue_id).then(
-          (res) => {
-            if (res?.code === 200) {
-              ElMessage({
-                message: t('quickIssue.SUCCESS_UPLOAD'),
-                type: 'success',
-              });
-            } else {
-              ElMessage({
-                message: res.msg,
-                type: 'error',
-              });
-            }
-          }
-        );
-      }
       const jump_url = `https://gitee.com/${issueData.repo}/issues/${res.data.number}`;
       if (isGoGitee) {
         window.open(jump_url);
@@ -282,7 +261,6 @@ function handelCreatIssue(
 
 function resetForm(verify: FormInstance) {
   verify.resetFields();
-  fileList.value = [];
   repoParams.sig = '';
   issueData.privacy = ['true'];
   issueData.description = '';
@@ -301,12 +279,7 @@ const handleClick = (path: string) => {
     router.push(path);
   }
 };
-async function handleUpload(file: File, id: string) {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('attach_id', id);
-  return await uploadIssueFile(formData);
-}
+
 function sigValueChange(val: string) {
   repoParams.sig = val;
   repoParams.page = 1;
@@ -316,18 +289,6 @@ function sigValueChange(val: string) {
   issueData.repo = '';
 }
 
-function onChange(rawFile: UploadUserFile) {
-  if (!rawFile?.size) {
-    return false;
-  }
-
-  if (rawFile.size / 1024 / 1024 > 10) {
-    ElMessage.warning(t('quickIssue.SIZE_LIMIT'));
-    fileList.value = [];
-    return false;
-  }
-  fileList.value[0] = rawFile;
-}
 function getNextPage() {
   if (reposList.value.total) {
     reposList.value.total > repoParams.page * repoParams.per_page
@@ -355,13 +316,7 @@ function handleTypeChange(val: number) {
   issueData.description =
     typesList.value?.find((item) => item.id === val)?.template || '';
 }
-// element 单文件上传，新文件覆盖旧文件
-const handleExceed: UploadProps['onExceed'] = (files) => {
-  upload.value?.clearFiles();
-  const file = files[0] as UploadRawFile;
-  file.uid = genFileId();
-  upload.value?.handleStart(file);
-};
+
 const debounceEvent = debounce(
   (val) => {
     if (val === undefined) {
@@ -532,31 +487,11 @@ watch(
                 class="fill-width"
               >
                 <AppEditor
+                  ref="editRef"
                   v-model="issueData.description"
-                  @upload-image="handleUploadImage"
+                  @imgAdd="(pos, file) => handleUploadImage(pos, file, editRef.editRef)"
                 >
                 </AppEditor>
-              </el-form-item>
-            </div>
-            <div class="form-liner verify-email">
-              <el-form-item :label="t('quickIssue.FILE')" class="upload-item">
-                <el-upload
-                  ref="upload"
-                  :on-change="onChange"
-                  :multiple="false"
-                  :auto-upload="false"
-                  :file-list="fileList"
-                  :on-exceed="handleExceed"
-                  class="upload-file"
-                  action=""
-                  :limit="1"
-                >
-                  <template #trigger>
-                    <OIcon>
-                      <IconAdd />
-                    </OIcon>
-                  </template>
-                </el-upload>
               </el-form-item>
             </div>
             <div class="form-liner verify-email">
@@ -570,7 +505,7 @@ watch(
               <el-form-item
                 :label="t('quickIssue.CODE')"
                 prop="code"
-                class="verify-code"
+                class="verify-code-form"
               >
                 <OInput
                   v-model="issueData.code"
@@ -646,10 +581,13 @@ watch(
       </div>
     </OTabs>
   </ODialog>
-  <ODialog v-model="isSlideVerifyShown" class="slide-dialog" :show-close="true">
-    <AppSlideVerify v-show="isSlideVerifyShown" @succuss="sendVerifyEmail">
-    </AppSlideVerify>
-  </ODialog>
+  <Verify
+    ref="verifyRef"
+    mode="pop"
+    captcha-type="blockPuzzle"
+    :img-size="getVerifyImgSize()"
+    @success="sendVerifyEmail"
+  ></Verify>
 </template>
 
 <style lang="scss">
@@ -767,7 +705,7 @@ watch(
       .upload-item {
         width: 100%;
       }
-      .verify-code {
+      .verify-code-form {
         .el-form-item__label {
           width: 120px;
         }
@@ -874,7 +812,7 @@ watch(
       }
     }
     .verify-email {
-      .verify-code {
+      .verify-code-form {
         .el-form-item__label {
           width: 180px;
           justify-content: flex-end;
