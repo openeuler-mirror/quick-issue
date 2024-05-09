@@ -8,7 +8,7 @@ COPY . /home/quick-isuue/web
 RUN npm install pnpm -g
 
 RUN pnpm install
-RUN pnpm generate
+RUN pnpm build
 
 FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/openeuler/nginx:1.24.0-22.03-lts-sp1 as NginxBuilder
 
