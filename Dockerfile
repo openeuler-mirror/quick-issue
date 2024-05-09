@@ -1,4 +1,4 @@
-FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/website/node:18.14.1 as Builder
+FROM node:18.14.1 as Builder
 
 RUN mkdir -p /home/quick-isuue/web
 WORKDIR /home/quick-isuue/web
@@ -8,19 +8,10 @@ COPY . /home/quick-isuue/web
 RUN npm install pnpm -g
 
 RUN pnpm install
-RUN pnpm generate
+RUN pnpm build
+RUN ls /home/quick-isuue/web
 
 FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/openeuler/nginx:1.24.0-22.03-lts-sp1 as NginxBuilder
-
-ARG DOC_BRANCH=master
-ARG DOC_REPOSITORY
-RUN sed -i "s|repo.openeuler.org|mirrors.pku.edu.cn/openeuler|g" /etc/yum.repos.d/openEuler.repo \
-    && yum update -y \
-    && yum install -y git \
-    && git config --global http.postBuffer 524288000 \
-    && git config --global https.postBuffer 524288000 \
-    && mkdir -p /home/quick-isuue/web/ \
-    && git clone ${DOC_REPOSITORY} -b $DOC_BRANCH /home/quick-isuue/web/website-docs
 
 FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/website/openeuler:22.03-lts-sp1-latest
 ENV PATH /usr/share/nginx/sbin:$PATH
@@ -39,8 +30,7 @@ COPY --from=NginxBuilder /usr/share/nginx/sbin/nginx /usr/share/nginx/sbin/nginx
 COPY --from=NginxBuilder /etc/nginx/modules /etc/nginx/modules
 COPY --from=NginxBuilder /etc/nginx/geoip  /etc/nginx/geoip
 COPY --from=NginxBuilder /etc/nginx/mime.types  /etc/nginx/mime.types
-COPY --from=Builder /home/quick-isuue/web/packages/website/.output/public /usr/share/nginx/www/
-COPY --from=NginxBuilder /home/quick-isuue/web/website-docs/public /usr/share/nginx/www/
+COPY --from=Builder /home/quick-isuue/web/dist /usr/share/nginx/www/
 
 WORKDIR /home/quick-isuue/web
 RUN sed -i "s|repo.openeuler.org|mirrors.pku.edu.cn/openeuler|g" /etc/yum.repos.d/openEuler.repo \
