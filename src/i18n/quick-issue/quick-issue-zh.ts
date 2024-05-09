@@ -35,7 +35,7 @@ export default {
   CREATE: '新建',
   CANCEL1: '取消',
   CONTINUE: '新建并继续',
-  PRIVACY: '隐私声明',
+  PRIVACY: '《隐私声明》',
   SELECT_ALL: '选择全部',
   EXCLUDE: '排除标签',
   LABER_TIP: '同时包括所有“选中标签”的PR将会被筛选出来',

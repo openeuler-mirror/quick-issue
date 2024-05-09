@@ -76,7 +76,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api-omapi/, ''),
       },
       '/api-issues/': {
-        target: 'https://ipb.osinfra.cn',
+        target: 'https://quickissue-server.test.osinfra.cn',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api-issues/, ''),
       },
