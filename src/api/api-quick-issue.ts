@@ -1,16 +1,7 @@
 import { request } from '@/shared/axios';
 import type { AxiosResponse } from '@/shared/axios';
 import { IssueQueryData } from '@/shared/@types/type-quick-issue';
-import { getAuthorization } from '@/shared/utils';
 
-function getHeaderConfig() {
-  const headersConfig = {
-    headers: {
-      authorization: getAuthorization(),
-    },
-  };
-  return headersConfig;
-}
 /**
  * 获取issue 数据
  * @name getRepoIssue
@@ -64,7 +55,6 @@ export function uploadIssueImage(params: object) {
     .post(url, params, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        authorization: getAuthorization(),
       },
     })
     .then((res: AxiosResponse) => res.data)
@@ -82,7 +72,7 @@ export function verifySubmitterEmail(params: object) {
   const url = '/api-issues/verify/';
 
   return request
-    .post(url, params, getHeaderConfig())
+    .post(url, params)
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
       console.error(e);
@@ -110,32 +100,13 @@ export function getReposData(params: object) {
 export function createIssue(params: object) {
   const url = `/api-issues/new-issue/`;
   return request
-    .post(url, params, getHeaderConfig())
+    .post(url, params)
     .then((res: AxiosResponse) => res.data)
     .catch((e: any) => {
       console.error(e);
     });
 }
 
-/**
- * 上传 文件
- * @name uploadFile
- * @return {String}
- */
-export function uploadIssueFile(params: object) {
-  const url = '/api-issues/attachment/';
-  return request
-    .post(url, params, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        authorization: getAuthorization(),
-      },
-    })
-    .then((res: AxiosResponse) => res.data)
-    .catch((e: any) => {
-      console.error(e);
-    });
-}
 /**
  * 获取pull 数据
  * @name getLabelColors
@@ -184,4 +155,20 @@ export function getPrSelectOption(type: string, params: object | null) {
     .catch((e: any) => {
       console.error(e);
     });
+}
+
+/**
+ * 获取验证图片  以及token
+ */
+export function reqGet(data: any) {
+  const url = '/api-issues/captcha/get';
+  return request.post(url, data).then((res: AxiosResponse) => res.data);
+}
+
+/**
+ * 滑动或者点选验证
+ */
+export function reqCheck(data: any) {
+  const url = '/api-issues/captcha/check';
+  return request.post(url, data).then((res: AxiosResponse) => res.data);
 }

@@ -44,5 +44,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SigLandscapeFeature: typeof import('./src/components/SigLandscapeFeature.vue')['default']
+    Verify: typeof import('./src/components/verifition/Verify.vue')['default']
+    VerifySlide: typeof import('./src/components/verifition/Verify/VerifySlide.vue')['default']
   }
 }
