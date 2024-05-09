@@ -12,16 +12,6 @@ RUN pnpm generate
 
 FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/openeuler/nginx:1.24.0-22.03-lts-sp1 as NginxBuilder
 
-ARG DOC_BRANCH=master
-ARG DOC_REPOSITORY
-RUN sed -i "s|repo.openeuler.org|mirrors.pku.edu.cn/openeuler|g" /etc/yum.repos.d/openEuler.repo \
-    && yum update -y \
-    && yum install -y git \
-    && git config --global http.postBuffer 524288000 \
-    && git config --global https.postBuffer 524288000 \
-    && mkdir -p /home/quick-isuue/web/ \
-    && git clone ${DOC_REPOSITORY} -b $DOC_BRANCH /home/quick-isuue/web/website-docs
-
 FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/website/openeuler:22.03-lts-sp1-latest
 ENV PATH /usr/share/nginx/sbin:$PATH
 ENV NGINX_CONFIG_FILE /etc/nginx/nginx.conf
