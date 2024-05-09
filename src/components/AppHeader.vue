@@ -75,7 +75,7 @@ const jumpToUserZone = () => {
       <div class="header-logo">
         <img class="quickissue-logo" :src="QuickIssueLogo" alt="" />
         <span class="line"></span>
-        <a target="_blank" :href="`https://www.openeuler.org/${lang}/`"
+        <a target="_blank" rel="noopener noreferrer" :href="`https://www.openeuler.org/${lang}/`"
           ><img class="community-logo" :src="communityLogoWhite"
         /></a>
       </div>
@@ -108,8 +108,9 @@ const jumpToUserZone = () => {
         </div>
       </div>
       <a
-        href="https://github.com/opensourceways/issue_pr_board/blob/main/doc/apis.md"
+        href="https://gitee.com/openeuler/infrastructure/blob/master/docs/quickIssue/quickissue_api.mdd"
         class="api-docs"
+        rel="noopener noreferrer"
         target="_blank"
       >
         API
