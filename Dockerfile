@@ -9,6 +9,7 @@ RUN npm install pnpm -g
 
 RUN pnpm install
 RUN pnpm build
+RUN ls /home/quick-isuue/web
 
 FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/openeuler/nginx:1.24.0-22.03-lts-sp1 as NginxBuilder
 
@@ -29,7 +30,7 @@ COPY --from=NginxBuilder /usr/share/nginx/sbin/nginx /usr/share/nginx/sbin/nginx
 COPY --from=NginxBuilder /etc/nginx/modules /etc/nginx/modules
 COPY --from=NginxBuilder /etc/nginx/geoip  /etc/nginx/geoip
 COPY --from=NginxBuilder /etc/nginx/mime.types  /etc/nginx/mime.types
-COPY --from=Builder /home/quick-isuue/web/packages/website/.output/public /usr/share/nginx/www/
+COPY --from=Builder /home/quick-isuue/web/dist /usr/share/nginx/www/
 
 WORKDIR /home/quick-isuue/web
 RUN sed -i "s|repo.openeuler.org|mirrors.pku.edu.cn/openeuler|g" /etc/yum.repos.d/openEuler.repo \
