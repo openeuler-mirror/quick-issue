@@ -30,7 +30,6 @@ COPY --from=NginxBuilder /etc/nginx/modules /etc/nginx/modules
 COPY --from=NginxBuilder /etc/nginx/geoip  /etc/nginx/geoip
 COPY --from=NginxBuilder /etc/nginx/mime.types  /etc/nginx/mime.types
 COPY --from=Builder /home/quick-isuue/web/packages/website/.output/public /usr/share/nginx/www/
-COPY --from=NginxBuilder /home/quick-isuue/web/website-docs/public /usr/share/nginx/www/
 
 WORKDIR /home/quick-isuue/web
 RUN sed -i "s|repo.openeuler.org|mirrors.pku.edu.cn/openeuler|g" /etc/yum.repos.d/openEuler.repo \
