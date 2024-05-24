@@ -26,8 +26,13 @@ export function getUrlParam(paraName: string) {
     return '';
   }
 }
-export async function handleUploadImage(pos: Event, file: File, editRef: any) {
+export async function handleUploadImage(
+  event: Event,
+  insertImage: any,
+  files: [File]
+) {
   // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
+  const file = files[0];
   if (file.size / 1024 / 1024 > 2) {
     ElMessage({
       message: '不支持2MB以上图片上传',
@@ -37,11 +42,15 @@ export async function handleUploadImage(pos: Event, file: File, editRef: any) {
   }
 
   const formData = new FormData();
+  let url = '';
   formData.append('file', file);
   await uploadIssueImage(formData).then((res) => {
     if (res.code === 200 && res.data?.url) {
-      const url = res.data?.url;
-      editRef.$img2Url(pos, url);
+      url = res.data?.url;
+      insertImage({
+        url: url,
+        desc: '输入图片说明',
+      });
     } else {
       ElMessage({
         message: res.msg,
