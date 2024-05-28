@@ -5,8 +5,6 @@ import i18n from './i18n';
 
 import '@/shared/styles/index.scss';
 
-// import '@/shared/styles/element-plus/index.scss';
-
 import VueMarkdownEditor from '@kangc/v-md-editor';
 import '@kangc/v-md-editor/lib/style/base-editor.css';
 import vuepressTheme from '@kangc/v-md-editor/lib/theme/vuepress.js';

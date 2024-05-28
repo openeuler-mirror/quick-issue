@@ -1,16 +1,7 @@
 import { request } from '@/shared/axios';
 import type { AxiosResponse } from '@/shared/axios';
 import { IssueQueryData } from '@/shared/@types/type-quick-issue';
-import { getAuthorization } from '@/shared/utils';
 
-function getHeaderConfig() {
-  const headersConfig = {
-    headers: {
-      authorization: getAuthorization(),
-    },
-  };
-  return headersConfig;
-}
 /**
  * 获取issue 数据
  * @name getRepoIssue
@@ -33,9 +24,6 @@ export function getRepoIssue(params: IssueQueryData) {
   return request
     .get(url, { params })
     .then((res: AxiosResponse) => res.data)
-    .catch((e: any) => {
-      console.error(e);
-    });
 }
 /**
  * 获取筛选条件
@@ -48,9 +36,6 @@ export function getIssueSelectOption(type: string, params: object | null) {
   return request
     .get(url, { params })
     .then((res: AxiosResponse) => res.data)
-    .catch((e: any) => {
-      console.error(e);
-    });
 }
 
 /**
@@ -64,13 +49,9 @@ export function uploadIssueImage(params: object) {
     .post(url, params, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        authorization: getAuthorization(),
       },
     })
-    .then((res: AxiosResponse) => res.data)
-    .catch((e: any) => {
-      console.error(e);
-    });
+    .then((res: AxiosResponse) => res.data);
 }
 
 /**
@@ -81,12 +62,7 @@ export function uploadIssueImage(params: object) {
 export function verifySubmitterEmail(params: object) {
   const url = '/api-issues/verify/';
 
-  return request
-    .post(url, params, getHeaderConfig())
-    .then((res: AxiosResponse) => res.data)
-    .catch((e: any) => {
-      console.error(e);
-    });
+  return request.post(url, params).then((res: AxiosResponse) => res.data);
 }
 /**
  * sig仓库查找
@@ -98,9 +74,6 @@ export function getReposData(params: object) {
   return request
     .get(url, { params })
     .then((res: AxiosResponse) => res.data)
-    .catch((e: any) => {
-      console.error(e);
-    });
 }
 /**
  * 创建issue
@@ -110,32 +83,10 @@ export function getReposData(params: object) {
 export function createIssue(params: object) {
   const url = `/api-issues/new-issue/`;
   return request
-    .post(url, params, getHeaderConfig())
+    .post(url, params)
     .then((res: AxiosResponse) => res.data)
-    .catch((e: any) => {
-      console.error(e);
-    });
 }
 
-/**
- * 上传 文件
- * @name uploadFile
- * @return {String}
- */
-export function uploadIssueFile(params: object) {
-  const url = '/api-issues/attachment/';
-  return request
-    .post(url, params, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        authorization: getAuthorization(),
-      },
-    })
-    .then((res: AxiosResponse) => res.data)
-    .catch((e: any) => {
-      console.error(e);
-    });
-}
 /**
  * 获取pull 数据
  * @name getLabelColors
@@ -146,9 +97,6 @@ export function getLabelColors() {
   return request
     .get(url)
     .then((res: AxiosResponse) => res.data)
-    .catch((e: any) => {
-      console.error(e);
-    });
 }
 /**
  * 获取pull 数据
@@ -166,9 +114,6 @@ export function getRepoPull(params: any) {
   return request
     .get(url, { params })
     .then((res: AxiosResponse) => res.data)
-    .catch((e: any) => {
-      console.error(e);
-    });
 }
 /**
  * 获取筛选条件
@@ -181,7 +126,20 @@ export function getPrSelectOption(type: string, params: object | null) {
   return request
     .get(url, { params })
     .then((res: AxiosResponse) => res.data)
-    .catch((e: any) => {
-      console.error(e);
-    });
+}
+
+/**
+ * 获取验证图片  以及token
+ */
+export function reqGet() {
+  const url = '/api-issues/verify/get';
+  return request.get(url).then((res: AxiosResponse) => res.data);
+}
+
+/**
+ * 滑动或者点选验证
+ */
+export function reqCheck(data: any) {
+  const url = '/api-issues/verify/check';
+  return request.post(url, data).then((res: AxiosResponse) => res.data);
 }
