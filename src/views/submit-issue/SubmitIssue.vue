@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted, watch, computed, provide } from 'vue';
+import { ref, reactive, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { debounce } from 'lodash-es';
 import { useI18n } from 'vue-i18n';
@@ -19,6 +19,8 @@ import {
   getReposData,
   getIssueSelectOption,
   createIssue,
+  reqGet,
+  reqCheck,
 } from '@/api/api-quick-issue';
 
 import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
@@ -26,7 +28,6 @@ import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
 import { getSigLandscape } from '@/api/api-sig';
 
 import AppEditor from '@/components/AppEditor.vue';
-import Verify from '@/components/verifition/Verify.vue';
 import AppContent from '@/components/AppContent.vue';
 import SigLandscapeFeature from '@/components/SigLandscapeFeature.vue';
 import OIcon from 'opendesign/icon/OIcon.vue';
@@ -49,19 +50,10 @@ const { t } = useI18n();
 const landscapeInfo = ref<GroupInfo[]>([]);
 const isMenuShown = ref(false);
 const editRef = ref();
-
-function getVerifyImgSize() {
-  let width = 400;
-  const height = 200;
-  const innerWidth = window.innerWidth;
-  if (innerWidth - 28 < 400) {
-    width = innerWidth - 30;
-  }
-  return {
-    width: width + 'px',
-    height: height + 'px',
-  };
-}
+const getRes = ref({
+  captcha_id: '',
+  src: '',
+});
 
 const titleList = ref([
   {
@@ -82,7 +74,19 @@ const totalTime = ref(60);
 const tabType = ref(titleList.value[0].key);
 const isGiteeUser = ref(false);
 const clock = ref();
-const verifyRef = ref();
+const challenge = ref();
+const isVerifyShown = ref(false);
+
+const verifyEmail = () => {
+  reqCheck({
+    captcha_id: getRes.value.captcha_id,
+    challenge: challenge.value,
+    email: issueData.email,
+  }).then(() => {
+    isVerifyShown.value = false;
+    sendVerifyEmail();
+  });
+};
 
 const reposList = ref<OptionList>({
   page: 1,
@@ -112,11 +116,6 @@ const issueData: IssueData = reactive({
   description: '',
   privacy: [],
 });
-
-provide(
-  'email',
-  computed(() => issueData.email)
-);
 
 function getSigValue(val: string) {
   if (issueData.sig && issueData.sig === val) {
@@ -150,6 +149,12 @@ function getRepoBySigName() {
   });
 }
 
+function queryGetReq() {
+  reqGet().then((res) => {
+    getRes.value = res.data;
+  });
+}
+
 function changeStash() {
   isGiteeUser.value = !isGiteeUser.value;
 }
@@ -169,7 +174,8 @@ async function getCodeByEmail(verify: FormInstance | undefined) {
   rules.email = emailRules;
   verify.validate(async (res) => {
     if (totalTime.value === 60 && res) {
-      verifyRef.value.show();
+      isVerifyShown.value = true;
+      queryGetReq();
     }
   });
 }
@@ -335,6 +341,11 @@ const debounceEvent = debounce(
   }
 );
 
+// 刷新验证码
+const changeVerifyCode = () => {
+  queryGetReq();
+};
+
 onMounted(async () => {
   getRepoBySigName();
   try {
@@ -354,7 +365,10 @@ onMounted(async () => {
     }
     landscapeInfo.value = await getSigLandscape(lang.value);
   } catch (err: any) {
-    console.error(err);
+    ElMessage({
+      message: 'error',
+      type: 'error',
+    });
   }
 });
 watch(
@@ -487,9 +501,8 @@ watch(
                 class="fill-width"
               >
                 <AppEditor
-                  ref="editRef"
                   v-model="issueData.description"
-                  @imgAdd="(pos, file) => handleUploadImage(pos, file, editRef.editRef)"
+                  @upload-image="handleUploadImage"
                 >
                 </AppEditor>
               </el-form-item>
@@ -581,13 +594,13 @@ watch(
       </div>
     </OTabs>
   </ODialog>
-  <Verify
-    ref="verifyRef"
-    mode="pop"
-    captcha-type="blockPuzzle"
-    :img-size="getVerifyImgSize()"
-    @success="sendVerifyEmail"
-  ></Verify>
+  <ODialog v-model="isVerifyShown" class="verify-dialog" :show-close="true">
+    <OButton size="small" @click="verifyEmail">确认</OButton>
+    <OInput v-model="challenge" placeholder="请填写验证码"></OInput>
+    <div class="img-box" @click="changeVerifyCode">
+      <img :src="`/api-issues${getRes.src}`" alt="" />
+    </div>
+  </ODialog>
 </template>
 
 <style lang="scss">
@@ -880,6 +893,22 @@ watch(
         height: 80px;
         margin-top: -80px;
         visibility: hidden;
+      }
+    }
+  }
+}
+.verify-dialog {
+  .el-dialog__body {
+    display: flex;
+    align-items: center;
+    .o-input {
+      margin: 0 24px;
+    }
+    .img-box {
+      cursor: pointer;
+      width: 160px;
+      img {
+        width: 100%;
       }
     }
   }
