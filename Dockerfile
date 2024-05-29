@@ -14,7 +14,7 @@ RUN ls /home/quick-isuue/web
 FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/openeuler/nginx:1.24.0-22.03-lts-sp1 as NginxBuilder
 
 FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/website/openeuler:22.03-lts-sp1-latest
-ENV PATH /usr/share/nginx/sbin:$PATH
+
 ENV NGINX_CONFIG_FILE /etc/nginx/nginx.conf
 ENV NGINX_CONFIG_PATH /etc/nginx/
 ENV NGINX_PID /var/run/nginx.pid
@@ -30,6 +30,7 @@ COPY --from=NginxBuilder /usr/share/nginx/sbin/nginx /usr/share/nginx/sbin/nginx
 COPY --from=NginxBuilder /etc/nginx/modules /etc/nginx/modules
 COPY --from=NginxBuilder /etc/nginx/geoip  /etc/nginx/geoip
 COPY --from=NginxBuilder /etc/nginx/mime.types  /etc/nginx/mime.types
+
 COPY --from=Builder /home/quick-isuue/web/dist /usr/share/nginx/www/
 
 WORKDIR /home/quick-isuue/web
@@ -89,7 +90,7 @@ RUN touch /var/run/nginx.pid \
     && rm -rf /usr/share/gcc-10.3.1 \
     && yum remove gdb-gdbserver findutils passwd shadow -y
 
-COPY ./deploy/monitor.sh ./deploy/entrypoint.sh /etc/nginx
+COPY ./deploy/monitor.sh ./deploy/entrypoint.sh /etc/nginx/
 RUN chmod 500 /etc/nginx/monitor.sh \
     && chmod 500 /etc/nginx/entrypoint.sh \
     && chown nginx:nginx /etc/nginx/monitor.sh \
