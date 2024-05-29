@@ -31,7 +31,11 @@ const props = defineProps({
 });
 const { t } = useI18n();
 
-const typeTitel: any = {
+interface TypeTitelT {
+  [key: string]: string;
+}
+
+const typeTitel: TypeTitelT = {
   submitted: t('quickIssue.MY_SUBMISSIONS'),
   pending: t('quickIssue.MY_ASSIGNMENTS'),
   all: t('quickIssue.ALL'),
@@ -182,7 +186,7 @@ function searchValchange() {
 }
 
 const valueChangeDebounced = debounce(
-  (val) => {
+  (val: string) => {
     if (val !== optionQuery.keyword) {
       filterList.value.get(`${openDropDown.value}List`).data = [];
       filterList.value.get(`${openDropDown.value}List`).page = 1;
@@ -215,7 +219,7 @@ function handleCommand(command: string | Array<string>, key: string) {
 function getLabelColor(label: string) {
   const result: CSSProperties = {};
   result.color = `#${
-    labelColor?.labelColor?.find((item) => {
+    labelColor?.labelColor?.find((item: { name: string }) => {
       return item.name === label;
     })?.color
   }`;
@@ -287,23 +291,19 @@ function labelClick() {
   isShowLabel.value = true;
 }
 function getOption(type: string) {
-  getPrSelectOption(type, optionQuery)
-    .then((res: OptionList) => {
-      filterList.value.get(`${type}List`).data = [
-        ...filterList.value.get(`${type}List`).data,
-        ...res.data,
-      ];
-      filterList.value.get(`${type}List`).total = res.total;
-    })
-    .catch((err: any) => {
-      throw new Error(err);
-    });
+  getPrSelectOption(type, optionQuery).then((res: OptionList) => {
+    filterList.value.get(`${type}List`).data = [
+      ...filterList.value.get(`${type}List`).data,
+      ...res.data,
+    ];
+    filterList.value.get(`${type}List`).total = res.total;
+  });
 }
 
 onMounted(() => {
   if (window.localStorage?.getItem('pr-title')) {
     checkedTitle.value = JSON.parse(
-      window.localStorage.getItem('pr-title') as any
+      window.localStorage.getItem('pr-title') as string
     );
   }
   getRepoIssueData();

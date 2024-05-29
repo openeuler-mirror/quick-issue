@@ -164,7 +164,6 @@ onUnmounted(() => {
       .o-search {
         width: 100%;
         height: 34px;
-        // margin: var(--o-spacing-h10) var(--o-spacing-h5);
         .el-input__wrapper {
           box-shadow: 0 0 0 1px var(--o-color-border1) inset;
           &:hover {

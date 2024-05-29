@@ -13,7 +13,6 @@ declare module 'vue' {
     AppHeader: typeof import('./src/components/AppHeader.vue')['default']
     AppIssue: typeof import('./src/components/AppIssue.vue')['default']
     AppPull: typeof import('./src/components/AppPull.vue')['default']
-    AppSlideVerify: typeof import('./src/components/AppSlideVerify.vue')['default']
     DocAnchor: typeof import('./src/components/DocAnchor.vue')['default']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']

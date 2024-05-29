@@ -35,7 +35,11 @@ const props = defineProps({
 
 const { t } = useI18n();
 
-const typeTitel: any = {
+interface TypeTitelT {
+  [key: string]: string;
+}
+
+const typeTitel: TypeTitelT = {
   submitted: t('quickIssue.MY_SUBMISSIONS'),
   pending: t('quickIssue.MY_ASSIGNMENTS'),
   all: t('quickIssue.ALL'),
@@ -239,7 +243,7 @@ function searchValchange() {
 }
 
 const valueChangeDebounced = debounce(
-  (val) => {
+  (val: string) => {
     if (val !== optionQuery.keyword) {
       filterList.value.get(`${openDropDown.value}List`).data = [];
       filterList.value.get(`${openDropDown.value}List`).page = 1;
@@ -256,7 +260,7 @@ const valueChangeDebounced = debounce(
 function getLabelColor(label: string) {
   const result: CSSProperties = {};
   result.color = `#${
-    labelColor?.labelColor?.find((item) => {
+    labelColor?.labelColor?.find((item: { name: string }) => {
       return item.name === label;
     })?.color
   }`;
@@ -320,37 +324,43 @@ function clickLabel() {
 }
 function getOption(type: string) {
   if (type === 'repos') {
-    getReposData(optionQuery)
-      .then((res: OptionList) => {
-        filterList.value.get(`${type}List`).data = [
-          ...filterList.value.get(`${type}List`).data,
-          ...res.data,
-        ];
-        filterList.value.get(`${type}List`).total = res.total;
-      })
-      .catch((err: any) => {
-        throw new Error(err);
-      });
+    getReposData(optionQuery).then((res: OptionList) => {
+      filterList.value.get(`${type}List`).data = [
+        ...filterList.value.get(`${type}List`).data,
+        ...res.data,
+      ];
+      filterList.value.get(`${type}List`).total = res.total;
+    });
   } else {
-    getIssueSelectOption(type, optionQuery)
-      .then((res: OptionList) => {
-        filterList.value.get(`${type}List`).data = [
-          ...filterList.value.get(`${type}List`).data,
-          ...res.data,
-        ];
-        filterList.value.get(`${type}List`).total = res.total;
-      })
-      .catch((err: any) => {
-        throw new Error(err);
-      });
+    getIssueSelectOption(type, optionQuery).then((res: OptionList) => {
+      filterList.value.get(`${type}List`).data = [
+        ...filterList.value.get(`${type}List`).data,
+        ...res.data,
+      ];
+      filterList.value.get(`${type}List`).total = res.total;
+    });
   }
 }
 onMounted(() => {
-  if (window.localStorage?.getItem('title')) {
-    checkedTitle.value = JSON.parse(
-      window.localStorage.getItem('title') as any
-    );
+  try {
+    if (window.localStorage?.getItem('title')) {
+      checkedTitle.value = JSON.parse(
+        window.localStorage.getItem('title') as string
+      );
+    }
+  } catch {
+    checkedTitle.value = [
+      'id',
+      'repo',
+      'type',
+      'title',
+      'state',
+      'author',
+      'label',
+      'create_at',
+    ];
   }
+
   getRepoIssueData();
   getOption('authors');
   getOption('assignees');

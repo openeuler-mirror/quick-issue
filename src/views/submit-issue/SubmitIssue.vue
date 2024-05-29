@@ -47,14 +47,16 @@ const router = useRouter();
 const formRef = ref<FormInstance>();
 const { t } = useI18n();
 
-const landscapeInfo = ref<GroupInfo[]>([]);
-const isMenuShown = ref(false);
-const editRef = ref();
+const landscapeInfo = ref<GroupInfo[]>([]); //landscape数据
+const isMenuShown = ref(false); // landscape显示
+
+// 发送邮箱验证码，验证
 const getRes = ref({
   captcha_id: '',
   src: '',
 });
 
+//landscape title
 const titleList = ref([
   {
     value: t('sig.SIG_LANDSCAPE[0].CATEGORY_NAME'),
@@ -65,9 +67,12 @@ const titleList = ref([
     key: 'operate',
   },
 ]);
+
 const lang = computed(() => {
   return useLangStore().lang;
 });
+
+// 按钮文字内容
 const content = ref(t('quickIssue.SEND_CODE'));
 
 const totalTime = ref(60);
@@ -105,6 +110,7 @@ const repoParams = reactive({
   total: 0,
 });
 
+// 表单数据
 const issueData: IssueData = reactive({
   title: decodeURI(getUrlParam('title')) || '',
   issue_type_id: '',
@@ -172,7 +178,7 @@ async function getCodeByEmail(verify: FormInstance | undefined) {
   rules.code = [];
   rules.privacy = privacyRules;
   rules.email = emailRules;
-  verify.validate(async (res) => {
+  verify.validate(async (res: boolean) => {
     if (totalTime.value === 60 && res) {
       isVerifyShown.value = true;
       queryGetReq();
@@ -225,18 +231,12 @@ async function submitForm(
     if (res) {
       const parmes = JSON.parse(JSON.stringify(issueData));
       // 邮箱隐藏 添加提交人邮箱
-      parmes.description = `${
-        issueData.description
-      } \n \n -- submited by ${getHiddenEmail(issueData.email)}`;
+      parmes.description = issueData.description;
       handelCreatIssue(parmes, isGoGitee, verify);
     } else {
       verify.scrollToField('title');
     }
   });
-}
-
-function getHiddenEmail(email: string): string {
-  return `${email.split('@')[0]}@***${email.charAt(email.length - 1)}`;
 }
 
 function handelCreatIssue(
@@ -245,7 +245,7 @@ function handelCreatIssue(
   verify: FormInstance
 ) {
   createIssue(parmes).then(async (res) => {
-    if (res.code === 201) {
+    if (res.code === 200) {
       const jump_url = `https://gitee.com/${issueData.repo}/issues/${res.data.number}`;
       if (isGoGitee) {
         window.open(jump_url);
@@ -270,21 +270,16 @@ function resetForm(verify: FormInstance) {
   repoParams.sig = '';
   issueData.privacy = ['true'];
   issueData.description = '';
+  issueData.repo = '';
+  challenge.value = '';
   verify.scrollToField('title');
 }
 
-function optionClick(item: any) {
+function optionClick(item: { enterprise_number: number }) {
   if (item?.enterprise_number) {
     issueData.project_id = item.enterprise_number;
   }
 }
-const handleClick = (path: string) => {
-  if (path.startsWith('https:')) {
-    window.open(path, '_blank');
-  } else {
-    router.push(path);
-  }
-};
 
 function sigValueChange(val: string) {
   repoParams.sig = val;
@@ -324,7 +319,7 @@ function handleTypeChange(val: number) {
 }
 
 const debounceEvent = debounce(
-  (val) => {
+  (val: string) => {
     if (val === undefined) {
       return false;
     }
@@ -364,7 +359,7 @@ onMounted(async () => {
       issueData.description = targetType?.template || '';
     }
     landscapeInfo.value = await getSigLandscape(lang.value);
-  } catch (err: any) {
+  } catch {
     ElMessage({
       message: 'error',
       type: 'error',
@@ -561,9 +556,9 @@ watch(
                 @click="submitForm(formRef, false)"
                 >{{ t('quickIssue.CONTINUE') }}</OButton
               >
-              <OButton size="small" @click="handleClick(`/${lang}/issues/`)">{{
-                t('quickIssue.CANCEL')
-              }}</OButton>
+              <RouterLink :to="`/${lang}/issues/`">
+                <OButton size="small">{{ t('quickIssue.CANCEL') }}</OButton>
+              </RouterLink>
             </div>
           </div>
         </transition-group>
