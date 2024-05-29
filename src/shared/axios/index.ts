@@ -19,6 +19,9 @@ interface RequestConfig<D = any> extends AxiosRequestConfig {
   $doException?: boolean; // 是否弹出错误提示框
   global?: boolean; // 是否为全局请求， 全局请求在清除请求池时，不清除
 }
+interface ErrorResponse {
+  msg: string;
+}
 
 // 全局loading
 let loadingInstance: LoadingInstance | null = null;
@@ -91,16 +94,11 @@ const requestInterceptorId = request.interceptors.request.use(
     }
     loadingCount++;
     // 存储请求信息
-    // request.config = Object.assign({}, config);
     // 定义取消请求
     config.cancelToken = new axios.CancelToken((cancelFn) => {
       if (!config.url) {
         return;
       }
-      // // 如果已请求，则取消重复请求
-      // if (pendingPool.has(config.url)) {
-      //   cancelFn(`${config.url}请求重复`);
-      // } else {
       // 存储到请求池
       pendingPool.set(config.url, {
         cancelFn,
@@ -140,9 +138,11 @@ const responseInterceptorId = request.interceptors.response.use(
     }
     const { config } = err;
     if (!(config as RequestConfig).$doException) {
+      const response = err.response as AxiosResponse<ErrorResponse>;
+      const message = response?.data?.msg || err.message;
       ElMessage({
         type: 'error',
-        message: err.toString(),
+        message,
       });
     }
     // 非取消请求发生异常，同样将请求移除请求池

@@ -9,6 +9,8 @@ import { OptionList } from '@/shared/@types/type-quick-issue';
 import { isValidKey } from '@/shared/utils';
 import { useLabelColor } from '@/stores/index';
 
+import { ElOption } from 'element-plus';
+
 import IconTraingleUp from '~icons/app/icon-arrow-traingle-up.svg';
 import IconTraingleDown from '~icons/app/icon-arrow-traingle-down.svg';
 import IconFilter from '~icons/app/icon-filter.svg';
@@ -31,7 +33,11 @@ const props = defineProps({
 });
 const { t } = useI18n();
 
-const typeTitel: any = {
+interface TypeTitelT {
+  [key: string]: string;
+}
+
+const typeTitel: TypeTitelT = {
   submitted: t('quickIssue.MY_SUBMISSIONS'),
   pending: t('quickIssue.MY_ASSIGNMENTS'),
   all: t('quickIssue.ALL'),
@@ -182,7 +188,7 @@ function searchValchange() {
 }
 
 const valueChangeDebounced = debounce(
-  (val) => {
+  (val: string) => {
     if (val !== optionQuery.keyword) {
       filterList.value.get(`${openDropDown.value}List`).data = [];
       filterList.value.get(`${openDropDown.value}List`).page = 1;
@@ -215,7 +221,7 @@ function handleCommand(command: string | Array<string>, key: string) {
 function getLabelColor(label: string) {
   const result: CSSProperties = {};
   result.color = `#${
-    labelColor?.labelColor?.find((item) => {
+    labelColor?.labelColor?.find((item: { name: string }) => {
       return item.name === label;
     })?.color
   }`;
@@ -287,23 +293,19 @@ function labelClick() {
   isShowLabel.value = true;
 }
 function getOption(type: string) {
-  getPrSelectOption(type, optionQuery)
-    .then((res: OptionList) => {
-      filterList.value.get(`${type}List`).data = [
-        ...filterList.value.get(`${type}List`).data,
-        ...res.data,
-      ];
-      filterList.value.get(`${type}List`).total = res.total;
-    })
-    .catch((err: any) => {
-      throw new Error(err);
-    });
+  getPrSelectOption(type, optionQuery).then((res: OptionList) => {
+    filterList.value.get(`${type}List`).data = [
+      ...filterList.value.get(`${type}List`).data,
+      ...res.data,
+    ];
+    filterList.value.get(`${type}List`).total = res.total;
+  });
 }
 
 onMounted(() => {
   if (window.localStorage?.getItem('pr-title')) {
     checkedTitle.value = JSON.parse(
-      window.localStorage.getItem('pr-title') as any
+      window.localStorage.getItem('pr-title') as string
     );
   }
   getRepoIssueData();
@@ -323,8 +325,39 @@ watch(
     deep: true,
   }
 );
+// element-plus select 组件 超出 limit 点击 仍然会触发 watch问题处理
+const maxTag = 5;
 watch(
-  () => queryData,
+  () => [queryData.label, queryData.exclusion],
+  (oldValue, newValue) => {
+    if (
+      (oldValue[0].length === newValue[0].length &&
+        oldValue[0].length === maxTag &&
+        oldValue[1].length === newValue[1].length) ||
+      (oldValue[1].length === newValue[1].length &&
+        oldValue[1].length === maxTag &&
+        oldValue[0].length === newValue[0].length)
+    ) {
+      return;
+    }
+    getRepoIssueData();
+  }
+);
+watch(
+  () => [
+    queryData.assignee,
+    queryData.author,
+    queryData.create,
+    queryData.direction,
+    queryData.page,
+    queryData.per_page,
+    queryData.ref,
+    queryData.repo,
+    queryData.search,
+    queryData.sig,
+    queryData.sort,
+    queryData.state,
+  ],
   () => {
     getRepoIssueData();
   },
@@ -359,6 +392,7 @@ watch(
       <OSearch
         v-model="inputValue"
         :placeholder="t('quickIssue.PLACEHOLDER_PR')"
+        :maxlength="100"
         @change="searchValchange"
       ></OSearch>
     </div>
@@ -563,15 +597,16 @@ watch(
             </OIcon>
             <template #dropdown>
               <el-dropdown-menu>
-                <OCheckboxGroup v-model="queryData.state">
-                  <OCheckbox
+                <ElCheckboxGroup v-model="queryData.state">
+                  <ElCheckbox
                     v-for="item in ISSUE_CONFIG.PR_STATE"
                     :key="item.VALUE"
                     :value="item.VALUE"
+                    :label="item.VALUE"
                   >
                     {{ item.TEXT }}
-                  </OCheckbox>
-                </OCheckboxGroup>
+                  </ElCheckbox>
+                </ElCheckboxGroup>
               </el-dropdown-menu>
             </template>
           </ODropdown>
@@ -895,6 +930,7 @@ watch(
       <OSelect
         v-model="queryData.label"
         multiple
+        :multiple-limit="5"
         :placeholder="t('quickIssue.SELECT')"
         popper-class="remove-scrollbar"
         :listener-scorll="true"
@@ -928,12 +964,15 @@ watch(
         <IconRefresh> </IconRefresh>
       </OIcon>
     </div>
-    <p class="label-tip">{{ t('quickIssue.LABER_TIP') }}</p>
+    <p class="label-tip">
+      {{ t('quickIssue.LABER_TIP', [t('quickIssue.PR')]) }}
+    </p>
     <div class="label-select">
       <span class="label">{{ t('quickIssue.EXCLUDE') }}</span>
       <OSelect
         v-model="queryData.exclusion"
         multiple
+        :multiple-limit="5"
         :placeholder="t('quickIssue.SELECT')"
         popper-class="remove-scrollbar"
         :listener-scorll="true"
@@ -965,7 +1004,9 @@ watch(
         <IconRefresh> </IconRefresh>
       </OIcon>
     </div>
-    <p class="label-tip">{{ t('quickIssue.LABER_TIP1') }}</p>
+    <p class="label-tip">
+      {{ t('quickIssue.LABER_TIP1', [t('quickIssue.PR')]) }}
+    </p>
   </ODialog>
 </template>
 

@@ -30,9 +30,7 @@ function goAnchor() {
 
   const topArr: number[] = [];
   anchorList.value = Array.from(anchorList.value).filter((item: any) => {
-    return item.className !== 'for-seo'
-      ? topArr.push(item.offsetTop + item.clientHeight)
-      : '';
+    return topArr.push(item.offsetTop + item.clientHeight);
   });
   for (let i = 0; i < topArr.length; i++) {
     if (scrollTop - 100 <= topArr[i]) {

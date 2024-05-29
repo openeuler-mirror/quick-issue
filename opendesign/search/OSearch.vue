@@ -44,7 +44,6 @@ const attrs = useAttrs();
       border-radius: 0;
       padding: 1px 8px;
       background-color: var(--o-search-color-bg);
-      // box-shadow: var(--o-search-shadow);
 
       .el-input__prefix-inner {
         font-size: var(--o-font-size-h5);
