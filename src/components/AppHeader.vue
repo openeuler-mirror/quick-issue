@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, Ref, ref, watch } from 'vue';
 
 import { useLangStore } from '@/stores';
 
@@ -43,7 +43,7 @@ const options = ref([
   { value: 'en', label: 'English' },
 ]);
 // 选择语言
-const handleCommand = (command: any): void => {
+const handleCommand = (command: Ref): void => {
   locale.value = command.value;
 
   const { pathname } = window.location;
@@ -108,7 +108,7 @@ const jumpToUserZone = () => {
         </div>
       </div>
       <a
-        href="https://gitee.com/openeuler/infrastructure/blob/master/docs/quickIssue/quickissue_api.mdd"
+        href="https://gitee.com/openeuler/infrastructure/blob/master/docs/quickIssue/quickissue_api.md"
         class="api-docs"
         rel="noopener noreferrer"
         target="_blank"

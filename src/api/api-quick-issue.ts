@@ -55,16 +55,6 @@ export function uploadIssueImage(params: object) {
 }
 
 /**
- * issue 提交邮箱验证
- * @name getRepoIssue
- * @return {String}
- */
-export function verifySubmitterEmail(params: object) {
-  const url = '/api-issues/verify/';
-
-  return request.post(url, params).then((res: AxiosResponse) => res.data);
-}
-/**
  * sig仓库查找
  * @name getRepoIssue
  * @return {String}

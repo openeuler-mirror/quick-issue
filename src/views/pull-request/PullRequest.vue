@@ -1,12 +1,24 @@
 <script lang="ts" setup>
+import { computed } from 'vue';
+
 import AppPull from '@/components/AppPull.vue';
 import AppContent from '@/components/AppContent.vue';
 import DocAnchor from '@/components/DocAnchor.vue';
+
 import { useStoreData } from '@/shared/login';
+import { ISSUE_TYPE } from '@/shared/issue-type';
 
 import { hiddenMail } from '@/shared/utils';
 
 const { guardAuthClient } = useStoreData();
+
+const isPersonalShown = computed(() => {
+  return (
+    (guardAuthClient.value?.identities &&
+      guardAuthClient.value?.identities[0]?.login_name) ||
+    guardAuthClient.value?.email
+  );
+});
 
 function getNameList(arr: any) {
   try {
@@ -24,32 +36,18 @@ function getNameList(arr: any) {
 <template>
   <div class="issues">
     <AppContent>
-      <DocAnchor
-        v-if="
-          (guardAuthClient?.identities &&
-            guardAuthClient?.identities[0]?.login_name) ||
-          guardAuthClient?.email
-        "
-      />
+      <DocAnchor v-if="isPersonalShown" />
       <AppPull
-        v-if="
-          (guardAuthClient?.identities &&
-            guardAuthClient?.identities[0]?.login_name) ||
-          guardAuthClient?.email
-        "
-        issue-type="pending"
+        v-if="isPersonalShown"
+        :issue-type="ISSUE_TYPE.PENDING"
         :user-name="
           getNameList(guardAuthClient?.identities) ||
           hiddenMail(guardAuthClient?.email)
         "
       />
       <AppPull
-        v-if="
-          (guardAuthClient?.identities &&
-            guardAuthClient?.identities[0]?.login_name) ||
-          guardAuthClient?.email
-        "
-        issue-type="submitted"
+        v-if="isPersonalShown"
+        :issue-type="ISSUE_TYPE.SUBMITTED"
         :user-name="
           getNameList(guardAuthClient?.identities) ||
           hiddenMail(guardAuthClient?.email)
@@ -61,7 +59,7 @@ function getNameList(arr: any) {
           getNameList(guardAuthClient?.identities) ||
           hiddenMail(guardAuthClient?.email)
         "
-        issue-type="all"
+        :issue-type="ISSUE_TYPE.ALL"
       />
     </AppContent>
   </div>
