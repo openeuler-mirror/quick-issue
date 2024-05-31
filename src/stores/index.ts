@@ -8,11 +8,11 @@ interface LabelColor {
 export const useLangStore = defineStore('lang', {
   state: () => {
     return {
-      lang: '',
+      lang: '' as 'zh' | 'en',
     };
   },
   actions: {
-    setLangStore(val: string) {
+    setLangStore(val: 'zh' | 'en') {
       this.lang = val;
     },
   },

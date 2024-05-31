@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted, watch, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { debounce } from 'lodash-es';
+import { debounce, cloneDeep } from 'lodash-es';
 import { useI18n } from 'vue-i18n';
 
 import { useLangStore } from '@/stores';
@@ -28,6 +27,7 @@ import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
 import { getSigLandscape } from '@/api/api-sig';
 
 import AppEditor from '@/components/AppEditor.vue';
+import AppVerify from '@/components/AppVerify.vue';
 import AppContent from '@/components/AppContent.vue';
 import SigLandscapeFeature from '@/components/SigLandscapeFeature.vue';
 import OIcon from 'opendesign/icon/OIcon.vue';
@@ -43,7 +43,6 @@ interface TypesList {
   name: string;
   template: string;
 }
-const router = useRouter();
 const formRef = ref<FormInstance>();
 const { t } = useI18n();
 
@@ -51,8 +50,8 @@ const landscapeInfo = ref<GroupInfo[]>([]); //landscape数据
 const isMenuShown = ref(false); // landscape显示
 
 // 发送邮箱验证码，验证
-const getRes = ref({
-  captcha_id: '',
+const veriflyData = ref({
+  captcha_id: 0,
   src: '',
 });
 
@@ -84,7 +83,7 @@ const isVerifyShown = ref(false);
 
 const verifyEmail = () => {
   reqCheck({
-    captcha_id: getRes.value.captcha_id,
+    captcha_id: veriflyData.value.captcha_id,
     challenge: challenge.value,
     email: issueData.email,
   }).then(() => {
@@ -157,7 +156,7 @@ function getRepoBySigName() {
 
 function queryGetReq() {
   reqGet().then((res) => {
-    getRes.value = res.data;
+    veriflyData.value = res.data;
   });
 }
 
@@ -229,9 +228,7 @@ async function submitForm(
   rules.code = codeRules;
   verify.validate(async (res: boolean) => {
     if (res) {
-      const parmes = JSON.parse(JSON.stringify(issueData));
-      // 邮箱隐藏 添加提交人邮箱
-      parmes.description = issueData.description;
+      const parmes = cloneDeep(issueData);
       handelCreatIssue(parmes, isGoGitee, verify);
     } else {
       verify.scrollToField('title');
@@ -589,13 +586,15 @@ watch(
       </div>
     </OTabs>
   </ODialog>
-  <ODialog v-model="isVerifyShown" class="verify-dialog" :show-close="true">
-    <OButton size="small" @click="verifyEmail">确认</OButton>
-    <OInput v-model="challenge" placeholder="请填写验证码"></OInput>
-    <div class="img-box" @click="changeVerifyCode">
-      <img :src="`/api-issues${getRes.src}`" alt="" />
-    </div>
-  </ODialog>
+  <AppVerify
+    v-model="isVerifyShown"
+    :challenge="challenge"
+    :src="veriflyData.src"
+    @change-verify-code="changeVerifyCode"
+    @verify-email="verifyEmail"
+    @update:challenge="(val) => (challenge = val)"
+    @close-dlg="isVerifyShown = false"
+  />
 </template>
 
 <style lang="scss">
@@ -888,22 +887,6 @@ watch(
         height: 80px;
         margin-top: -80px;
         visibility: hidden;
-      }
-    }
-  }
-}
-.verify-dialog {
-  .el-dialog__body {
-    display: flex;
-    align-items: center;
-    .o-input {
-      margin: 0 24px;
-    }
-    .img-box {
-      cursor: pointer;
-      width: 160px;
-      img {
-        width: 100%;
       }
     }
   }

@@ -6,6 +6,10 @@ settings:
 
 overrides:
   glob-parent: 5.1.2
+  katex: 0.16.10
+  markdown-it: 12.3.2
+  postcss: 8.4.31
+  semver: 6.3.1
 
 dependencies:
   '@kangc/v-md-editor':
@@ -159,7 +163,7 @@ packages:
       debug: 4.3.4
       gensync: 1.0.0-beta.2
       json5: 2.2.3
-      semver: 6.3.0
+      semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -192,7 +196,7 @@ packages:
       '@babel/helper-validator-option': 7.21.0
       browserslist: 4.21.5
       lru-cache: 5.1.1
-      semver: 6.3.0
+      semver: 6.3.1
     dev: true
 
   /@babel/helper-create-class-features-plugin@7.21.8(@babel/core@7.21.8):
@@ -210,7 +214,7 @@ packages:
       '@babel/helper-replace-supers': 7.21.5
       '@babel/helper-skip-transparent-expression-wrappers': 7.20.0
       '@babel/helper-split-export-declaration': 7.18.6
-      semver: 6.3.0
+      semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -615,7 +619,7 @@ packages:
       copy-to-clipboard: 3.3.3
       highlight.js: 10.7.3
       insert-text-at-cursor: 0.3.0
-      katex: 0.13.24
+      katex: 0.16.10
       markdown-it: 12.3.2
       markdown-it-attrs: 4.1.6(markdown-it@12.3.2)
       markdown-it-container: 3.0.0
@@ -800,7 +804,7 @@ packages:
       grapheme-splitter: 1.0.4
       ignore: 5.2.4
       natural-compare-lite: 1.4.0
-      semver: 7.5.1
+      semver: 6.3.1
       tsutils: 3.21.0(typescript@4.9.5)
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -874,7 +878,7 @@ packages:
       debug: 4.3.4
       globby: 11.1.0
       is-glob: 4.0.3
-      semver: 7.5.1
+      semver: 6.3.1
       tsutils: 3.21.0(typescript@4.9.5)
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -895,7 +899,7 @@ packages:
       '@typescript-eslint/typescript-estree': 5.59.6(typescript@4.9.5)
       eslint: 8.41.0
       eslint-scope: 5.1.1
-      semver: 7.5.1
+      semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -967,7 +971,7 @@ packages:
   /@volar/typescript-faster@0.40.13:
     resolution: {integrity: sha512-uy+TlcFkKoNlKEnxA4x5acxdxLyVDIXGSc8cYDNXpPKjBKXrQaetzCzlO3kVBqu1VLMxKNGJMTKn35mo+ILQmw==}
     dependencies:
-      semver: 7.5.1
+      semver: 6.3.1
     dev: true
 
   /@volar/vue-language-core@0.40.13:
@@ -1036,7 +1040,7 @@ packages:
       '@vue/shared': 3.3.4
       estree-walker: 2.0.2
       magic-string: 0.30.0
-      postcss: 8.4.23
+      postcss: 8.4.31
       source-map-js: 1.0.2
 
   /@vue/compiler-ssr@3.3.4:
@@ -1139,9 +1143,9 @@ packages:
     resolution: {integrity: sha512-sXTLjeZzH8SQuAL5AEH0hhsMljjNJbzWbBvzaj5yQCCdf+3sp/dJ0kwnBSnQjFPPnzPg5t3tLKGUYHyW0KiKzA==}
     dependencies:
       '@vuepress/shared-utils': 1.9.10
-      markdown-it: 8.4.2
-      markdown-it-anchor: 5.3.0(markdown-it@8.4.2)
-      markdown-it-chain: 1.3.0(markdown-it@8.4.2)
+      markdown-it: 12.3.2
+      markdown-it-anchor: 5.3.0(markdown-it@12.3.2)
+      markdown-it-chain: 1.3.0(markdown-it@12.3.2)
       markdown-it-emoji: 1.4.0
       markdown-it-table-of-contents: 0.4.4
       prismjs: 1.29.0
@@ -1158,7 +1162,7 @@ packages:
       globby: 9.2.0
       gray-matter: 4.0.3
       hash-sum: 1.0.2
-      semver: 6.3.0
+      semver: 6.3.1
       toml: 3.0.0
       upath: 1.2.0
     transitivePeerDependencies:
@@ -2096,10 +2100,6 @@ packages:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
     dev: true
 
-  /entities@1.1.2:
-    resolution: {integrity: sha512-f2LZMYl1Fzu7YSBKg+RoROelpOaNrcGmE9AZubeDfrCEia483oW4MI4VyFd5VNHIgQ/7qm1I0wUHK1eJnn2y2w==}
-    dev: false
-
   /entities@2.1.0:
     resolution: {integrity: sha512-hCx1oky9PFrJ611mf0ifBLBRW8lUUVRlFolb5gWRfIELabBlbp9xZvrqZLZAs+NxFnbfQoeGd8wDkygjg7U85w==}
     dev: false
@@ -2378,7 +2378,7 @@ packages:
       natural-compare: 1.4.0
       nth-check: 2.1.1
       postcss-selector-parser: 6.0.13
-      semver: 7.5.1
+      semver: 6.3.1
       vue-eslint-parser: 9.3.0(eslint@8.41.0)
       xml-name-validator: 4.0.0
     transitivePeerDependencies:
@@ -3178,13 +3178,6 @@ packages:
       graceful-fs: 4.2.11
     dev: false
 
-  /katex@0.13.24:
-    resolution: {integrity: sha512-jZxYuKCma3VS5UuxOx/rFV1QyGSl3Uy/i0kTJF3HgQ5xMinCQVF8Zd4bMY/9aI9b9A2pjIBOsjSSm68ykTAr8w==}
-    hasBin: true
-    dependencies:
-      commander: 8.3.0
-    dev: false
-
   /katex@0.16.10:
     resolution: {integrity: sha512-ZiqaC04tp2O5utMsl2TEZTXxa6WSC4yo0fv5ML++D3QZv/vx2Mct0mTlRx3O+uUkjfuAgOkzsCmq5MiUEsDDdA==}
     hasBin: true
@@ -3240,12 +3233,6 @@ packages:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
     engines: {node: '>=10'}
     dev: true
-
-  /linkify-it@2.2.0:
-    resolution: {integrity: sha512-GnAl/knGn+i1U/wjBz3akz2stz+HrHLsxMwHQGofCDfPvlf+gDKN58UtfmUquTY4/MXeE2x7k19KQmeoZi94Iw==}
-    dependencies:
-      uc.micro: 1.0.6
-    dev: false
 
   /linkify-it@3.0.3:
     resolution: {integrity: sha512-ynTsyrFSdE5oZ/O9GEf00kPngmOfVwazR5GKDq6EYfhlpFug3J2zybX56a2PRRpc9P+FuSoGNAwjlbDs9jJBPQ==}
@@ -3346,13 +3333,6 @@ packages:
       yallist: 3.1.1
     dev: true
 
-  /lru-cache@6.0.0:
-    resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
-    engines: {node: '>=10'}
-    dependencies:
-      yallist: 4.0.0
-    dev: true
-
   /magic-string@0.26.7:
     resolution: {integrity: sha512-hX9XH3ziStPoPhJxLq1syWuZMxbDvGNbVchfrdCtanC7D13888bMFow61x8axrx+GfHLtVeAx2kxL7tTGRl+Ow==}
     engines: {node: '>=12'}
@@ -3392,30 +3372,30 @@ packages:
       object-visit: 1.0.1
     dev: false
 
-  /markdown-it-anchor@5.3.0(markdown-it@8.4.2):
+  /markdown-it-anchor@5.3.0(markdown-it@12.3.2):
     resolution: {integrity: sha512-/V1MnLL/rgJ3jkMWo84UR+K+jF1cxNG1a+KwqeXqTIJ+jtA8aWSHuigx8lTzauiIjBDbwF3NcWQMotd0Dm39jA==}
     peerDependencies:
-      markdown-it: '*'
+      markdown-it: 12.3.2
     dependencies:
-      markdown-it: 8.4.2
+      markdown-it: 12.3.2
     dev: false
 
   /markdown-it-attrs@4.1.6(markdown-it@12.3.2):
     resolution: {integrity: sha512-O7PDKZlN8RFMyDX13JnctQompwrrILuz2y43pW2GagcwpIIElkAdfeek+erHfxUOlXWPsjFeWmZ8ch1xtRLWpA==}
     engines: {node: '>=6'}
     peerDependencies:
-      markdown-it: '>= 9.0.0'
+      markdown-it: 12.3.2
     dependencies:
       markdown-it: 12.3.2
     dev: false
 
-  /markdown-it-chain@1.3.0(markdown-it@8.4.2):
+  /markdown-it-chain@1.3.0(markdown-it@12.3.2):
     resolution: {integrity: sha512-XClV8I1TKy8L2qsT9iX3qiV+50ZtcInGXI80CA+DP62sMs7hXlyV/RM3hfwy5O3Ad0sJm9xIwQELgANfESo8mQ==}
     engines: {node: '>=6.9'}
     peerDependencies:
-      markdown-it: '>=5.0.0'
+      markdown-it: 12.3.2
     dependencies:
-      markdown-it: 8.4.2
+      markdown-it: 12.3.2
       webpack-chain: 4.12.1
     dev: false
 
@@ -3439,17 +3419,6 @@ packages:
       argparse: 2.0.1
       entities: 2.1.0
       linkify-it: 3.0.3
-      mdurl: 1.0.1
-      uc.micro: 1.0.6
-    dev: false
-
-  /markdown-it@8.4.2:
-    resolution: {integrity: sha512-GcRz3AWTqSUphY3vsUqQSFMbgR38a4Lh3GWlHRh/7MRwz8mcu9n2IO7HOh+bXHrR9kOPDl5RNCaEsrneb+xhHQ==}
-    hasBin: true
-    dependencies:
-      argparse: 1.0.10
-      entities: 1.1.2
-      linkify-it: 2.2.0
       mdurl: 1.0.1
       uc.micro: 1.0.6
     dev: false
@@ -4051,8 +4020,8 @@ packages:
       util-deprecate: 1.0.2
     dev: true
 
-  /postcss@8.4.23:
-    resolution: {integrity: sha512-bQ3qMcpF6A/YjR55xtoTr0jGOlnPOKAIMdOWiv0EIT6HVPEaJiJB4NLljSbiHoC2RX7DN5Uvjtpbg1NPdwv1oA==}
+  /postcss@8.4.31:
+    resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
     engines: {node: ^10 || ^12 || >=14}
     dependencies:
       nanoid: 3.3.6
@@ -4252,17 +4221,9 @@ packages:
       kind-of: 6.0.3
     dev: false
 
-  /semver@6.3.0:
-    resolution: {integrity: sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==}
+  /semver@6.3.1:
+    resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
-
-  /semver@7.5.1:
-    resolution: {integrity: sha512-Wvss5ivl8TMRZXXESstBA4uR5iXgEN/VC5/sOcuXdVLzcdkz4HWetIoRfG5gb5X+ij/G9rw9YoGn3QoQ8OCSpw==}
-    engines: {node: '>=10'}
-    hasBin: true
-    dependencies:
-      lru-cache: 6.0.0
-    dev: true
 
   /set-value@2.0.1:
     resolution: {integrity: sha512-JxHc1weCN68wRY0fhCoXpyK55m/XPHafOmK4UWD7m2CI14GMcFypt4w/0+NV5f/ZMby2F6S2wwA7fgynh9gWSw==}
@@ -4872,7 +4833,7 @@ packages:
     dependencies:
       '@types/node': 18.16.14
       esbuild: 0.15.18
-      postcss: 8.4.23
+      postcss: 8.4.31
       resolve: 1.22.2
       rollup: 2.79.1
       sass: 1.62.1
@@ -4908,7 +4869,7 @@ packages:
       espree: 9.5.2
       esquery: 1.5.0
       lodash: 4.17.21
-      semver: 7.5.1
+      semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -5033,10 +4994,6 @@ packages:
 
   /yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
-    dev: true
-
-  /yallist@4.0.0:
-    resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
     dev: true
 
   /yaml@2.2.2:

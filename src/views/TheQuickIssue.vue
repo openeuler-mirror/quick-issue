@@ -7,6 +7,8 @@ import DocAnchor from '@/components/DocAnchor.vue';
 import { useStoreData } from '@/shared/login';
 import { ISSUE_TYPE } from '@/shared/issue-type';
 
+import { IdentitiesT } from '@/shared/@types/type-login';
+
 import { hiddenMail } from '@/shared/utils';
 
 const { guardAuthClient } = useStoreData();
@@ -19,9 +21,9 @@ const isPersonalShown = computed(() => {
   );
 });
 
-function getNameList(arr: any) {
+function getNameList(arr: [IdentitiesT]) {
   try {
-    const giteeName = arr?.filter((item: any) => {
+    const giteeName = arr?.filter((item: IdentitiesT) => {
       return item.identity === 'gitee';
     })[0]?.login_name;
     if (giteeName) {

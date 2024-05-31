@@ -226,10 +226,8 @@ const handleSizeChange = (val: number) => {
   totalPage.value = Math.ceil(total.value / val);
 };
 
-const handleCheckAllChange = (val: any) => {
-  (queryData.issue_state as Array<string>) = val
-    ? ISSUE_CONFIG.ISSUE_STATE
-    : [];
+const handleCheckAllChange = (val: string[]) => {
+  queryData.issue_state = val ? ISSUE_CONFIG.ISSUE_STATE : [];
   isIndeterminate.value = false;
 };
 
