@@ -68,7 +68,7 @@ export const rules: any = reactive({
     },
     {
       min: 1,
-      max: 100,
+      max: 191,
       message: t('quickIssue.TITLE_LIMIT'),
       trigger: 'blur',
     },
