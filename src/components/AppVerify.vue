@@ -50,9 +50,13 @@ const { t, locale } = useI18n();
       <iconReset></iconReset>
     </OIcon>
     <template #footer>
-      <OButton type="primary" size="small" @click="emits('verify-email')">{{
-        t('quickIssue.VERIFY_CONFIRM')
-      }}</OButton>
+      <OButton
+        type="primary"
+        :disabled="templateChallenge.trim().length !== 6"
+        size="small"
+        @click="emits('verify-email')"
+        >{{ t('quickIssue.VERIFY_CONFIRM') }}</OButton
+      >
       <OButton size="small" @click="emits('close-dlg')">{{
         t('quickIssue.VERIFY_CANCEL')
       }}</OButton>
