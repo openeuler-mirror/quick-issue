@@ -79,7 +79,7 @@ const totalTime = ref(60);
 const tabType = ref(titleList.value[0].key);
 const isGiteeUser = ref(false);
 const clock = ref();
-const challenge = ref();
+const challenge = ref('');
 const isVerifyShown = ref(false);
 
 const verifyEmail = () => {

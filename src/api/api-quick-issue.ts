@@ -117,7 +117,7 @@ export function reqGet() {
  */
 export function reqCheck(data: {
   captcha_id: number;
-  challenge: number;
+  challenge: string;
   email: string;
 }) {
   const url = '/api-issues/verify/check';
