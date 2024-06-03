@@ -21,7 +21,6 @@ import CodeImgXzs from '@/assets/footer/code-xzs.png';
 import CodeImgZgz from '@/assets/footer/code-zgz.png';
 
 const { t } = useI18n();
-const router = useRouter();
 const lang = computed(() => {
   return useLangStore().lang;
 });

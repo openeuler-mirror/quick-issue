@@ -13,8 +13,10 @@ import LogoLinkedin from '@/assets/footer/linkedin@2x.png';
 import LogoYoutube from '@/assets/footer/youtube@2x.png';
 import LogoTwitter from '@/assets/footer/twitter@2x.png';
 
+
+
 // 友情链接
-export const linksData: any = {
+export const linksData = {
   zh: [
     {
       path: 'https://my.oschina.net/openeuler',
@@ -76,7 +78,7 @@ export const linksData: any = {
   ],
 };
 // 隐私链接
-export const linksData2: any = {
+export const linksData2 = {
   zh: [
     {
       NAME: '品牌',

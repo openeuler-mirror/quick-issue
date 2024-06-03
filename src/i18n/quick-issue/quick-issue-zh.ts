@@ -59,8 +59,10 @@ export default {
   SIZE_LIMIT: '附件不得超过10MB，请重新选择文件。',
   SUCCESS_UPLOAD: '附件上传成功',
   SUCCESS_UPLOAD1: 'Issue 创建成功，附件上传失败！',
-  SWIPE_RIGHT: '向右滑动完成验证',
-  SWIPER: '请拖动滑块完成人机校验',
   VERIFY_FAIL: '验证失败',
   VERIFY_SUCCESS: '验证成功',
+  VERIFY_TITLE: '请完成验证码',
+  VERIFY_PLH: '请输入图片中的数字',
+  VERIFY_CONFIRM: '确定',
+  VERIFY_CANCEL: '取消',
 };

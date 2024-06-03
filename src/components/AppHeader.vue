@@ -55,7 +55,7 @@ const handleCommand = (command: Ref): void => {
 
 watch(
   () => {
-    return locale.value as string;
+    return locale.value as 'zh' | 'en';
   },
   (val) => {
     useLangStore().setLangStore(val);

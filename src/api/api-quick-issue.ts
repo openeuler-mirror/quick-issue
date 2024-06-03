@@ -21,9 +21,7 @@ export function getRepoIssue(params: IssueQueryData) {
     params.issue_state = params.issue_state.join(',');
     params.milestone = params.milestone.join(',');
   }
-  return request
-    .get(url, { params })
-    .then((res: AxiosResponse) => res.data)
+  return request.get(url, { params }).then((res: AxiosResponse) => res.data);
 }
 /**
  * 获取筛选条件
@@ -33,9 +31,7 @@ export function getRepoIssue(params: IssueQueryData) {
 export function getIssueSelectOption(type: string, params: object | null) {
   type === 'exLabels' ? (type = 'labels') : '';
   const url = `/api-issues/issues/${type}`;
-  return request
-    .get(url, { params })
-    .then((res: AxiosResponse) => res.data)
+  return request.get(url, { params }).then((res: AxiosResponse) => res.data);
 }
 
 /**
@@ -61,9 +57,7 @@ export function uploadIssueImage(params: object) {
  */
 export function getReposData(params: object) {
   const url = `/api-issues/repos/`;
-  return request
-    .get(url, { params })
-    .then((res: AxiosResponse) => res.data)
+  return request.get(url, { params }).then((res: AxiosResponse) => res.data);
 }
 /**
  * 创建issue
@@ -72,9 +66,7 @@ export function getReposData(params: object) {
  */
 export function createIssue(params: object) {
   const url = `/api-issues/new-issue/`;
-  return request
-    .post(url, params)
-    .then((res: AxiosResponse) => res.data)
+  return request.post(url, params).then((res: AxiosResponse) => res.data);
 }
 
 /**
@@ -84,9 +76,7 @@ export function createIssue(params: object) {
  */
 export function getLabelColors() {
   const url = '/api-issues/colors';
-  return request
-    .get(url)
-    .then((res: AxiosResponse) => res.data)
+  return request.get(url).then((res: AxiosResponse) => res.data);
 }
 /**
  * 获取pull 数据
@@ -101,9 +91,7 @@ export function getRepoPull(params: any) {
     params.state = params.state.join(',');
     params.exclusion = params.exclusion.join(',');
   }
-  return request
-    .get(url, { params })
-    .then((res: AxiosResponse) => res.data)
+  return request.get(url, { params }).then((res: AxiosResponse) => res.data);
 }
 /**
  * 获取筛选条件
@@ -113,9 +101,7 @@ export function getRepoPull(params: any) {
 export function getPrSelectOption(type: string, params: object | null) {
   type === 'exLabels' ? (type = 'labels') : '';
   const url = `/api-issues/pulls/${type}`;
-  return request
-    .get(url, { params })
-    .then((res: AxiosResponse) => res.data)
+  return request.get(url, { params }).then((res: AxiosResponse) => res.data);
 }
 
 /**
@@ -129,7 +115,11 @@ export function reqGet() {
 /**
  * 滑动或者点选验证
  */
-export function reqCheck(data: any) {
+export function reqCheck(data: {
+  captcha_id: number;
+  challenge: number;
+  email: string;
+}) {
   const url = '/api-issues/verify/check';
   return request.post(url, data).then((res: AxiosResponse) => res.data);
 }
