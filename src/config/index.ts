@@ -13,8 +13,6 @@ import LogoLinkedin from '@/assets/footer/linkedin@2x.png';
 import LogoYoutube from '@/assets/footer/youtube@2x.png';
 import LogoTwitter from '@/assets/footer/twitter@2x.png';
 
-
-
 // 友情链接
 export const linksData = {
   zh: [
@@ -108,3 +106,6 @@ export const linksData2 = {
     },
   ],
 };
+
+export const defaultIssueRepo = 'openeuler/community-issue';
+export const defaultIssueRepoID = 7392228;

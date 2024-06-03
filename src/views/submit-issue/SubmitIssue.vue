@@ -23,6 +23,7 @@ import {
 } from '@/api/api-quick-issue';
 
 import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
+import { defaultIssueRepo, defaultIssueRepoID } from '@/config';
 
 import { getSigLandscape } from '@/api/api-sig';
 
@@ -82,11 +83,15 @@ const challenge = ref();
 const isVerifyShown = ref(false);
 
 const verifyEmail = () => {
+  if (challenge.value.length !== 6) {
+    return false;
+  }
   reqCheck({
     captcha_id: veriflyData.value.captcha_id,
     challenge: challenge.value,
     email: issueData.email,
   }).then(() => {
+    challenge.value = '';
     isVerifyShown.value = false;
     sendVerifyEmail();
   });
@@ -103,7 +108,6 @@ const repoParams = reactive({
   page: 1,
   per_page: 40,
   keyword: '',
-  public: true,
   status: '开始',
   sig: '',
   total: 0,
@@ -114,8 +118,8 @@ const issueData: IssueData = reactive({
   title: decodeURI(getUrlParam('title')) || '',
   issue_type_id: '',
   sig: '',
-  project_id: Number(getUrlParam('repo_id')) || 7392228,
-  repo: getUrlParam('repo') || 'openeuler/community-issue',
+  project_id: Number(getUrlParam('repo_id')) || defaultIssueRepoID,
+  repo: getUrlParam('repo') || defaultIssueRepo,
   email: '',
   code: '',
   description: '',
@@ -148,8 +152,8 @@ function getRepoBySigName() {
         type: 'warning',
         duration: 10000,
       });
-      issueData.repo = 'openeuler/community-issue';
-      issueData.project_id = 7392228;
+      issueData.repo = defaultIssueRepo;
+      issueData.project_id = defaultIssueRepoID;
     }
   });
 }
@@ -267,7 +271,8 @@ function resetForm(verify: FormInstance) {
   repoParams.sig = '';
   issueData.privacy = ['true'];
   issueData.description = '';
-  issueData.repo = '';
+  issueData.repo = defaultIssueRepo;
+  issueData.project_id = defaultIssueRepoID;
   challenge.value = '';
   verify.scrollToField('title');
 }
