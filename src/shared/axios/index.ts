@@ -19,6 +19,9 @@ interface RequestConfig<D = any> extends AxiosRequestConfig {
   $doException?: boolean; // 是否弹出错误提示框
   global?: boolean; // 是否为全局请求， 全局请求在清除请求池时，不清除
 }
+interface ErrorResponse {
+  msg: string;
+}
 
 // 全局loading
 let loadingInstance: LoadingInstance | null = null;
@@ -135,9 +138,11 @@ const responseInterceptorId = request.interceptors.response.use(
     }
     const { config } = err;
     if (!(config as RequestConfig).$doException) {
+      const response = err.response as AxiosResponse<ErrorResponse>;
+      const message = response?.data?.msg || err.message;
       ElMessage({
         type: 'error',
-        message: err.toString(),
+        message,
       });
     }
     // 非取消请求发生异常，同样将请求移除请求池

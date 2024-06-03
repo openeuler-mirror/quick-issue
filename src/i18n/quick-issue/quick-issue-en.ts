@@ -46,7 +46,7 @@ export default {
   MANDATORY: 'Mandatory',
   MANDATORY1: 'Mandatory',
   EMAIL_ADRESS: 'Enter an email address',
-  TITLE_LIMIT: 'Title cannot exceed 100 characters',
+  TITLE_LIMIT: 'Title cannot exceed 191 characters',
   RIGHT_EMAIL_ADRESS: 'Enter a valid email address',
   VER_CODE: 'Enter the verification code',
   VER_CODE1: 'Enter the 6-digit verification code',
@@ -63,7 +63,7 @@ export default {
   VERIFY_FAIL: 'Verification failed.',
   VERIFY_SUCCESS: 'Verification succeeds in',
   VERIFY_TITLE: 'Please complete the verification code',
-  VERIFY_PLH: 'Please enter the numbers in the image',
+  VERIFY_PLH: 'Please enter the characters in the image',
   VERIFY_CONFIRM: 'Confirm',
   VERIFY_CANCEL: 'Cancel',
 };

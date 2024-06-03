@@ -46,7 +46,7 @@ export default {
   SEND_CODE: '发送验证码',
   MANDATORY: '必选项',
   MANDATORY1: '必填项',
-  TITLE_LIMIT: '标题长度不超过100字符',
+  TITLE_LIMIT: '标题长度不超过191字符',
   EMAIL_ADRESS: '请填写邮箱',
   RIGHT_EMAIL_ADRESS: '请输入正确格式邮箱',
   VER_CODE: '请填写验证码',
@@ -62,7 +62,7 @@ export default {
   VERIFY_FAIL: '验证失败',
   VERIFY_SUCCESS: '验证成功',
   VERIFY_TITLE: '请完成验证码',
-  VERIFY_PLH: '请输入图片中的数字',
+  VERIFY_PLH: '请输入图片中的字符',
   VERIFY_CONFIRM: '确定',
   VERIFY_CANCEL: '取消',
 };
