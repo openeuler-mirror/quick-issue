@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted, watch, computed } from 'vue';
-import { debounce, cloneDeep } from 'lodash-es';
+import { debounce } from 'lodash-es';
 import { useI18n } from 'vue-i18n';
 
 import { useLangStore } from '@/stores';
@@ -23,7 +23,7 @@ import {
 } from '@/api/api-quick-issue';
 
 import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
-import { defaultIssueRepo, defaultIssueRepoID } from '@/config';
+import { defaultIssueRepo, defaultIssueRepoID, giteeUrl } from '@/config';
 
 import { getSigLandscape } from '@/api/api-sig';
 
@@ -214,7 +214,7 @@ async function goGitee(verify: FormInstance | undefined) {
   rules.privacy = [];
   verify.validate(async (res: boolean) => {
     if (res) {
-      const url = `https://gitee.com/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${issueData.issue_type_id}`;
+      const url = `${giteeUrl}/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${issueData.issue_type_id}`;
       window.open(url);
     }
   });
@@ -232,7 +232,18 @@ async function submitForm(
   rules.code = codeRules;
   verify.validate(async (res: boolean) => {
     if (res) {
-      const parmes = cloneDeep(issueData);
+      const parmes = {
+        title: issueData.title,
+        issue_type_id: issueData.issue_type_id,
+        project_id: issueData.project_id,
+        email: issueData.email,
+        code: issueData.code,
+        description: issueData.description,
+        privacy:
+          Array.isArray(issueData.privacy) && issueData.privacy.length
+            ? true
+            : false,
+      };
       handelCreatIssue(parmes, isGoGitee, verify);
     } else {
       verify.scrollToField('title');
@@ -247,7 +258,7 @@ function handelCreatIssue(
 ) {
   createIssue(parmes).then(async (res) => {
     if (res.code === 200) {
-      const jump_url = `https://gitee.com/${issueData.repo}/issues/${res.data.number}`;
+      const jump_url = `${giteeUrl}/${issueData.repo}/issues/${res.data.number}`;
       if (isGoGitee) {
         window.open(jump_url);
       }
@@ -269,7 +280,7 @@ function handelCreatIssue(
 function resetForm(verify: FormInstance) {
   verify.resetFields();
   repoParams.sig = '';
-  issueData.privacy = ['true'];
+  issueData.privacy = [];
   issueData.description = '';
   issueData.repo = defaultIssueRepo;
   issueData.project_id = defaultIssueRepoID;

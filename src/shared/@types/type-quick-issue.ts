@@ -25,11 +25,11 @@ export interface OptionList {
 export interface IssueData {
   title: string;
   issue_type_id: string | number | undefined;
-  sig: string;
+  sig?: string;
   project_id: number;
-  repo: string;
+  repo?: string;
   email: string;
   code: string;
   description: string;
-  privacy: Array<string>;
+  privacy: Array<string> | boolean;
 }

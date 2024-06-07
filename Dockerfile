@@ -1,4 +1,4 @@
-FROM node:18.14.1 as Builder
+FROM node:18.20.1 as Builder
 
 RUN mkdir -p /home/quick-isuue/web
 WORKDIR /home/quick-isuue/web
