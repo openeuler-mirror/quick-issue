@@ -10,8 +10,6 @@ import { ISSUE_TYPE } from '@/shared/issue-type';
 
 import { IdentitiesT } from '@/shared/@types/type-login';
 
-import { hiddenMail } from '@/shared/utils';
-
 const { guardAuthClient } = useStoreData();
 
 const isPersonalShown = computed(() => {
@@ -31,7 +29,7 @@ function getNameList(arr: [IdentitiesT]) {
       return giteeName;
     }
   } catch (error) {
-    return false;
+    return '';
   }
 }
 </script>
@@ -42,25 +40,16 @@ function getNameList(arr: [IdentitiesT]) {
       <AppPull
         v-if="isPersonalShown"
         :issue-type="ISSUE_TYPE.PENDING"
-        :user-name="
-          getNameList(guardAuthClient?.identities) ||
-          hiddenMail(guardAuthClient?.email)
-        "
+        :user-name="getNameList(guardAuthClient?.identities)"
       />
       <AppPull
         v-if="isPersonalShown"
         :issue-type="ISSUE_TYPE.SUBMITTED"
-        :user-name="
-          getNameList(guardAuthClient?.identities) ||
-          hiddenMail(guardAuthClient?.email)
-        "
+        :user-name="getNameList(guardAuthClient?.identities)"
       />
 
       <AppPull
-        :user-name="
-          getNameList(guardAuthClient?.identities) ||
-          hiddenMail(guardAuthClient?.email)
-        "
+        :user-name="getNameList(guardAuthClient?.identities)"
         :issue-type="ISSUE_TYPE.ALL"
       />
     </AppContent>
