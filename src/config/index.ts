@@ -108,5 +108,4 @@ export const linksData2 = {
 };
 
 export const defaultIssueRepo = 'openeuler/community-issue';
-export const defaultIssueRepoID = 7392228;
 export const giteeUrl = 'https://gitee.com';

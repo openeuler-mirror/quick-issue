@@ -26,7 +26,6 @@ export interface IssueData {
   title: string;
   issue_type_id: string | number | undefined;
   sig?: string;
-  project_id: number;
   repo?: string;
   email: string;
   code: string;
