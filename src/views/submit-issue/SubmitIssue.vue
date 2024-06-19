@@ -90,11 +90,15 @@ const verifyEmail = () => {
     captcha_id: veriflyData.value.captcha_id,
     challenge: challenge.value,
     email: issueData.email,
-  }).then(() => {
-    challenge.value = '';
-    isVerifyShown.value = false;
-    sendVerifyEmail();
-  });
+  })
+    .then(() => {
+      challenge.value = '';
+      isVerifyShown.value = false;
+      sendVerifyEmail();
+    })
+    .catch(() => {
+      queryGetReq();
+    });
 };
 
 const reposList = ref<OptionList>({
@@ -154,6 +158,7 @@ function getRepoBySigName() {
   });
 }
 
+// 刷新验证码
 function queryGetReq() {
   reqGet().then((res) => {
     veriflyData.value = res.data;
@@ -337,11 +342,6 @@ const debounceEvent = debounce(
     trailing: true,
   }
 );
-
-// 刷新验证码
-const changeVerifyCode = () => {
-  queryGetReq();
-};
 
 onMounted(async () => {
   getRepoBySigName();
@@ -596,7 +596,7 @@ watch(
     v-model="isVerifyShown"
     :challenge="challenge"
     :src="veriflyData.src"
-    @change-verify-code="changeVerifyCode"
+    @change-verify-code="queryGetReq"
     @verify-email="verifyEmail"
     @update:challenge="(val) => (challenge = val)"
     @close-dlg="isVerifyShown = false"
