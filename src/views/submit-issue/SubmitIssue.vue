@@ -80,7 +80,7 @@ const tabType = ref(titleList.value[0].key);
 const isGiteeUser = ref(false);
 const clock = ref();
 const challenge = ref('');
-const isVerifyShown = ref(false);
+const isVerifyShown = ref(true);
 
 const verifyEmail = () => {
   if (challenge.value.length !== 6) {
@@ -109,7 +109,6 @@ const repoParams = reactive({
   per_page: 40,
   keyword: '',
   sig: '',
-  total: 0,
 });
 
 // 表单数据

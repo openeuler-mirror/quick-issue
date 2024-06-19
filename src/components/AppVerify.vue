@@ -65,12 +65,13 @@ const { t, locale } = useI18n();
 </template>
 
 <style lang="scss">
-.o-icon {
+
+.verify-dialog {
+  padding: 32px 46px;
+  .o-icon {
   cursor: pointer;
   font-size: 24px;
 }
-.verify-dialog {
-  padding: 32px 46px;
   .el-dialog__header {
     padding: 0;
     text-align: center;
