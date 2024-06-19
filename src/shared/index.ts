@@ -106,7 +106,7 @@ export const emailRules = [
   },
   {
     pattern: new RegExp(
-      '^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$'
+      '^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$'
     ),
     message: t('quickIssue.RIGHT_EMAIL_ADRESS'),
     trigger: 'change',

@@ -23,7 +23,7 @@ import {
 } from '@/api/api-quick-issue';
 
 import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
-import { defaultIssueRepo, defaultIssueRepoID, giteeUrl } from '@/config';
+import { defaultIssueRepo, giteeUrl } from '@/config';
 
 import { getSigLandscape } from '@/api/api-sig';
 
@@ -90,11 +90,15 @@ const verifyEmail = () => {
     captcha_id: veriflyData.value.captcha_id,
     challenge: challenge.value,
     email: issueData.email,
-  }).then(() => {
-    challenge.value = '';
-    isVerifyShown.value = false;
-    sendVerifyEmail();
-  });
+  })
+    .then(() => {
+      challenge.value = '';
+      isVerifyShown.value = false;
+      sendVerifyEmail();
+    })
+    .catch(() => {
+      queryGetReq();
+    });
 };
 
 const reposList = ref<OptionList>({
@@ -108,9 +112,7 @@ const repoParams = reactive({
   page: 1,
   per_page: 40,
   keyword: '',
-  status: '开始',
   sig: '',
-  total: 0,
 });
 
 // 表单数据
@@ -118,7 +120,6 @@ const issueData: IssueData = reactive({
   title: decodeURI(getUrlParam('title')) || '',
   issue_type_id: '',
   sig: '',
-  project_id: Number(getUrlParam('repo_id')) || defaultIssueRepoID,
   repo: getUrlParam('repo') || defaultIssueRepo,
   email: '',
   code: '',
@@ -153,11 +154,11 @@ function getRepoBySigName() {
         duration: 10000,
       });
       issueData.repo = defaultIssueRepo;
-      issueData.project_id = defaultIssueRepoID;
     }
   });
 }
 
+// 刷新验证码
 function queryGetReq() {
   reqGet().then((res) => {
     veriflyData.value = res.data;
@@ -235,9 +236,9 @@ async function submitForm(
       const parmes = {
         title: issueData.title,
         issue_type_id: issueData.issue_type_id,
-        project_id: issueData.project_id,
         email: issueData.email,
         code: issueData.code,
+        repo: issueData.repo,
         description: issueData.description,
         privacy:
           Array.isArray(issueData.privacy) && issueData.privacy.length
@@ -283,15 +284,8 @@ function resetForm(verify: FormInstance) {
   issueData.privacy = [];
   issueData.description = '';
   issueData.repo = defaultIssueRepo;
-  issueData.project_id = defaultIssueRepoID;
   challenge.value = '';
   verify.scrollToField('title');
-}
-
-function optionClick(item: { enterprise_number: number }) {
-  if (item?.enterprise_number) {
-    issueData.project_id = item.enterprise_number;
-  }
 }
 
 function sigValueChange(val: string) {
@@ -348,11 +342,6 @@ const debounceEvent = debounce(
     trailing: true,
   }
 );
-
-// 刷新验证码
-const changeVerifyCode = () => {
-  queryGetReq();
-};
 
 onMounted(async () => {
   getRepoBySigName();
@@ -477,7 +466,6 @@ watch(
                   :key="item.repo"
                   :label="item.repo"
                   :value="item.repo"
-                  @click="optionClick(item)"
                 />
               </el-scrollbar>
             </OSelect>
@@ -578,6 +566,7 @@ watch(
       </el-form>
     </div>
   </AppContent>
+  <!-- -------------landscape-------------------- -->
   <div class="mo-content"></div>
   <ODialog v-model="isMenuShown" class="menu-dialog" :show-close="true">
     <h1 id="tech"></h1>
@@ -602,11 +591,12 @@ watch(
       </div>
     </OTabs>
   </ODialog>
+  <!-- ------- 邮件发送验证-------------- -->
   <AppVerify
     v-model="isVerifyShown"
     :challenge="challenge"
     :src="veriflyData.src"
-    @change-verify-code="changeVerifyCode"
+    @change-verify-code="queryGetReq"
     @verify-email="verifyEmail"
     @update:challenge="(val) => (challenge = val)"
     @close-dlg="isVerifyShown = false"
