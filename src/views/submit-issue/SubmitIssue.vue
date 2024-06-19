@@ -80,7 +80,7 @@ const tabType = ref(titleList.value[0].key);
 const isGiteeUser = ref(false);
 const clock = ref();
 const challenge = ref('');
-const isVerifyShown = ref(true);
+const isVerifyShown = ref(false);
 
 const verifyEmail = () => {
   if (challenge.value.length !== 6) {
