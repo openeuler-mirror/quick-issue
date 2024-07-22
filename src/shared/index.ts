@@ -100,6 +100,11 @@ export const privacyRules = [
 ];
 export const emailRules = [
   {
+    max: 100,
+    message: t('quickIssue.RIGHT_EMAIL_ADRESS'),
+    trigger: 'blur',
+  },
+  {
     required: true,
     message: t('quickIssue.EMAIL_ADRESS'),
     trigger: 'change',
