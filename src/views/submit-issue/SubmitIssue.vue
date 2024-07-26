@@ -361,12 +361,7 @@ onMounted(async () => {
       issueData.description = targetType?.template || '';
     }
     landscapeInfo.value = await getSigLandscape(lang.value);
-  } catch {
-    ElMessage({
-      message: 'error',
-      type: 'error',
-    });
-  }
+  } catch (err) {}
 });
 watch(
   () => repoParams,
