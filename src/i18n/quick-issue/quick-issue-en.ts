@@ -37,8 +37,10 @@ export default {
   PRIVACY: 'Privacy Statement',
   SELECT_ALL: 'Select All',
   EXCLUDE: 'Exclude Labels',
-  LABER_TIP: 'PRs containing all included labels will be displayed',
-  LABER_TIP1: 'PRs containing any of the excluded labels will be hidden',
+  LABER_TIP: '{0} containing all included labels will be displayed',
+  LABER_TIP1: '{0} containing any of the excluded labels will be hidden',
+  PR:'PRs',
+  ISSUE:'Issues',
   PRIVACY_TEXT:
     'By filling and submitting the content, I fully understand and agree to the terms of the openEuler ',
   SELECT_SIG: 'Select SIG',

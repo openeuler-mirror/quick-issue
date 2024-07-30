@@ -106,7 +106,7 @@ onUnmounted(() => {
       margin-bottom: 5px;
       background-color: var(--o-color-bg2);
       width: 100%;
-      z-index: 1;
+      z-index: 2;
 
       .o-search {
         padding: 4px 8px;

@@ -38,8 +38,10 @@ export default {
   PRIVACY: '《隐私声明》',
   SELECT_ALL: '选择全部',
   EXCLUDE: '排除标签',
-  LABER_TIP: '同时包括所有“选中标签”的PR将会被筛选出来',
-  LABER_TIP1: '包含“排除标签”的PR不会被筛选出来',
+  LABER_TIP: '同时包括所有“选中标签”的{0}将会被筛选出来',
+  LABER_TIP1: '包含“排除标签”的{0}不会被筛选出来',
+  PR:'PR',
+  ISSUE:'ISSUE',
   PRIVACY_TEXT:
     '您理解并同意，您填写并提交的内容，即视为您已充分阅读并同意openEuler的',
   SELECT_SIG: '选择SIG组',
