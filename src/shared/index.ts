@@ -68,7 +68,7 @@ export const rules: any = reactive({
     },
     {
       min: 1,
-      max: 100,
+      max: 191,
       message: t('quickIssue.TITLE_LIMIT'),
       trigger: 'blur',
     },
@@ -100,13 +100,18 @@ export const privacyRules = [
 ];
 export const emailRules = [
   {
+    max: 100,
+    message: t('quickIssue.RIGHT_EMAIL_ADRESS'),
+    trigger: 'blur',
+  },
+  {
     required: true,
     message: t('quickIssue.EMAIL_ADRESS'),
     trigger: 'change',
   },
   {
     pattern: new RegExp(
-      '^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$'
+      '^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$'
     ),
     message: t('quickIssue.RIGHT_EMAIL_ADRESS'),
     trigger: 'change',

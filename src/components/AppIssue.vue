@@ -22,6 +22,8 @@ import IconSetting from '~icons/app/icon-setting';
 import ODropdown from 'opendesign/dropdown/ODropdown.vue';
 import OIcon from 'opendesign/icon/OIcon.vue';
 
+import { ElOption } from 'element-plus';
+
 const props = defineProps({
   issueType: {
     type: String,
@@ -35,7 +37,11 @@ const props = defineProps({
 
 const { t } = useI18n();
 
-const typeTitel: any = {
+interface TypeTitelT {
+  [key: string]: string;
+}
+
+const typeTitel: TypeTitelT = {
   submitted: t('quickIssue.MY_SUBMISSIONS'),
   pending: t('quickIssue.MY_ASSIGNMENTS'),
   all: t('quickIssue.ALL'),
@@ -222,10 +228,8 @@ const handleSizeChange = (val: number) => {
   totalPage.value = Math.ceil(total.value / val);
 };
 
-const handleCheckAllChange = (val: any) => {
-  (queryData.issue_state as Array<string>) = val
-    ? ISSUE_CONFIG.ISSUE_STATE
-    : [];
+const handleCheckAllChange = (val: string[]) => {
+  queryData.issue_state = val ? ISSUE_CONFIG.ISSUE_STATE : [];
   isIndeterminate.value = false;
 };
 
@@ -239,7 +243,7 @@ function searchValchange() {
 }
 
 const valueChangeDebounced = debounce(
-  (val) => {
+  (val: string) => {
     if (val !== optionQuery.keyword) {
       filterList.value.get(`${openDropDown.value}List`).data = [];
       filterList.value.get(`${openDropDown.value}List`).page = 1;
@@ -256,7 +260,7 @@ const valueChangeDebounced = debounce(
 function getLabelColor(label: string) {
   const result: CSSProperties = {};
   result.color = `#${
-    labelColor?.labelColor?.find((item) => {
+    labelColor?.labelColor?.find((item: { name: string }) => {
       return item.name === label;
     })?.color
   }`;
@@ -320,37 +324,43 @@ function clickLabel() {
 }
 function getOption(type: string) {
   if (type === 'repos') {
-    getReposData(optionQuery)
-      .then((res: OptionList) => {
-        filterList.value.get(`${type}List`).data = [
-          ...filterList.value.get(`${type}List`).data,
-          ...res.data,
-        ];
-        filterList.value.get(`${type}List`).total = res.total;
-      })
-      .catch((err: any) => {
-        throw new Error(err);
-      });
+    getReposData(optionQuery).then((res: OptionList) => {
+      filterList.value.get(`${type}List`).data = [
+        ...filterList.value.get(`${type}List`).data,
+        ...res.data,
+      ];
+      filterList.value.get(`${type}List`).total = res.total;
+    });
   } else {
-    getIssueSelectOption(type, optionQuery)
-      .then((res: OptionList) => {
-        filterList.value.get(`${type}List`).data = [
-          ...filterList.value.get(`${type}List`).data,
-          ...res.data,
-        ];
-        filterList.value.get(`${type}List`).total = res.total;
-      })
-      .catch((err: any) => {
-        throw new Error(err);
-      });
+    getIssueSelectOption(type, optionQuery).then((res: OptionList) => {
+      filterList.value.get(`${type}List`).data = [
+        ...filterList.value.get(`${type}List`).data,
+        ...res.data,
+      ];
+      filterList.value.get(`${type}List`).total = res.total;
+    });
   }
 }
 onMounted(() => {
-  if (window.localStorage?.getItem('title')) {
-    checkedTitle.value = JSON.parse(
-      window.localStorage.getItem('title') as any
-    );
+  try {
+    if (window.localStorage?.getItem('title')) {
+      checkedTitle.value = JSON.parse(
+        window.localStorage.getItem('title') as string
+      );
+    }
+  } catch {
+    checkedTitle.value = [
+      'id',
+      'repo',
+      'type',
+      'title',
+      'state',
+      'author',
+      'label',
+      'create_at',
+    ];
   }
+
   getRepoIssueData();
   getOption('authors');
   getOption('assignees');
@@ -369,15 +379,50 @@ watch(
     deep: true,
   }
 );
+// element-plus select 组件 超出 limit 点击 仍然会触发 watch问题处理
+const maxTag = 5;
 watch(
-  () => queryData,
-  () => {
+  () => [queryData.label, queryData.exclusion],
+  (oldValue, newValue) => {
+    // 超出 limit 继续点击当前选项不调用接口
+    if (
+      (oldValue[0].length === newValue[0].length &&
+        oldValue[0].length === maxTag &&
+        oldValue[1].length === newValue[1].length) ||
+      (oldValue[1].length === newValue[1].length &&
+        oldValue[1].length === maxTag &&
+        oldValue[0].length === newValue[0].length)
+    ) {
+      return;
+    }
     getRepoIssueData();
   },
   {
     deep: true,
   }
 );
+watch(
+  () => [
+    queryData.assignee,
+    queryData.author,
+    queryData.create,
+    queryData.direction,
+    queryData.page,
+    queryData.per_page,
+    queryData.branch,
+    queryData.repo,
+    queryData.search,
+    queryData.priority,
+    queryData.sort,
+    queryData.issue_state,
+    queryData.milestone,
+    queryData.issue_type,
+  ],
+  () => {
+    getRepoIssueData();
+  }
+);
+
 watch(
   () => optionQuery,
   () => {
@@ -405,6 +450,7 @@ watch(
       <OSearch
         v-model="inputValue"
         :placeholder="t('quickIssue.PLACEHOLDER')"
+        :maxlength="100"
         @change="searchValchange"
       ></OSearch>
     </div>
@@ -563,18 +609,19 @@ watch(
                     @change="handleCheckAllChange"
                     >{{ t('quickIssue.SELECT_ALL') }}</ElCheckbox
                   >
-                  <OCheckboxGroup
+                  <ElCheckboxGroup
                     v-model="queryData.issue_state"
                     @change="handleCheckedValueChange"
                   >
-                    <OCheckbox
+                    <ElCheckbox
                       v-for="item in ISSUE_CONFIG.ISSUE_STATE"
                       :key="item"
+                      :label="item"
                       :value="item"
                     >
                       {{ item }}
-                    </OCheckbox>
-                  </OCheckboxGroup>
+                    </ElCheckbox>
+                  </ElCheckboxGroup>
                 </el-dropdown-menu>
               </template>
             </ODropdown>
@@ -624,19 +671,20 @@ watch(
                     @input="valueChangeDebounced"
                   ></OSearch>
                 </div>
-                <OCheckboxGroup
+                <ElCheckboxGroup
                   v-if="filterList.get('milestonesList').data.length"
+                  :max="5"
                   v-model="queryData.milestone"
-                  @change="handleCheckedValueChange"
                 >
-                  <OCheckbox
+                  <ElCheckbox
                     v-for="item in filterList.get('milestonesList').data"
                     :key="item"
+                    :label="item"
                     :value="item"
                   >
                     {{ item }}
-                  </OCheckbox>
-                </OCheckboxGroup>
+                  </ElCheckbox>
+                </ElCheckboxGroup>
                 <ODropdownItem v-else disabled class="empty-option"
                   >No Data</ODropdownItem
                 >
@@ -1081,6 +1129,7 @@ watch(
         multiple
         :placeholder="t('quickIssue.SELECT')"
         popper-class="remove-scrollbar"
+        :multiple-limit="5"
         :listener-scorll="true"
         @scorll-bottom="getNextPage"
         @visible-change="(val: boolean) => changeVisible(val, 'labels')"
@@ -1112,13 +1161,16 @@ watch(
         <IconRefresh> </IconRefresh>
       </OIcon>
     </div>
-    <p class="label-tip">{{ t('quickIssue.LABER_TIP') }}</p>
+    <p class="label-tip">
+      {{ t('quickIssue.LABER_TIP', [t('quickIssue.ISSUE')]) }}
+    </p>
     <div class="label-select">
       <span class="label">{{ t('quickIssue.EXCLUDE') }}</span>
       <OSelect
         v-model="queryData.exclusion"
         multiple
         :placeholder="t('quickIssue.SELECT')"
+        :multiple-limit="5"
         popper-class="remove-scrollbar"
         :listener-scorll="true"
         @scorll-bottom="getNextPage"
@@ -1149,7 +1201,9 @@ watch(
         <IconRefresh> </IconRefresh>
       </OIcon>
     </div>
-    <p class="label-tip">{{ t('quickIssue.LABER_TIP1') }}</p>
+    <p class="label-tip">
+      {{ t('quickIssue.LABER_TIP1', [t('quickIssue.ISSUE')]) }}
+    </p>
   </ODialog>
 </template>
 

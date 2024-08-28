@@ -30,8 +30,5 @@ const modalClassNames = computed(() => {
 </template>
 
 <style lang="scss">
-// .o-dialog {
-//   max-width: 1420px;
-//   width: 100%;
-// }
+
 </style>

@@ -1,67 +1,56 @@
 <script lang="ts" setup>
+import { computed } from 'vue';
+
 import AppPull from '@/components/AppPull.vue';
 import AppContent from '@/components/AppContent.vue';
 import DocAnchor from '@/components/DocAnchor.vue';
-import { useStoreData } from '@/shared/login';
 
-import { hiddenMail } from '@/shared/utils';
+import { useStoreData } from '@/shared/login';
+import { ISSUE_TYPE } from '@/shared/issue-type';
+
+import { IdentitiesT } from '@/shared/@types/type-login';
 
 const { guardAuthClient } = useStoreData();
 
-function getNameList(arr: any) {
+const isPersonalShown = computed(() => {
+  return (
+    (guardAuthClient.value?.identities &&
+      guardAuthClient.value?.identities[0]?.login_name) ||
+    guardAuthClient.value?.email
+  );
+});
+
+function getNameList(arr: [IdentitiesT]) {
   try {
-    const giteeName = arr?.filter((item: any) => {
+    const giteeName = arr?.filter((item: IdentitiesT) => {
       return item.identity === 'gitee';
     })[0]?.login_name;
     if (giteeName) {
       return giteeName;
     }
   } catch (error) {
-    return false;
+    return '';
   }
 }
 </script>
 <template>
   <div class="issues">
     <AppContent>
-      <DocAnchor
-        v-if="
-          (guardAuthClient?.identities &&
-            guardAuthClient?.identities[0]?.login_name) ||
-          guardAuthClient?.email
-        "
+      <DocAnchor v-if="isPersonalShown" />
+      <AppPull
+        v-if="isPersonalShown"
+        :issue-type="ISSUE_TYPE.PENDING"
+        :user-name="getNameList(guardAuthClient?.identities)"
       />
       <AppPull
-        v-if="
-          (guardAuthClient?.identities &&
-            guardAuthClient?.identities[0]?.login_name) ||
-          guardAuthClient?.email
-        "
-        issue-type="pending"
-        :user-name="
-          getNameList(guardAuthClient?.identities) ||
-          hiddenMail(guardAuthClient?.email)
-        "
-      />
-      <AppPull
-        v-if="
-          (guardAuthClient?.identities &&
-            guardAuthClient?.identities[0]?.login_name) ||
-          guardAuthClient?.email
-        "
-        issue-type="submitted"
-        :user-name="
-          getNameList(guardAuthClient?.identities) ||
-          hiddenMail(guardAuthClient?.email)
-        "
+        v-if="isPersonalShown"
+        :issue-type="ISSUE_TYPE.SUBMITTED"
+        :user-name="getNameList(guardAuthClient?.identities)"
       />
 
       <AppPull
-        :user-name="
-          getNameList(guardAuthClient?.identities) ||
-          hiddenMail(guardAuthClient?.email)
-        "
-        issue-type="all"
+        :user-name="getNameList(guardAuthClient?.identities)"
+        :issue-type="ISSUE_TYPE.ALL"
       />
     </AppContent>
   </div>

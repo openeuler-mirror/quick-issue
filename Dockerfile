@@ -1,4 +1,4 @@
-FROM node:18.14.1 as Builder
+FROM node:18.20.1 as Builder
 
 RUN mkdir -p /home/quick-isuue/web
 WORKDIR /home/quick-isuue/web
@@ -13,7 +13,7 @@ RUN ls /home/quick-isuue/web
 
 FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/openeuler/nginx:1.24.0-22.03-lts-sp1 as NginxBuilder
 
-FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/website/openeuler:22.03-lts-sp1-latest
+FROM openeuler/openeuler:22.03-lts-sp1
 
 ENV NGINX_CONFIG_FILE /etc/nginx/nginx.conf
 ENV NGINX_CONFIG_PATH /etc/nginx/

@@ -2,6 +2,8 @@
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+
+import { linksData, linksData2 } from '@/config';
 import { useLangStore } from '@/stores';
 
 import AppContent from '@/components/AppContent.vue';
@@ -12,21 +14,6 @@ import LogoAtom from '@/assets/footer/atom-logo.svg';
 import FooterBg from '@/assets/footer/footer-bg.png';
 import FooterBgMo from '@/assets/footer/footer-bg-mo.png';
 
-// 中文友情链接
-import LogoBilibili from '@/assets/footer/bilibili.png';
-import LogoInfoq from '@/assets/footer/infoq.png';
-import LogoJuejin from '@/assets/footer/juejin.png';
-import LogoOschina from '@/assets/footer/oschina.png';
-import LogoCsdn from '@/assets/footer/csdn.png';
-import Logo51cto from '@/assets/footer/51cto.png';
-
-// 英文、俄文友情链接
-import LogoRedditSquare from '@/assets/footer/reddit-square@2x.png';
-import LogoBilibili2 from '@/assets/footer/bilibili@2x.png';
-import LogoLinkedin from '@/assets/footer/linkedin@2x.png';
-import LogoYoutube from '@/assets/footer/youtube@2x.png';
-import LogoTwitter from '@/assets/footer/twitter@2x.png';
-
 // 公众号、小助手
 import CodeTitleXzs from '@/assets/footer/img-xzs.png';
 import CodeTitleGzh from '@/assets/footer/img-gzh.png';
@@ -34,103 +21,9 @@ import CodeImgXzs from '@/assets/footer/code-xzs.png';
 import CodeImgZgz from '@/assets/footer/code-zgz.png';
 
 const { t } = useI18n();
-const router = useRouter();
 const lang = computed(() => {
   return useLangStore().lang;
 });
-// 友情链接
-const linksData: any = {
-  zh: [
-    {
-      path: 'https://my.oschina.net/openeuler',
-      logo: LogoOschina,
-      id: 'oschina',
-    },
-    {
-      path: 'https://blog.csdn.net/openEuler_?spm=1000.2115.3001.5343',
-      logo: LogoCsdn,
-      id: 'csdn',
-    },
-    {
-      path: 'https://juejin.cn/user/3183782863845454',
-      logo: LogoJuejin,
-      id: 'juejin',
-    },
-    {
-      path: 'https://space.bilibili.com/527064077/channel/series',
-      logo: LogoBilibili,
-      id: 'bilibili',
-    },
-    {
-      path: 'https://www.infoq.cn/profile/6E6CE3E2316F28/publish',
-      logo: LogoInfoq,
-      id: 'infoq',
-    },
-    {
-      path: 'https://blog.51cto.com/u_14948868',
-      logo: Logo51cto,
-      id: '51cto',
-    },
-  ],
-  en: [
-    {
-      path: 'https://www.reddit.com/r/openEuler/',
-      logo: LogoRedditSquare,
-      id: 'reddit-square',
-    },
-    {
-      path: 'https://www.linkedin.com/company/openeuler',
-      logo: LogoLinkedin,
-      id: 'linkedin',
-    },
-    {
-      path: 'https://twitter.com/openEuler',
-      logo: LogoTwitter,
-      id: 'twitter',
-    },
-    {
-      path: 'https://space.bilibili.com/527064077/channel/series',
-      logo: LogoBilibili2,
-      id: 'bilibili',
-    },
-    {
-      path: 'https://www.youtube.com/channel/UCPzSqXqCgmJmdIicbY7GAeA',
-      logo: LogoYoutube,
-      id: 'youtube',
-    },
-  ],
-};
-// 隐私链接
-const linksData2: any = {
-  zh: [
-    {
-      NAME: '品牌',
-      URL: 'https://www.openeuler.org/zh/other/brand/',
-    },
-    {
-      NAME: '隐私政策',
-      URL: 'https://www.openeuler.org/zh/other/privacy/',
-    },
-    {
-      NAME: '法律声明',
-      URL: 'https://www.openeuler.org/zh/other/legal/',
-    },
-  ],
-  en: [
-    {
-      NAME: 'Trademark',
-      URL: 'https://www.openeuler.org/en/other/brand/',
-    },
-    {
-      NAME: 'Privacy Policy',
-      URL: 'https://www.openeuler.org/en/other/privacy/',
-    },
-    {
-      NAME: 'Legal Notice',
-      URL: 'https://www.openeuler.org/en/other/legal/',
-    },
-  ],
-};
 
 // 公众号、小助手
 const footerCodeList = [
@@ -145,14 +38,6 @@ const footerCodeList = [
     label: t('common.FOOTER.QR_ASSISTANT'),
   },
 ];
-
-const handleNavClick = (path: string) => {
-  if (path.startsWith('https:')) {
-    window.open(path, '_blank');
-  } else {
-    router.push(`/${'zh'}` + path);
-  }
-};
 
 // 背景
 const footBg = {
@@ -193,9 +78,8 @@ const footBg = {
               <a
                 v-for="link in linksData2[lang]"
                 :key="link.URL"
-                href="javascript:;"
+                :href="link.URL"
                 class="link"
-                @click="handleNavClick(link.URL)"
                 >{{ link.NAME }}</a
               >
             </div>
@@ -207,18 +91,17 @@ const footBg = {
           </div>
           <div class="footer-right">
             <div v-if="lang === 'zh'" class="code-box">
-              <a
+              <div
                 v-for="(item, index) in footerCodeList"
                 :key="index"
                 class="code-pop"
-                href="javascript:;"
               >
                 <img :src="item.img" class="code-img" alt="" />
                 <div class="code-layer">
                   <img :src="item.code" alt="" />
                   <p class="txt">{{ item.label }}</p>
                 </div>
-              </a>
+              </div>
             </div>
             <div class="footer-links" :class="{ iszh: lang === 'zh' }">
               <a
@@ -226,6 +109,7 @@ const footBg = {
                 :key="item.id"
                 :href="item.path"
                 class="links-logo"
+                rel="noopener noreferrer"
                 target="_blank"
               >
                 <img :src="item.logo" alt="" />

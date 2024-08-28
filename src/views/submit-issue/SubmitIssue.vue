@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted, watch, computed } from 'vue';
-import { useRouter } from 'vue-router';
 import { debounce } from 'lodash-es';
 import { useI18n } from 'vue-i18n';
 
@@ -24,10 +23,12 @@ import {
 } from '@/api/api-quick-issue';
 
 import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
+import { defaultIssueRepo, giteeUrl } from '@/config';
 
 import { getSigLandscape } from '@/api/api-sig';
 
 import AppEditor from '@/components/AppEditor.vue';
+import AppVerify from '@/components/AppVerify.vue';
 import AppContent from '@/components/AppContent.vue';
 import SigLandscapeFeature from '@/components/SigLandscapeFeature.vue';
 import OIcon from 'opendesign/icon/OIcon.vue';
@@ -43,18 +44,19 @@ interface TypesList {
   name: string;
   template: string;
 }
-const router = useRouter();
 const formRef = ref<FormInstance>();
 const { t } = useI18n();
 
-const landscapeInfo = ref<GroupInfo[]>([]);
-const isMenuShown = ref(false);
-const editRef = ref();
-const getRes = ref({
-  captcha_id: '',
+const landscapeInfo = ref<GroupInfo[]>([]); //landscape数据
+const isMenuShown = ref(false); // landscape显示
+
+// 发送邮箱验证码，验证
+const veriflyData = ref({
+  captcha_id: 0,
   src: '',
 });
 
+//landscape title
 const titleList = ref([
   {
     value: t('sig.SIG_LANDSCAPE[0].CATEGORY_NAME'),
@@ -65,27 +67,38 @@ const titleList = ref([
     key: 'operate',
   },
 ]);
+
 const lang = computed(() => {
   return useLangStore().lang;
 });
+
+// 按钮文字内容
 const content = ref(t('quickIssue.SEND_CODE'));
 
 const totalTime = ref(60);
 const tabType = ref(titleList.value[0].key);
 const isGiteeUser = ref(false);
 const clock = ref();
-const challenge = ref();
+const challenge = ref('');
 const isVerifyShown = ref(false);
 
 const verifyEmail = () => {
+  if (challenge.value.length !== 6) {
+    return false;
+  }
   reqCheck({
-    captcha_id: getRes.value.captcha_id,
+    captcha_id: veriflyData.value.captcha_id,
     challenge: challenge.value,
     email: issueData.email,
-  }).then(() => {
-    isVerifyShown.value = false;
-    sendVerifyEmail();
-  });
+  })
+    .then(() => {
+      challenge.value = '';
+      isVerifyShown.value = false;
+      sendVerifyEmail();
+    })
+    .catch(() => {
+      queryGetReq();
+    });
 };
 
 const reposList = ref<OptionList>({
@@ -99,18 +112,15 @@ const repoParams = reactive({
   page: 1,
   per_page: 40,
   keyword: '',
-  public: true,
-  status: '开始',
   sig: '',
-  total: 0,
 });
 
+// 表单数据
 const issueData: IssueData = reactive({
   title: decodeURI(getUrlParam('title')) || '',
   issue_type_id: '',
   sig: '',
-  project_id: Number(getUrlParam('repo_id')) || 7392228,
-  repo: getUrlParam('repo') || 'openeuler/community-issue',
+  repo: getUrlParam('repo') || defaultIssueRepo,
   email: '',
   code: '',
   description: '',
@@ -143,15 +153,15 @@ function getRepoBySigName() {
         type: 'warning',
         duration: 10000,
       });
-      issueData.repo = 'openeuler/community-issue';
-      issueData.project_id = 7392228;
+      issueData.repo = defaultIssueRepo;
     }
   });
 }
 
+// 刷新验证码
 function queryGetReq() {
   reqGet().then((res) => {
-    getRes.value = res.data;
+    veriflyData.value = res.data;
   });
 }
 
@@ -172,7 +182,7 @@ async function getCodeByEmail(verify: FormInstance | undefined) {
   rules.code = [];
   rules.privacy = privacyRules;
   rules.email = emailRules;
-  verify.validate(async (res) => {
+  verify.validate(async (res: boolean) => {
     if (totalTime.value === 60 && res) {
       isVerifyShown.value = true;
       queryGetReq();
@@ -205,7 +215,7 @@ async function goGitee(verify: FormInstance | undefined) {
   rules.privacy = [];
   verify.validate(async (res: boolean) => {
     if (res) {
-      const url = `https://gitee.com/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${issueData.issue_type_id}`;
+      const url = `${giteeUrl}/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${issueData.issue_type_id}`;
       window.open(url);
     }
   });
@@ -223,20 +233,23 @@ async function submitForm(
   rules.code = codeRules;
   verify.validate(async (res: boolean) => {
     if (res) {
-      const parmes = JSON.parse(JSON.stringify(issueData));
-      // 邮箱隐藏 添加提交人邮箱
-      parmes.description = `${
-        issueData.description
-      } \n \n -- submited by ${getHiddenEmail(issueData.email)}`;
+      const parmes = {
+        title: issueData.title,
+        issue_type_id: issueData.issue_type_id,
+        email: issueData.email,
+        code: issueData.code,
+        repo: issueData.repo,
+        description: issueData.description,
+        privacy:
+          Array.isArray(issueData.privacy) && issueData.privacy.length
+            ? true
+            : false,
+      };
       handelCreatIssue(parmes, isGoGitee, verify);
     } else {
       verify.scrollToField('title');
     }
   });
-}
-
-function getHiddenEmail(email: string): string {
-  return `${email.split('@')[0]}@***${email.charAt(email.length - 1)}`;
 }
 
 function handelCreatIssue(
@@ -245,8 +258,8 @@ function handelCreatIssue(
   verify: FormInstance
 ) {
   createIssue(parmes).then(async (res) => {
-    if (res.code === 201) {
-      const jump_url = `https://gitee.com/${issueData.repo}/issues/${res.data.number}`;
+    if (res.code === 200) {
+      const jump_url = `${giteeUrl}/${issueData.repo}/issues/${res.data.number}`;
       if (isGoGitee) {
         window.open(jump_url);
       }
@@ -268,23 +281,12 @@ function handelCreatIssue(
 function resetForm(verify: FormInstance) {
   verify.resetFields();
   repoParams.sig = '';
-  issueData.privacy = ['true'];
+  issueData.privacy = [];
   issueData.description = '';
+  issueData.repo = defaultIssueRepo;
+  challenge.value = '';
   verify.scrollToField('title');
 }
-
-function optionClick(item: any) {
-  if (item?.enterprise_number) {
-    issueData.project_id = item.enterprise_number;
-  }
-}
-const handleClick = (path: string) => {
-  if (path.startsWith('https:')) {
-    window.open(path, '_blank');
-  } else {
-    router.push(path);
-  }
-};
 
 function sigValueChange(val: string) {
   repoParams.sig = val;
@@ -324,7 +326,7 @@ function handleTypeChange(val: number) {
 }
 
 const debounceEvent = debounce(
-  (val) => {
+  (val: string) => {
     if (val === undefined) {
       return false;
     }
@@ -340,11 +342,6 @@ const debounceEvent = debounce(
     trailing: true,
   }
 );
-
-// 刷新验证码
-const changeVerifyCode = () => {
-  queryGetReq();
-};
 
 onMounted(async () => {
   getRepoBySigName();
@@ -364,12 +361,7 @@ onMounted(async () => {
       issueData.description = targetType?.template || '';
     }
     landscapeInfo.value = await getSigLandscape(lang.value);
-  } catch (err: any) {
-    ElMessage({
-      message: 'error',
-      type: 'error',
-    });
-  }
+  } catch (err) {}
 });
 watch(
   () => repoParams,
@@ -469,7 +461,6 @@ watch(
                   :key="item.repo"
                   :label="item.repo"
                   :value="item.repo"
-                  @click="optionClick(item)"
                 />
               </el-scrollbar>
             </OSelect>
@@ -561,15 +552,16 @@ watch(
                 @click="submitForm(formRef, false)"
                 >{{ t('quickIssue.CONTINUE') }}</OButton
               >
-              <OButton size="small" @click="handleClick(`/${lang}/issues/`)">{{
-                t('quickIssue.CANCEL')
-              }}</OButton>
+              <RouterLink :to="`/${lang}/issues/`">
+                <OButton size="small">{{ t('quickIssue.CANCEL') }}</OButton>
+              </RouterLink>
             </div>
           </div>
         </transition-group>
       </el-form>
     </div>
   </AppContent>
+  <!-- -------------landscape-------------------- -->
   <div class="mo-content"></div>
   <ODialog v-model="isMenuShown" class="menu-dialog" :show-close="true">
     <h1 id="tech"></h1>
@@ -594,13 +586,16 @@ watch(
       </div>
     </OTabs>
   </ODialog>
-  <ODialog v-model="isVerifyShown" class="verify-dialog" :show-close="true">
-    <OButton size="small" @click="verifyEmail">确认</OButton>
-    <OInput v-model="challenge" placeholder="请填写验证码"></OInput>
-    <div class="img-box" @click="changeVerifyCode">
-      <img :src="`/api-issues${getRes.src}`" alt="" />
-    </div>
-  </ODialog>
+  <!-- ------- 邮件发送验证-------------- -->
+  <AppVerify
+    v-model="isVerifyShown"
+    :challenge="challenge"
+    :src="veriflyData.src"
+    @change-verify-code="queryGetReq"
+    @verify-email="verifyEmail"
+    @update:challenge="(val) => (challenge = val)"
+    @close-dlg="isVerifyShown = false"
+  />
 </template>
 
 <style lang="scss">
@@ -893,22 +888,6 @@ watch(
         height: 80px;
         margin-top: -80px;
         visibility: hidden;
-      }
-    }
-  }
-}
-.verify-dialog {
-  .el-dialog__body {
-    display: flex;
-    align-items: center;
-    .o-input {
-      margin: 0 24px;
-    }
-    .img-box {
-      cursor: pointer;
-      width: 160px;
-      img {
-        width: 100%;
       }
     }
   }
