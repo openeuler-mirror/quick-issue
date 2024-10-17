@@ -7,7 +7,7 @@ export default {
     ATOM_PC: '/atom-pc.png',
     ATOM_MO: '/atom-mo.png',
     MAIL: 'contact@openeuler.io',
-    COPY_RIGHT: '版权所有 © 2024 openEuler 保留一切权利',
+    COPY_RIGHT: '版权所有 © {year} openEuler 保留一切权利',
     LICENSED_1: '遵循',
     LICENSED_2: '木兰宽松许可证第2版（MulanPSL2）',
     QR_CODE: 'openEuler公众号',

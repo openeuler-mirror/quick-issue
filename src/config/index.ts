@@ -90,6 +90,10 @@ export const linksData2 = {
       NAME: '法律声明',
       URL: 'https://www.openeuler.org/zh/other/legal/',
     },
+    {
+      NAME: '关于cookies',
+      URL: 'https://www.openeuler.org/zh/other/cookies/',
+    },
   ],
   en: [
     {
@@ -103,6 +107,10 @@ export const linksData2 = {
     {
       NAME: 'Legal Notice',
       URL: 'https://www.openeuler.org/en/other/legal/',
+    },
+    {
+      NAME: 'About Cookies',
+      URL: 'https://www.openeuler.org/en/other/cookies/',
     },
   ],
 };
