@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
 import { linksData, linksData2 } from '@/config';
 import { useLangStore } from '@/stores';
+import { getYearByOffset } from '@/shared/utils';
 
 import AppContent from '@/components/AppContent.vue';
 
@@ -83,7 +83,9 @@ const footBg = {
                 >{{ link.NAME }}</a
               >
             </div>
-            <p class="copyright">{{ t('common.FOOTER.COPY_RIGHT') }}</p>
+            <p class="copyright">
+              {{ t('common.FOOTER.COPY_RIGHT', { year: getYearByOffset() }) }}
+            </p>
             <p class="license">
               <span>{{ t('common.FOOTER.LICENSED_1') }}</span>
               {{ t('common.FOOTER.LICENSED_2') }}

@@ -473,7 +473,7 @@ watch(
         <el-table-column
           v-if="checkedTitle.includes('repo')"
           key="repo"
-          min-width="110"
+          min-width="130"
         >
           <template #header>
             <span :class="queryData.repo ? 'active' : ''">{{
@@ -545,7 +545,7 @@ watch(
         <el-table-column
           v-if="checkedTitle.includes('type')"
           key="type"
-          min-width="80"
+          min-width="100"
         >
           <template #header>
             <span :class="queryData.issue_type ? 'active' : ''">{{
