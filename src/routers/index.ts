@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import { useLangStore, usePrevPageUrl } from '@/stores';
+import { useLangStore } from '@/stores';
 import { reportPV } from '@/shared/analytics';
 
 export const routes: RouteRecordRaw[] = [
@@ -43,11 +43,11 @@ router.beforeEach((to, from) => {
   if (from.path === '/') {
     return;
   }
-  usePrevPageUrl().url = window.location.href;
+  to.meta.$referrer = window.location.href;
 });
 
 router.afterEach((to, from) => {
   if (to.path !== from.path) {
-    reportPV(usePrevPageUrl().url);
+    reportPV(to.meta.$referrer as string);
   }
 });

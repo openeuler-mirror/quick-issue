@@ -30,9 +30,3 @@ export const useLabelColor = defineStore('color', {
     },
   },
 });
-
-export const usePrevPageUrl = defineStore('analytics', {
-  state: () => ({
-    url: '',
-  }),
-});
