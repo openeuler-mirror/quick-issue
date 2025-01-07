@@ -12,6 +12,7 @@ import Prism from 'prismjs';
 
 import App from './App.vue';
 import OpenDesign from 'opendesign';
+import { enableOA, reportPerformance } from './shared/analytics';
 
 VueMarkdownEditor.use(vuepressTheme, {
   Prism,
@@ -24,5 +25,8 @@ app.use(createPinia());
 app.use(OpenDesign);
 app.use(router);
 app.use(VueMarkdownEditor);
+
+enableOA();
+reportPerformance();
 
 app.mount('#app');
