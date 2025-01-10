@@ -38,6 +38,7 @@ import type { FormInstance, TabsPaneContext } from 'element-plus';
 import IconGitee from '~icons/app/icon-gitee.svg';
 import IconDown from '~icons/app/icon-pulldown.svg';
 import IconSearch from '~icons/app/icon-search.svg';
+import { oaReport } from '@/shared/analytics';
 
 interface TypesList {
   id: number;
@@ -216,6 +217,10 @@ async function goGitee(verify: FormInstance | undefined) {
   verify.validate(async (res: boolean) => {
     if (res) {
       const url = `${giteeUrl}/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${issueData.issue_type_id}`;
+      oaReport('toGiteeCreateIssue', {
+        $utm_source: 'quick_issue',
+        jump_url: url,
+      });
       window.open(url);
     }
   });
@@ -260,6 +265,11 @@ function handelCreatIssue(
   createIssue(parmes).then(async (res) => {
     if (res.code === 200) {
       const jump_url = `${giteeUrl}/${issueData.repo}/issues/${res.data.number}`;
+      oaReport('noGiteeCreateIssue', {
+        $utm_source: 'quick_issue',
+        jump_url,
+        quick_issue_email: parmes.email,
+      });
       if (isGoGitee) {
         window.open(jump_url);
       }
