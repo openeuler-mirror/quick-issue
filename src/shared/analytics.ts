@@ -22,16 +22,16 @@ export const disableOA = () => {
 };
 
 export const reportPV = ($referrer?: string) => {
-  oa.report(OpenEventKeys.PV, $referrer ? () => ({ $referrer }) : undefined);
+  oaReport(OpenEventKeys.PV, $referrer ? { $referrer } : undefined);
 };
 
 export const reportPerformance = () => {
-  oa.report(OpenEventKeys.LCP);
-  oa.report(OpenEventKeys.INP);
-  oa.report(OpenEventKeys.PageBasePerformance);
+  oaReport(OpenEventKeys.LCP);
+  oaReport(OpenEventKeys.INP);
+  oaReport(OpenEventKeys.PageBasePerformance);
 };
 
-export const oaReport = async <T extends Record<string, any>>(
+export const oaReport = <T extends Record<string, any>>(
   event: string,
   eventData?: T | ((...opt: any[]) => Promise<T> | T),
   $service = 'quickissue',
@@ -40,18 +40,13 @@ export const oaReport = async <T extends Record<string, any>>(
     eventOptions?: any;
   }
 ) => {
-  let data: T | undefined;
-  if (eventData) {
-    data =
-      typeof eventData === 'function'
-        ? await (eventData as (...opt: any[]) => Promise<T> | T)()
-        : eventData;
-  }
-  await oa.report(
+  return oa.report(
     event,
-    () => ({
+    async (...opt) => ({
       $service,
-      ...data,
+      ...(typeof eventData === 'function'
+        ? await eventData(...opt)
+        : eventData),
     }),
     options
   );
