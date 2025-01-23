@@ -365,7 +365,7 @@ onMounted(async () => {
     }
     await getIssueSelectOption('types', null).then((res) => {
       // 手动筛选，只留两个场景 【开发|使用openEuler】
-      const sceneDescMap = {
+      const sceneDescMap: Record<string, string> = {
         '开发openEuler': '如构建场景/测试场景/发布场景/分析场景/问题反馈场景/其他场景',
         '使用openEuler': '如下载场景/使用文档场景/安装及迁移场景/其他场景',
       };
