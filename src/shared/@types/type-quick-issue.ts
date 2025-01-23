@@ -31,4 +31,5 @@ export interface IssueData {
   code: string;
   description: string;
   privacy: Array<string> | boolean;
+  isGiteeUser: boolean;
 }
