@@ -18,6 +18,7 @@ interface RequestConfig<D = any> extends AxiosRequestConfig {
   data?: D;
   $doException?: boolean; // 是否弹出错误提示框
   global?: boolean; // 是否为全局请求， 全局请求在清除请求池时，不清除
+  showLoading?: boolean; // 是否显示loading，默认是
 }
 interface ErrorResponse {
   msg: string;
@@ -84,15 +85,18 @@ const pendingPool: Map<string, any> = new Map();
  */
 const requestInterceptorId = request.interceptors.request.use(
   (config) => {
-    if (loadingCount === 0) {
-      loadingInstance = ElLoading.service({
-        fullscreen: true,
-        target: 'body',
-        text: 'Loading',
-        background: 'transparent',
-      });
+    if ((config as RequestConfig).showLoading !== false) {
+      if (loadingCount === 0) {
+        loadingInstance = ElLoading.service({
+          fullscreen: true,
+          target: 'body',
+          text: 'Loading',
+          background: 'transparent',
+        });
+      }
+      loadingCount++;
     }
-    loadingCount++;
+
     // 存储请求信息
     // 定义取消请求
     config.cancelToken = new axios.CancelToken((cancelFn) => {
@@ -119,12 +123,14 @@ const requestInterceptorId = request.interceptors.request.use(
 const responseInterceptorId = request.interceptors.response.use(
   // @ts-ignore
   (response: AxiosResponse) => {
-    loadingCount--;
-    if (loadingCount === 0 && loadingInstance) {
-      loadingInstance.close();
-      loadingInstance = null;
-    }
     const { config } = response;
+    if ((config as RequestConfig).showLoading !== false) {
+      loadingCount--;
+      if (loadingCount === 0 && loadingInstance) {
+        loadingInstance.close();
+        loadingInstance = null;
+      }
+    }
     // 请求完成，移除请求池
     if (config.url) {
       pendingPool.delete(config.url);
