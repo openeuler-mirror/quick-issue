@@ -219,7 +219,11 @@ async function goGitee(verify: FormInstance | undefined) {
   rules.privacy = [];
   verify.validate(async (res: boolean) => {
     if (res) {
-      const url = `${giteeUrl}/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${issueTypeId.value}`;
+      const url = `${giteeUrl}/${issueData.repo}/issues/new?title=${
+        issueData.title
+      }&issue%5Bissue_type_id%5D=${
+        issueTypeId.value
+      }&issue%5Bdescription%5D=${encodeURIComponent(issueData.description)}`;
       oaReport('toGiteeCreateIssue', {
         $utm_source: 'quick_issue',
         jump_url: url,
@@ -366,7 +370,7 @@ onMounted(async () => {
     await getIssueSelectOption('types', null).then((res) => {
       // 手动筛选，只留两个场景 【开发|使用openEuler】
       const sceneDescMap: Record<string, string> = {
-        '开发openEuler': '如构建场景/测试场景/发布场景/分析场景/问题反馈场景/其他场景',
+        '开发openEuler': '如构建场景/测试场景/发布场景/分析场景/其他场景',
         '使用openEuler': '如下载场景/使用文档场景/安装及迁移场景/其他场景',
       };
       typesList.value = res.data
@@ -413,7 +417,11 @@ watch(
         :class="lang === 'en' ? 'en-form' : ''"
       >
         <div class="form-liner is-gitee-user-radio">
-          <el-form-item :label="t('quickIssue.IS_GITEE_USER')" prop="isGiteeUser" required>
+          <el-form-item
+            :label="t('quickIssue.IS_GITEE_USER')"
+            prop="isGiteeUser"
+            required
+          >
             <ORadioGroup v-model="issueData.isGiteeUser">
               <ORadio :value="true">{{ t('quickIssue.YES') }}</ORadio>
               <ORadio :value="false">{{ t('quickIssue.NO') }}</ORadio>
@@ -482,6 +490,7 @@ watch(
             <OSelect
               v-model="issueData.repo"
               :listener-scorll="true"
+              :placeholder="t('quickIssue.SELECT')"
               @scorll-bottom="getNextPage()"
               @visible-change="changeState"
             >
@@ -517,7 +526,7 @@ watch(
           </el-form-item>
         </div>
         <transition-group name="fadeHeight">
-          <div class="gitee-user" v-if="issueData.isGiteeUser">
+          <div v-if="issueData.isGiteeUser" class="gitee-user">
             <OButton size="small" @click="goGitee(formRef)">
               <template #prefixIcon>
                 <OIcon>
@@ -527,7 +536,7 @@ watch(
               {{ t('quickIssue.GITTE_USER') }}
             </OButton>
           </div>
-          <div class="not-gitee-user" v-else>
+          <div v-else class="not-gitee-user">
             <div class="form-liner editor">
               <el-form-item
                 :label="t('quickIssue.DESCRIPTIVE')"
@@ -545,6 +554,7 @@ watch(
                 :label="t('quickIssue.EMAIL')"
                 prop="email"
                 required
+                class="left-form-item email"
               >
                 <OInput
                   v-model="issueData.email"
@@ -741,11 +751,15 @@ watch(
         .el-form-item__label {
           width: 64px;
           text-align: right;
-          justify-content: flex-end;
           color: var(--o-color-text1);
           font-size: var(--o-font-size-h7);
           flex-shrink: 0;
           padding-right: var(--o-spacing-h5);
+        }
+        &:not(.is-required) {
+          .el-form-item__label {
+            padding-left: 11px;
+          }
         }
       }
       .fill-width {
@@ -755,6 +769,9 @@ watch(
       .left-form-item {
         margin-right: var(--o-spacing-h2);
         width: 53%;
+        &.email {
+          width: auto;
+        }
       }
 
       .right-form-item {
@@ -779,7 +796,7 @@ watch(
       }
       .verify-code-form {
         .el-form-item__label {
-          width: 120px;
+          width: 88px;
         }
       }
     }
@@ -885,7 +902,7 @@ watch(
     .form-liner {
       .el-form-item {
         .el-form-item__label {
-          width: 105px;
+          width: 120px;
         }
       }
       &.is-gitee-user-radio {
