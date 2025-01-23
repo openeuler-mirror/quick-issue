@@ -36,7 +36,6 @@ import { ElMessage } from 'element-plus';
 import type { FormInstance, TabsPaneContext } from 'element-plus';
 
 import IconGitee from '~icons/app/icon-gitee.svg';
-import IconDown from '~icons/app/icon-pulldown.svg';
 import IconSearch from '~icons/app/icon-search.svg';
 import { oaReport } from '@/shared/analytics';
 
@@ -44,6 +43,7 @@ interface TypesList {
   id: number;
   name: string;
   template: string;
+  desc?: string;
 }
 const formRef = ref<FormInstance>();
 const { t } = useI18n();
@@ -78,7 +78,6 @@ const content = ref(t('quickIssue.SEND_CODE'));
 
 const totalTime = ref(60);
 const tabType = ref(titleList.value[0].key);
-const isGiteeUser = ref(false);
 const clock = ref();
 const challenge = ref('');
 const isVerifyShown = ref(false);
@@ -126,6 +125,7 @@ const issueData: IssueData = reactive({
   code: '',
   description: '',
   privacy: [],
+  isGiteeUser: true,
 });
 
 function getSigValue(val: string) {
@@ -166,9 +166,6 @@ function queryGetReq() {
   });
 }
 
-function changeStash() {
-  isGiteeUser.value = !isGiteeUser.value;
-}
 function changeEmail() {
   if (totalTime.value !== 60) {
     window.clearInterval(clock.value);
@@ -183,6 +180,7 @@ async function getCodeByEmail(verify: FormInstance | undefined) {
   rules.code = [];
   rules.privacy = privacyRules;
   rules.email = emailRules;
+  verify.clearValidate('code');
   verify.validate(async (res: boolean) => {
     if (totalTime.value === 60 && res) {
       isVerifyShown.value = true;
@@ -207,6 +205,11 @@ function sendVerifyEmail() {
     type: 'success',
   });
 }
+
+const issueTypeId = computed(() =>
+  Number(issueData.issue_type_id?.toString().split('__').at(-1))
+);
+
 async function goGitee(verify: FormInstance | undefined) {
   if (!verify) {
     return;
@@ -216,7 +219,7 @@ async function goGitee(verify: FormInstance | undefined) {
   rules.privacy = [];
   verify.validate(async (res: boolean) => {
     if (res) {
-      const url = `${giteeUrl}/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${issueData.issue_type_id}`;
+      const url = `${giteeUrl}/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${issueTypeId.value}`;
       oaReport('toGiteeCreateIssue', {
         $utm_source: 'quick_issue',
         jump_url: url,
@@ -240,7 +243,7 @@ async function submitForm(
     if (res) {
       const parmes = {
         title: issueData.title,
-        issue_type_id: issueData.issue_type_id,
+        issue_type_id: issueTypeId.value,
         email: issueData.email,
         code: issueData.code,
         repo: issueData.repo,
@@ -361,8 +364,22 @@ onMounted(async () => {
       repoParams.sig = issueData.sig;
     }
     await getIssueSelectOption('types', null).then((res) => {
-      typesList.value = res.data;
+      // 手动筛选，只留两个场景 【开发|使用openEuler】
+      const sceneDescMap = {
+        '开发openEuler': '如构建场景/测试场景/发布场景/分析场景/问题反馈场景/其他场景',
+        '使用openEuler': '如下载场景/使用文档场景/安装及迁移场景/其他场景',
+      };
+      typesList.value = res.data
+        .filter((v: TypesList) => !!sceneDescMap[v.name])
+        .map((v: TypesList) => {
+          return {
+            ...v,
+            id: `${v.name}__${v.id}`,
+            desc: sceneDescMap[v.name] || '',
+          };
+        });
     });
+    // 根据url中的type获取对应的模板
     if (getUrlParam('type')) {
       const targetType = typesList.value?.find((item) => {
         return item.name === decodeURI(getUrlParam('type'));
@@ -392,25 +409,37 @@ watch(
         :model="issueData"
         :rules="rules"
         label-position="left"
-        hide-required-asterisk
         class="issue-form"
         :class="lang === 'en' ? 'en-form' : ''"
       >
+        <div class="form-liner is-gitee-user-radio">
+          <el-form-item :label="t('quickIssue.IS_GITEE_USER')" prop="isGiteeUser" required>
+            <ORadioGroup v-model="issueData.isGiteeUser">
+              <ORadio :value="true">{{ t('quickIssue.YES') }}</ORadio>
+              <ORadio :value="false">{{ t('quickIssue.NO') }}</ORadio>
+            </ORadioGroup>
+          </el-form-item>
+        </div>
         <div class="form-liner">
           <el-form-item
             :label="t('quickIssue.TITLE')"
             prop="title"
-            class="fill-width"
+            class="left-form-item"
           >
             <OInput
               v-model="issueData.title"
               :placeholder="t('quickIssue.INPUT')"
             ></OInput>
           </el-form-item>
-          <el-form-item :label="t('quickIssue.TYPE')" prop="issue_type_id">
+          <el-form-item
+            :label="t('quickIssue.SCENARIO')"
+            prop="issue_type_id"
+            class="right-form-item"
+          >
             <OSelect
               v-model.string="issueData.issue_type_id"
               :placeholder="t('quickIssue.SELECT')"
+              placement="bottom-end"
               @change="handleTypeChange"
             >
               <ElOption
@@ -418,12 +447,19 @@ watch(
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
-              />
+              >
+                <div class="scene-item">
+                  <span class="scene-name">{{ item.name }}</span>
+                  <span v-if="item.desc" class="scene-desc"
+                    >({{ item.desc }})</span
+                  >
+                </div>
+              </ElOption>
             </OSelect>
           </el-form-item>
         </div>
         <div class="form-liner">
-          <el-form-item label="SIG" prop="sig" class="fill-width">
+          <el-form-item label="SIG" prop="sig" class="left-form-item">
             <OInput
               v-model="issueData.sig"
               :placeholder="t('quickIssue.INPUT')"
@@ -438,7 +474,11 @@ watch(
             >
           </el-form-item>
           <!-- 仓库查询 -->
-          <el-form-item :label="t('quickIssue.REPO_NAME')" prop="repo">
+          <el-form-item
+            :label="t('quickIssue.REPO_NAME')"
+            prop="repo"
+            class="right-form-item"
+          >
             <OSelect
               v-model="issueData.repo"
               :listener-scorll="true"
@@ -476,8 +516,8 @@ watch(
             </OSelect>
           </el-form-item>
         </div>
-        <div class="is-gitee-user">
-          <div class="gitee-user">
+        <transition-group name="fadeHeight">
+          <div class="gitee-user" v-if="issueData.isGiteeUser">
             <OButton size="small" @click="goGitee(formRef)">
               <template #prefixIcon>
                 <OIcon>
@@ -487,15 +527,7 @@ watch(
               {{ t('quickIssue.GITTE_USER') }}
             </OButton>
           </div>
-          <div class="unregistered" @click="changeStash">
-            <OButton size="small">{{ t('quickIssue.NOT_GITEE_USER') }}</OButton>
-            <OIcon class="icon-arrow" :class="isGiteeUser ? 'reversal' : ''">
-              <IconDown />
-            </OIcon>
-          </div>
-        </div>
-        <transition-group name="fadeHeight">
-          <div v-if="isGiteeUser" class="not-gitee-user">
+          <div class="not-gitee-user" v-else>
             <div class="form-liner editor">
               <el-form-item
                 :label="t('quickIssue.DESCRIPTIVE')"
@@ -509,7 +541,11 @@ watch(
               </el-form-item>
             </div>
             <div class="form-liner verify-email">
-              <el-form-item :label="t('quickIssue.EMAIL')" prop="email">
+              <el-form-item
+                :label="t('quickIssue.EMAIL')"
+                prop="email"
+                required
+              >
                 <OInput
                   v-model="issueData.email"
                   :placeholder="t('quickIssue.INPUT')"
@@ -612,7 +648,7 @@ watch(
 .fadeHeight-enter-active,
 .fadeHeight-leave-active {
   transition: all 0.5s;
-  max-height: 530px;
+  max-height: 6000px;
 }
 .fadeHeight-enter,
 .fadeHeight-leave-to {
@@ -672,6 +708,7 @@ watch(
             padding-top: var(--o-spacing-h9);
           }
           .o-select {
+            width: 100%;
             .o-icon {
               padding: 0;
               color: inherit;
@@ -702,7 +739,7 @@ watch(
           }
         }
         .el-form-item__label {
-          width: 52px;
+          width: 64px;
           text-align: right;
           justify-content: flex-end;
           color: var(--o-color-text1);
@@ -714,6 +751,23 @@ watch(
       .fill-width {
         margin-right: var(--o-spacing-h2);
         width: 100%;
+      }
+      .left-form-item {
+        margin-right: var(--o-spacing-h2);
+        width: 53%;
+      }
+
+      .right-form-item {
+        width: 44%;
+      }
+
+      &.is-gitee-user-radio {
+        .el-form-item__label {
+          width: 161px;
+        }
+        .o-radio-label {
+          font-size: 16px;
+        }
       }
     }
 
@@ -742,6 +796,7 @@ watch(
       margin-top: var(--o-spacing-h3);
       .fill-width {
         margin: 0;
+        align-items: flex-start;
       }
     }
     .obuton-box {
@@ -753,6 +808,12 @@ watch(
       .center-button {
         margin: 0 var(--o-spacing-h4);
       }
+    }
+    .gitee-user {
+      margin-top: var(--o-spacing-h2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .is-gitee-user {
       display: flex;
@@ -825,7 +886,14 @@ watch(
       .el-form-item {
         .el-form-item__label {
           width: 105px;
-          justify-content: flex-start;
+        }
+      }
+      &.is-gitee-user-radio {
+        .el-form-item__label {
+          width: 246px;
+        }
+        .o-radio-label {
+          font-size: 16px;
         }
       }
     }
@@ -833,7 +901,6 @@ watch(
       .verify-code-form {
         .el-form-item__label {
           width: 180px;
-          justify-content: flex-end;
         }
       }
     }
@@ -910,6 +977,23 @@ watch(
   }
   .el-dialog__footer {
     padding: 0;
+  }
+}
+.scene-item {
+  .scene-name {
+    margin-right: 10px;
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .scene-desc {
+    color: #999;
+    font-size: 12px;
+    line-height: 22px;
+  }
+}
+.selected {
+  .scene-desc {
+    color: inherit;
   }
 }
 </style>
