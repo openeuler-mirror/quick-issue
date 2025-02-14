@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { useLangStore } from '@/stores';
-import { reportPV } from '@/shared/analytics';
 
 export const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/zh/issues' },
@@ -34,20 +33,9 @@ export const router = createRouter({
   },
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
   // 设置语言
   const langStore = useLangStore();
   const lang = to.fullPath.includes('en') ? 'en' : 'zh';
   langStore.lang = lang;
-
-  if (from.path === '/') {
-    return;
-  }
-  to.meta.$referrer = window.location.href;
-});
-
-router.afterEach((to, from) => {
-  if (to.path !== from.path) {
-    reportPV(to.meta.$referrer as string);
-  }
 });

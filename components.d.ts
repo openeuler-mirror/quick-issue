@@ -14,6 +14,7 @@ declare module 'vue' {
     AppIssue: typeof import('./src/components/AppIssue.vue')['default']
     AppPull: typeof import('./src/components/AppPull.vue')['default']
     AppVerify: typeof import('./src/components/AppVerify.vue')['default']
+    CookieNotice: typeof import('./src/components/CookieNotice.vue')['default']
     DocAnchor: typeof import('./src/components/DocAnchor.vue')['default']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']

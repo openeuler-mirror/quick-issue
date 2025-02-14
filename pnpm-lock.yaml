@@ -31,6 +31,9 @@ importers:
       js-base64:
         specifier: ^3.7.5
         version: 3.7.5
+      js-cookie:
+        specifier: ^3.0.5
+        version: 3.0.5
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -53,6 +56,9 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0(vue@3.3.4)
     devDependencies:
+      '@types/js-cookie':
+        specifier: ^3.0.6
+        version: 3.0.6
       '@types/lodash-es':
         specifier: ^4.17.7
         version: 4.17.7
@@ -437,6 +443,9 @@ packages:
 
   '@types/glob@7.2.0':
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
+
+  '@types/js-cookie@3.0.6':
+    resolution: {integrity: sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==}
 
   '@types/json-schema@7.0.11':
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
@@ -1742,6 +1751,10 @@ packages:
 
   js-base64@3.7.5:
     resolution: {integrity: sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA==}
+
+  js-cookie@3.0.5:
+    resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
+    engines: {node: '>=14'}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -3184,6 +3197,8 @@ snapshots:
       '@types/minimatch': 5.1.2
       '@types/node': 18.16.19
 
+  '@types/js-cookie@3.0.6': {}
+
   '@types/json-schema@7.0.11': {}
 
   '@types/lodash-es@4.17.7':
@@ -4578,6 +4593,8 @@ snapshots:
   javascript-stringify@1.6.0: {}
 
   js-base64@3.7.5: {}
+
+  js-cookie@3.0.5: {}
 
   js-tokens@4.0.0: {}
 
