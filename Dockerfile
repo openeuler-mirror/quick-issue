@@ -1,4 +1,4 @@
-FROM node:18.20.1 as Builder
+FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/node:latest as Builder
 
 RUN mkdir -p /home/quick-isuue/web
 WORKDIR /home/quick-isuue/web
@@ -11,9 +11,9 @@ RUN pnpm install
 RUN pnpm build
 RUN ls /home/quick-isuue/web
 
-FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/openeuler/nginx:1.24.0-22.03-lts-sp1 as NginxBuilder
+FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/openeuler/nginx:latest as NginxBuilder
 
-FROM openeuler/openeuler:22.03-lts-sp1
+FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/openeuler/base:latest
 
 ENV NGINX_CONFIG_FILE /etc/nginx/nginx.conf
 ENV NGINX_CONFIG_PATH /etc/nginx/
@@ -36,7 +36,7 @@ COPY --from=Builder /home/quick-isuue/web/dist /usr/share/nginx/www/
 WORKDIR /home/quick-isuue/web
 RUN sed -i "s|repo.openeuler.org|mirrors.pku.edu.cn/openeuler|g" /etc/yum.repos.d/openEuler.repo \
     && yum update -y \
-    && yum install -y findutils passwd shadow \
+    && yum install -y findutils passwd shadow pcre-devel \
     && find /usr/share/nginx/www -type d -print0| xargs -0 chmod 500 \
     && find /usr/share/nginx/www -type f -print0| xargs -0 chmod 400
 
