@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.7",
-    "@types/node": "^18.16.14",
+    "@types/node": "18.16.19",
     "@types/prismjs": "^1.26.0",
     "@vitejs/plugin-vue": "^3.2.0",
     "@vitejs/plugin-vue-jsx": "^2.1.1",
