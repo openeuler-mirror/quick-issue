@@ -14,7 +14,7 @@ type queryPermissionParams = {
   community: string;
 };
 
-const handleError = (err) => {
+const handleError = (err: any) => {
   const message = err?.response?.data?.message || '';
   if (message && message !== 'token expires') {
     ElMessage({
