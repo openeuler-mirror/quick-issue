@@ -13,9 +13,10 @@ export function getSigLandscape(lang: string): Promise<GroupInfo[]> {
     const info: GroupInfo[] = [];
     for (let i = 0, len = data.length; i < len; i++) {
       const item = data[i];
-      lang === 'zh'
-        ? ''
-        : ((item.group = item.en_group), (item.feature = item.en_feature));
+      if (lang !== 'zh') {
+        item.group = item.en_group;
+        item.feature = item.en_feature;
+      }
       if (item.group === '' && item.feature === '') {
         continue;
       }

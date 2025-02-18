@@ -144,7 +144,7 @@ const responseInterceptorId = request.interceptors.response.use(
     }
     const { config } = err;
     if (!(config as RequestConfig).$doException) {
-      const response = err.response as AxiosResponse<ErrorResponse>;
+      const response = err.response as any;
       const message = response?.data?.msg || err.message;
       ElMessage({
         type: 'error',

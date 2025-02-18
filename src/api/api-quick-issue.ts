@@ -29,7 +29,9 @@ export function getRepoIssue(params: IssueQueryData) {
  * @return {Array}
  */
 export function getIssueSelectOption(type: string, params: object | null) {
-  type === 'exLabels' ? (type = 'labels') : '';
+  if (type === 'exLabels') {
+    type = 'labels';
+  }
   const url = `/api-issues/issues/${type}`;
   return request.get(url, { params }).then((res: AxiosResponse) => res.data);
 }
@@ -99,7 +101,9 @@ export function getRepoPull(params: any) {
  * @return {Array}
  */
 export function getPrSelectOption(type: string, params: object | null) {
-  type === 'exLabels' ? (type = 'labels') : '';
+  if (type === 'exLabels') {
+    type = 'labels';
+  }
   const url = `/api-issues/pulls/${type}`;
   return request.get(url, { params }).then((res: AxiosResponse) => res.data);
 }
