@@ -13,6 +13,16 @@ import { ElMessage } from 'element-plus';
 type queryPermissionParams = {
   community: string;
 };
+
+const handleError = (err) => {
+  const message = err?.response?.data?.message || '';
+  if (message && message !== 'token expires') {
+    ElMessage({
+      type: 'error',
+      message: err.message,
+    });
+  }
+}
 export function queryPermission(params: queryPermissionParams) {
   const url = '/api-omapi/oneid/personal/center/user';
   const { token } = getUserAuth();
@@ -27,13 +37,7 @@ export function queryPermission(params: queryPermissionParams) {
     })
     .then((res: AxiosResponse) => res.data)
     .catch((err) => {
-      const message = err?.response?.data?.message || '';
-      if (message && message !== 'token expires') {
-        ElMessage({
-          type: 'error',
-          message: err.message,
-        });
-      }
+      handleError(err);
     });
 }
 
@@ -53,12 +57,6 @@ export function queryIDToken() {
     })
     .then((res: AxiosResponse) => res.data)
     .catch((err) => {
-      const message = err?.response?.data?.message || '';
-      if (message && message !== 'token expires') {
-        ElMessage({
-          type: 'error',
-          message: err.message,
-        });
-      }
+      handleError(err);
     });
 }
