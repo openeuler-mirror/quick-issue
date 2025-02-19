@@ -10,6 +10,7 @@ import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from '@/components/AppFooter.vue';
 
 import { refreshInfo } from '@/shared/login';
+import CookieNotice from './components/CookieNotice.vue';
 
 refreshInfo();
 const { locale } = useI18n();
@@ -31,6 +32,7 @@ watch(
 <template>
   <header><AppHeader /></header>
   <main><RouterView></RouterView></main>
+  <CookieNotice />
   <footer><AppFooter /></footer>
 </template>
 
