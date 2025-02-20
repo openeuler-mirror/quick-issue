@@ -15,7 +15,7 @@ import { enableOA } from '@/shared/analytics';
 import { disableOA } from '@/shared/analytics';
 
 const { lePadV } = useScreen();
-const { locale } = useI18n();
+const { t: $t, locale } = useI18n();
 const isZh = computed(() => locale.value === 'zh');
 const aboutCookiesUrl = computed(
   () => `https://www.openeuler.org/${locale.value}/other/cookies/`

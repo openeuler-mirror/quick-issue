@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { linksData, linksData2 } from '@/config';
+import { linksData2 } from '@/config';
 import { useLangStore } from '@/stores';
 import { getYearByOffset } from '@/shared/utils';
 
@@ -104,18 +104,6 @@ const footBg = {
                   <p class="txt">{{ item.label }}</p>
                 </div>
               </div>
-            </div>
-            <div class="footer-links" :class="{ iszh: lang === 'zh' }">
-              <a
-                v-for="item in linksData[lang]"
-                :key="item.id"
-                :href="item.path"
-                class="links-logo"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <img :src="item.logo" alt="" />
-              </a>
             </div>
           </div>
         </div>
@@ -221,7 +209,7 @@ $color: #fff;
     }
     .inner {
       display: flex;
-      align-items: end;
+      align-items: center;
       justify-content: space-between;
       padding: 18px 0 32px;
       position: relative;
@@ -310,7 +298,6 @@ $color: #fff;
       display: flex;
       justify-content: right;
       gap: 16px;
-      margin-bottom: 16px;
       .code-pop {
         position: relative;
         height: 20px;
