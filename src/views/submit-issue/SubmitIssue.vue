@@ -392,7 +392,9 @@ onMounted(async () => {
       issueData.description = targetType?.template || '';
     }
     landscapeInfo.value = await getSigLandscape(lang.value);
-  } catch (err) {}
+  } catch (err) {
+    //  intentionally empty
+  }
 });
 watch(
   () => repoParams,
