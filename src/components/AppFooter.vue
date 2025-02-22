@@ -80,6 +80,8 @@ const footBg = {
                 :key="link.URL"
                 :href="link.URL"
                 class="link"
+                target="_blank"
+                rel="noopener noreferrer"
                 >{{ link.NAME }}</a
               >
             </div>
