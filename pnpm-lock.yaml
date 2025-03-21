@@ -23,8 +23,8 @@ importers:
         specifier: ^0.0.9
         version: 0.0.9
       axios:
-        specifier: 1.7.4
-        version: 1.7.4
+        specifier: 1.8.2
+        version: 1.8.2
       element-plus:
         specifier: ^2.3.4
         version: 2.3.4(vue@3.3.4)
@@ -44,14 +44,14 @@ importers:
         specifier: ^2.1.6
         version: 2.1.6(typescript@4.9.5)(vue@3.3.4)
       prismjs:
-        specifier: ^1.29.0
-        version: 1.29.0
+        specifier: 1.30.0
+        version: 1.30.0
       vue:
         specifier: ^3.3.4
         version: 3.3.4
       vue-i18n:
-        specifier: 9.14.2
-        version: 9.14.2(vue@3.3.4)
+        specifier: 9.14.3
+        version: 9.14.3(vue@3.3.4)
       vue-router:
         specifier: ^4.3.0
         version: 4.3.0(vue@3.3.4)
@@ -345,16 +345,16 @@ packages:
   '@iconify/utils@2.1.5':
     resolution: {integrity: sha512-6MvDI+I6QMvXn5rK9KQGdpEE4mmLTcuQdLZEiX5N+uZB+vc4Yw9K1OtnOgkl8mp4d9X0UrILREyZgF1NUwUt+Q==}
 
-  '@intlify/core-base@9.14.2':
-    resolution: {integrity: sha512-DZyQ4Hk22sC81MP4qiCDuU+LdaYW91A6lCjq8AWPvY3+mGMzhGDfOCzvyR6YBQxtlPjFqMoFk9ylnNYRAQwXtQ==}
+  '@intlify/core-base@9.14.3':
+    resolution: {integrity: sha512-nbJ7pKTlXFnaXPblyfiH6awAx1C0PWNNuqXAR74yRwgi5A/Re/8/5fErLY0pv4R8+EHj3ZaThMHdnuC/5OBa6g==}
     engines: {node: '>= 16'}
 
-  '@intlify/message-compiler@9.14.2':
-    resolution: {integrity: sha512-YsKKuV4Qv4wrLNsvgWbTf0E40uRv+Qiw1BeLQ0LAxifQuhiMe+hfTIzOMdWj/ZpnTDj4RSZtkXjJM7JDiiB5LQ==}
+  '@intlify/message-compiler@9.14.3':
+    resolution: {integrity: sha512-ANwC226BQdd+MpJ36rOYkChSESfPwu3Ss2Faw0RHTOknYLoHTX6V6e/JjIKVDMbzs0/H/df/rO6yU0SPiWHqNg==}
     engines: {node: '>= 16'}
 
-  '@intlify/shared@9.14.2':
-    resolution: {integrity: sha512-uRAHAxYPeF+G5DBIboKpPgC/Waecd4Jz8ihtkpJQD5ycb5PwXp0k/+hBGl5dAjwF7w+l74kz/PKA8r8OK//RUw==}
+  '@intlify/shared@9.14.3':
+    resolution: {integrity: sha512-hJXz9LA5VG7qNE00t50bdzDv8Z4q9fpcL81wj4y4duKavrv0KM8YNLTwXNEFINHjTsfrG9TXvPuEjVaAvZ7yWg==}
     engines: {node: '>= 16'}
 
   '@jridgewell/gen-mapping@0.3.3':
@@ -771,8 +771,8 @@ packages:
     engines: {node: '>= 4.5.0'}
     hasBin: true
 
-  axios@1.7.4:
-    resolution: {integrity: sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==}
+  axios@1.8.2:
+    resolution: {integrity: sha512-ls4GYBm5aig9vWx8AWDSGLpnpDQRtWAfrjU+EuytuODrFBkqesN2RkOQCBzrA1RQNHw1SmRMSDDDSwzNAYQ6Rg==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -2254,8 +2254,8 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
-  prismjs@1.29.0:
-    resolution: {integrity: sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==}
+  prismjs@1.30.0:
+    resolution: {integrity: sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw==}
     engines: {node: '>=6'}
 
   proxy-from-env@1.1.0:
@@ -2718,20 +2718,14 @@ packages:
       '@vue/composition-api':
         optional: true
 
-  vue-eslint-parser@9.3.0:
-    resolution: {integrity: sha512-48IxT9d0+wArT1+3wNIy0tascRoywqSUe2E1YalIC1L8jsUGe5aJQItWfRok7DVFGz3UYvzEI7n5wiTXsCMAcQ==}
-    engines: {node: ^14.17.0 || >=16.0.0}
-    peerDependencies:
-      eslint: '>=6.0.0'
-
   vue-eslint-parser@9.4.3:
     resolution: {integrity: sha512-2rYRLWlIpaiN8xbPiDyXZXRgLGOtWxERV7ND5fFAv5qo1D2N9Fu9MNajBNc6o13lZ+24DAWCkQCvj4klgmcITg==}
     engines: {node: ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: '>=6.0.0'
 
-  vue-i18n@9.14.2:
-    resolution: {integrity: sha512-JK9Pm80OqssGJU2Y6F7DcM8RFHqVG4WkuCqOZTVsXkEzZME7ABejAUqUdA931zEBedc4thBgSUWxeQh4uocJAQ==}
+  vue-i18n@9.14.3:
+    resolution: {integrity: sha512-C+E0KE8ihKjdYCQx8oUkXX+8tBItrYNMnGJuzEPevBARQFUN2tKez6ZVOvBrWH0+KT5wEk3vOWjNk7ygb2u9ig==}
     engines: {node: '>= 16'}
     peerDependencies:
       vue: ^3.0.0
@@ -3096,17 +3090,17 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@intlify/core-base@9.14.2':
+  '@intlify/core-base@9.14.3':
     dependencies:
-      '@intlify/message-compiler': 9.14.2
-      '@intlify/shared': 9.14.2
+      '@intlify/message-compiler': 9.14.3
+      '@intlify/shared': 9.14.3
 
-  '@intlify/message-compiler@9.14.2':
+  '@intlify/message-compiler@9.14.3':
     dependencies:
-      '@intlify/shared': 9.14.2
+      '@intlify/shared': 9.14.3
       source-map-js: 1.0.2
 
-  '@intlify/shared@9.14.2': {}
+  '@intlify/shared@9.14.3': {}
 
   '@jridgewell/gen-mapping@0.3.3':
     dependencies:
@@ -3141,7 +3135,7 @@ snapshots:
       markdown-it-attrs: 4.1.6(markdown-it@12.3.2)
       markdown-it-container: 3.0.0
       mermaid: 10.9.1
-      prismjs: 1.29.0
+      prismjs: 1.30.0
       resize-observer-polyfill: 1.5.1
       vant: 3.6.12(vue@3.3.4)
       vue: 3.3.4
@@ -3500,7 +3494,7 @@ snapshots:
       markdown-it-chain: 1.3.0(markdown-it@12.3.2)
       markdown-it-emoji: 1.4.0
       markdown-it-table-of-contents: 0.4.4
-      prismjs: 1.29.0
+      prismjs: 1.30.0
     transitivePeerDependencies:
       - supports-color
 
@@ -3610,7 +3604,7 @@ snapshots:
 
   atob@2.1.2: {}
 
-  axios@1.7.4:
+  axios@1.8.2:
     dependencies:
       follow-redirects: 1.15.6
       form-data: 4.0.0
@@ -4171,7 +4165,7 @@ snapshots:
       nth-check: 2.1.1
       postcss-selector-parser: 6.0.13
       semver: 6.3.1
-      vue-eslint-parser: 9.3.0(eslint@8.56.0)
+      vue-eslint-parser: 9.4.3(eslint@8.56.0)
       xml-name-validator: 4.0.0
     transitivePeerDependencies:
       - supports-color
@@ -5194,7 +5188,7 @@ snapshots:
 
   prettier@3.2.5: {}
 
-  prismjs@1.29.0: {}
+  prismjs@1.30.0: {}
 
   proxy-from-env@1.1.0: {}
 
@@ -5628,19 +5622,6 @@ snapshots:
     dependencies:
       vue: 3.3.4
 
-  vue-eslint-parser@9.3.0(eslint@8.56.0):
-    dependencies:
-      debug: 4.3.4
-      eslint: 8.56.0
-      eslint-scope: 7.2.0
-      eslint-visitor-keys: 3.4.1
-      espree: 9.5.2
-      esquery: 1.5.0
-      lodash: 4.17.21
-      semver: 6.3.1
-    transitivePeerDependencies:
-      - supports-color
-
   vue-eslint-parser@9.4.3(eslint@8.56.0):
     dependencies:
       debug: 4.3.4
@@ -5654,10 +5635,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vue-i18n@9.14.2(vue@3.3.4):
+  vue-i18n@9.14.3(vue@3.3.4):
     dependencies:
-      '@intlify/core-base': 9.14.2
-      '@intlify/shared': 9.14.2
+      '@intlify/core-base': 9.14.3
+      '@intlify/shared': 9.14.3
       '@vue/devtools-api': 6.6.1
       vue: 3.3.4
 
