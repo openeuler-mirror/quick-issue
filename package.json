@@ -23,16 +23,16 @@
   "dependencies": {
     "@kangc/v-md-editor": "^2.3.18",
     "@opensig/open-analytics": "^0.0.9",
-    "axios": "1.7.4",
+    "axios": "1.8.2",
     "element-plus": "^2.3.4",
     "js-base64": "^3.7.5",
     "js-cookie": "^3.0.5",
     "lodash-es": "^4.17.21",
     "opendesign": "link:opendesign",
     "pinia": "^2.1.6",
-    "prismjs": "^1.29.0",
+    "prismjs": "1.30.0",
     "vue": "^3.3.4",
-    "vue-i18n": "9.14.2",
+    "vue-i18n": "9.14.3",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
