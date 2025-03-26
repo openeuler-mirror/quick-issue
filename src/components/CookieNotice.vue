@@ -9,10 +9,12 @@ import {
 import { useScreen } from './hooks/useScreen';
 import { useI18n } from 'vue-i18n';
 
-import IconClose from '~icons/app/icon-close.svg';
+// import IconClose from '~icons/app/icon-close.svg';
+
 import { useRoute, useRouter } from 'vue-router';
 import { enableOA } from '@/shared/analytics';
 import { disableOA } from '@/shared/analytics';
+import IconClose from './IconClose.vue';
 
 const { lePadV } = useScreen();
 const { t: $t, locale } = useI18n();
@@ -179,12 +181,17 @@ watch(
       </div>
     </div>
     <ElDialog
+      :show-close="false"
       v-model="isDlgVisible"
       :width="lePadV ? '90%' : '50%'"
       :title="$t('cookie.manage')"
       destroy-on-close
       :before-close="onDlgChange"
     >
+      <template #header="{ close, titleId, titleClass }">
+        <span :id="titleId" :class="titleClass">{{ $t('cookie.manage') }}</span>
+        <IconClose @click="close" style="position: absolute; top: 8px; right: 8px" />
+      </template>
       <div class="cookie-dlg-content">
         <div class="content-item">
           <div class="item-header">
@@ -312,6 +319,24 @@ watch(
   }
 
   .o-button {
+    border-radius: 32px;
+    --o-button-bg-color_hover: var(--o-color-kleinblue5);
+    --o-button-bg-color_active: var(--o-color-kleinblue4);
+    --o-button-border_hover: 1px solid var(--o-color-kleinblue5);
+    --o-button-border_active: 1px solid var(--o-color-kleinblue4);
+    transition: all 0.2s cubic-bezier(.2, 0, 0, 1);
+    html[class="dark"] & {
+      --o-button-bg-color_hover: var(--o-color-kleinblue7);
+      --o-button-bg-color_active: var(--o-color-kleinblue8);
+      --o-button-border_hover: 1px solid var(--o-color-kleinblue7);
+      --o-button-border_active: 1px solid var(--o-color-kleinblue8);
+    }
+    &:hover {
+      color: var(--o-color-white);
+    }
+    &:active {
+      color: var(--o-color-white);
+    }
     @media (max-width: 840px) {
       width: 100%;
       justify-content: center;
@@ -319,16 +344,33 @@ watch(
   }
 }
 
+.dialog-footer .o-button {
+  border-radius: 32px;
+  --o-button-bg-color_hover: var(--o-color-kleinblue5);
+  --o-button-bg-color_active: var(--o-color-kleinblue4);
+  --o-button-border_hover: 1px solid var(--o-color-kleinblue5);
+  --o-button-border_active: 1px solid var(--o-color-kleinblue4);
+  transition: all 0.2s cubic-bezier(.2, 0, 0, 1);
+  html[class="dark"] & {
+    --o-button-bg-color_hover: var(--o-color-kleinblue7);
+    --o-button-bg-color_active: var(--o-color-kleinblue8);
+    --o-button-border_hover: 1px solid var(--o-color-kleinblue7);
+    --o-button-border_active: 1px solid var(--o-color-kleinblue8);
+  }
+  &:hover {
+    color: var(--o-color-white);
+  }
+  &:active {
+    color: var(--o-color-white);
+  }
+}
+
 .cookie-notice-close {
   position: absolute;
   top: 12px;
-  right: 24px;
+  right: 44px;
   cursor: pointer;
   transform-origin: center;
-  color: var(--e-color-text1);
-  &:hover {
-    color: var(--e-color-brand1);
-  }
 }
 
 :deep(.el-dialog) {
