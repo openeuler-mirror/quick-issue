@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n';
 // import IconClose from '~icons/app/icon-close.svg';
 
 import { useRoute, useRouter } from 'vue-router';
-import { enableOA } from '@/shared/analytics';
+import { enableOA, removeHM } from '@/shared/analytics';
 import { disableOA } from '@/shared/analytics';
 import IconClose from './IconClose.vue';
 
@@ -77,6 +77,7 @@ onMounted(() => {
     enableOA(router);
   } else {
     disableOA();
+    removeHM();
   }
 });
 
@@ -108,6 +109,7 @@ const rejectAll = () => {
   );
   toggleNoticeVisible(false);
   disableOA();
+  removeHM();
 };
 
 const handleSave = () => {

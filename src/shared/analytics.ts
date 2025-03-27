@@ -6,6 +6,7 @@ import {
 import { reportAnalytics } from '@/api/api-analytics';
 import { Router } from 'vue-router';
 import { COOKIE_AGREED_STATUS, useCookieStore } from '@/stores/cookies';
+import { removeCookie } from './utils';
 
 export const oa = new OpenAnalytics({
   appKey: 'openEuler',
@@ -14,6 +15,7 @@ export const oa = new OpenAnalytics({
       useCookieStore().getUserCookieStatus() !== COOKIE_AGREED_STATUS.ALL_AGREED
     ) {
       disableOA();
+      removeHM();
       return;
     }
     reportAnalytics(data);
@@ -61,6 +63,29 @@ export const disableOA = () => {
     localStorage.removeItem(key);
   });
 };
+
+export const removeHM = () => {
+  const hm = /^hm/i;
+  document.cookie
+    .split(';')
+    .map((c) => c.trim())
+    .forEach((c) => {
+      const key = decodeURIComponent(c.split('=')[0]);
+      if (hm.test(key)) {
+        removeCookie(key);
+      }
+    });
+  [sessionStorage, localStorage].forEach((storage) => {
+    const keys = [];
+    for (let i = 0; i < storage.length; i++) {
+      const key = storage.key(i)!;
+      if (hm.test(key)) {
+        keys.push(key);
+      }
+    }
+    keys.forEach(key => storage.removeItem(key));
+  });
+}
 
 export const reportPV = ($referrer?: string) => {
   oaReport(OpenEventKeys.PV, $referrer ? { $referrer } : undefined);
