@@ -16,7 +16,7 @@ import IconLogin from '~icons/app/icon-login.svg';
 const { t, locale } = useI18n();
 
 const lang = computed(() => {
-  return useLangStore().lang;
+  return useLangStore().lang === 'zh' ? 'zh' : 'en';
 });
 
 const { token } = getUserAuth();
@@ -62,11 +62,14 @@ watch(
   }
 );
 
+const protalUrl = computed(() => {
+  return `${import.meta.env.VITE_PORTAL_ORIGIN}/${lang.value}`;
+});
+
 const jumpToUserZone = () => {
-  const language = lang.value === 'zh' ? 'zh' : 'en';
-  const origin = import.meta.env.VITE_LOGIN_ORIGIN;
-  window.open(`${origin}/${language}/profile`, '_black');
+  window.open(`${protalUrl.value}/workspace`, '_black');
 };
+
 </script>
 
 <template>
@@ -75,7 +78,7 @@ const jumpToUserZone = () => {
       <div class="header-logo">
         <img class="quickissue-logo" :src="QuickIssueLogo" alt="" />
         <span class="line"></span>
-        <a target="_blank" rel="noopener noreferrer" :href="`https://www.openeuler.org/${lang}/`"
+        <a target="_blank" rel="noopener noreferrer" :href="protalUrl"
           ><img class="community-logo" :src="communityLogoWhite"
         /></a>
       </div>
