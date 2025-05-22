@@ -589,7 +589,7 @@ watch(
                   <OCheckbox value="true">
                     {{ t('quickIssue.PRIVACY_TEXT') }}
                     <a
-                      :href="`https://www.openeuler.org/${lang}/other/privacy/`"
+                      :href="`${import.meta.env.VITE_MAIN_DOMAIN_URL}/${lang}/other/privacy/`"
                       target="_blank"
                       >{{ t('quickIssue.PRIVACY') }}</a
                     >

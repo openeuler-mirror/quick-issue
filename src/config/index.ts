@@ -80,37 +80,37 @@ export const linksData2 = {
   zh: [
     {
       NAME: '品牌',
-      URL: 'https://www.openeuler.org/zh/other/brand/',
+      URL: `${import.meta.env.VITE_MAIN_DOMAIN_URL}/zh/other/brand/`,
     },
     {
       NAME: '隐私政策',
-      URL: 'https://www.openeuler.org/zh/other/privacy/',
+      URL: `${import.meta.env.VITE_MAIN_DOMAIN_URL}/zh/other/privacy/`,
     },
     {
       NAME: '法律声明',
-      URL: 'https://www.openeuler.org/zh/other/legal/',
+      URL: `${import.meta.env.VITE_MAIN_DOMAIN_URL}/zh/other/legal/`,
     },
     {
       NAME: '关于cookies',
-      URL: 'https://www.openeuler.org/zh/other/cookies/',
+      URL: `${import.meta.env.VITE_MAIN_DOMAIN_URL}/zh/other/cookies/`,
     },
   ],
   en: [
     {
       NAME: 'Trademark',
-      URL: 'https://www.openeuler.org/en/other/brand/',
+      URL: `${import.meta.env.VITE_MAIN_DOMAIN_URL}/en/other/brand/`,
     },
     {
       NAME: 'Privacy Policy',
-      URL: 'https://www.openeuler.org/en/other/privacy/',
+      URL: `${import.meta.env.VITE_MAIN_DOMAIN_URL}/en/other/privacy/`,
     },
     {
       NAME: 'Legal Notice',
-      URL: 'https://www.openeuler.org/en/other/legal/',
+      URL: `${import.meta.env.VITE_MAIN_DOMAIN_URL}/en/other/legal/`,
     },
     {
       NAME: 'About Cookies',
-      URL: 'https://www.openeuler.org/en/other/cookies/',
+      URL: `${import.meta.env.VITE_MAIN_DOMAIN_URL}/en/other/cookies/`,
     },
   ],
 };
