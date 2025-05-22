@@ -63,7 +63,7 @@ watch(
 );
 
 const protalUrl = computed(() => {
-  return `${import.meta.env.VITE_PORTAL_ORIGIN}/${lang.value}`;
+  return `${import.meta.env.VITE_MAIN_DOMAIN_URL}/${lang.value}`;
 });
 
 const jumpToUserZone = () => {

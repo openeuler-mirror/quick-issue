@@ -20,7 +20,7 @@ const { lePadV } = useScreen();
 const { t: $t, locale } = useI18n();
 const isZh = computed(() => locale.value === 'zh');
 const aboutCookiesUrl = computed(
-  () => `https://www.openeuler.org/${locale.value}/other/cookies/`
+  () => `${import.meta.env.VITE_MAIN_DOMAIN_URL}/${locale.value}/other/cookies/`
 );
 
 const cookieStore = useCookieStore();
