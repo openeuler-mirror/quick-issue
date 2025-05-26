@@ -12,5 +12,7 @@ export default {
     LICENSED_2: 'the MulanPSL2',
     QR_CODE: 'WeChat Subscription',
     QR_ASSISTANT: 'WeChat Assistant',
+    BEIAN_1: 'J. ICP B. No. 2020036654-1',
+    BEIAN_2: 'J.G.W.A.B. No. 11030102011597'
   },
 };

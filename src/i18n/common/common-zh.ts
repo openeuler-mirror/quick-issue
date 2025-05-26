@@ -12,5 +12,7 @@ export default {
     LICENSED_2: '木兰宽松许可证第2版（MulanPSL2）',
     QR_CODE: 'openEuler公众号',
     QR_ASSISTANT: 'openEuler小助手',
+    BEIAN_1: '京ICP备2020036654号-1',
+    BEIAN_2: '京公网安备 11030102011597 号'
   },
 };

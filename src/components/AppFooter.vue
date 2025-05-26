@@ -13,6 +13,7 @@ import LogoFooter1 from '@/assets/footer-logo1.png';
 import LogoAtom from '@/assets/footer/atom-logo.svg';
 import FooterBg from '@/assets/footer/footer-bg.png';
 import FooterBgMo from '@/assets/footer/footer-bg-mo.png';
+import police from '@/assets/footer/police.png';
 
 // 公众号、小助手
 import CodeTitleXzs from '@/assets/footer/img-xzs.png';
@@ -85,13 +86,20 @@ const footBg = {
                 >{{ link.NAME }}</a
               >
             </div>
-            <p class="copyright">
-              {{ t('common.FOOTER.COPY_RIGHT', { year: getYearByOffset() }) }}
-            </p>
             <p class="license">
               <span>{{ t('common.FOOTER.LICENSED_1') }}</span>
               {{ t('common.FOOTER.LICENSED_2') }}
             </p>
+            <div class="beian-box">
+              <p class="copyright">
+                {{ t('common.FOOTER.COPY_RIGHT', { year: getYearByOffset() }) }}
+              </p>
+              <p class="beian">
+                <a href="https://beian.miit.gov.cn/#/Integrated/index/" target="_blank">{{ t('common.FOOTER.BEIAN_1') }}</a>
+                <img :src="police" alt="police">
+                <span>{{ t('common.FOOTER.BEIAN_2') }}</span>
+              </p>
+            </div>
           </div>
           <div class="footer-right">
             <div v-if="lang === 'zh'" class="code-box">
@@ -248,16 +256,37 @@ $color: #fff;
     }
   }
 
-  .copyright {
+  .beian-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--o-color-text-secondary);
     font-size: var(--o-font-size-text);
-    color: $color;
+    gap: 8px;
     margin-top: var(--o-spacing-h5);
     @media (max-width: 1436px) {
       font-size: var(--o-font-size-tip);
       line-height: var(--o-line-height-tip);
       margin-top: var(--o-spacing-h8);
     }
+    .beian {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      img {
+        height: 16px;
+        width: 16px;
+      }
+      a {
+        color: var(--o-color-text-secondary);
+        &:hover {
+          color: $color;
+        }
+      }
+    }
   }
+
   .license {
     font-size: var(--o-font-size-text);
     color: $color;
