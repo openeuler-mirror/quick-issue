@@ -67,7 +67,7 @@ const protalUrl = computed(() => {
 });
 
 const jumpToUserZone = () => {
-  window.open(`${protalUrl.value}/workspace`, '_black');
+  window.open(`${protalUrl.value}/my`, '_black');
 };
 
 </script>
