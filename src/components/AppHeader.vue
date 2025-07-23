@@ -12,12 +12,18 @@ import communityLogoWhite from '@/assets/openeuler-logo.png';
 import QuickIssueLogo from '@/assets/quickissue-logo.png';
 import IconDown from '~icons/app/icon-chevron-down.svg';
 import IconLogin from '~icons/app/icon-login.svg';
+import IconLocale from '~icons/app/icon-locale.svg';
+import OButton from 'opendesign/button/src/button';
 
 const { t, locale } = useI18n();
 
 const lang = computed(() => {
   return useLangStore().lang === 'zh' ? 'zh' : 'en';
 });
+
+const langText = computed(() => {
+  return lang.value === 'zh' ? '中' : 'En';
+})
 
 const { token } = getUserAuth();
 const { guardAuthClient } = useStoreData();
@@ -39,7 +45,7 @@ const navList = computed(() => {
 
 // 选择语言;
 const options = ref([
-  { value: 'zh', label: '中文' },
+  { value: 'zh', label: '简体中文' },
   { value: 'en', label: 'English' },
 ]);
 // 选择语言
@@ -119,10 +125,10 @@ const jumpToUserZone = () => {
         API
       </a>
       <div class="language">
-        <el-dropdown popper-class="language-change" @command="handleCommand">
+        <el-dropdown popper-class="language-change" @command="handleCommand" >
           <span class="el-dropdown-link">
-            {{ t('quickIssue.LANG') }}
-            <OIcon><IconDown></IconDown></OIcon>
+            <OIcon><IconLocale></IconLocale></OIcon>
+            <span class="lang-text" :class="`lang-${lang}`">{{ langText }}</span>
           </span>
 
           <template #dropdown>
@@ -132,8 +138,10 @@ const jumpToUserZone = () => {
                 :key="key"
                 :class="{ active: lang === item.value }"
                 :command="item"
-                >{{ item.label }}</el-dropdown-item
-              >
+                :divided="key !== 0"
+                >
+                <div class="lang-item">{{ item.label }}</div>
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -171,18 +179,34 @@ const jumpToUserZone = () => {
       display: flex;
       justify-content: flex-end;
       margin-right: 40px;
-      width: 100px;
       text-align: right;
       .el-dropdown {
         color: var(--o-color-text2);
         cursor: pointer;
-        &-link {
+        .el-dropdown-link {
           display: flex;
           color: var(--o-color-text2);
-        }
-
-        .o-icon {
-          margin-left: 5px;
+          position: relative;
+          .lang-text {
+            height: 24px;
+            width: 24px;
+            line-height: 24px;
+            font-size: 20px;
+            transform-origin: right bottom;
+            position: absolute;
+            transform: scale(0.5) ;
+            bottom: 2px;
+            right: -2px;
+            text-align: center;
+            background-color: #000;
+            &.lang-en {
+              width: 32px;
+              right: -4px;
+            }
+          }
+          .o-icon {
+            font-size: 24px;
+          }
         }
       }
     }
@@ -300,9 +324,10 @@ const jumpToUserZone = () => {
 }
 .login {
   .icon {
-    font-size: var(--o-font-size-h6);
+    font-size: 24px;
     color: var(--o-color-text2);
     cursor: pointer;
   }
 }
 </style>
+

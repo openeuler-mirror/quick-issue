@@ -102,25 +102,27 @@ body {
 }
 .language-change.el-popper {
   box-shadow: var(--o-shadow-l1) !important;
-  width: 120px;
   .el-dropdown-menu {
     background: none;
-    padding: 0 20px;
+    padding: 5px 0;
     &__item {
       justify-content: center;
-      line-height: 50px;
-      border-bottom: 1px solid var(--o-color-division1);
-      color: var(--o-color-text1);
-      padding: 0;
-      background: none !important;
+      padding: 0 !important;
       &:last-child {
         border-bottom: none;
       }
-      &:hover {
-        color: var(--o-color-brand1);
+      .lang-item {
+        width: 80px;
+        text-align: center;
+        line-height: 22px;
+        padding: 4px 8px;
+        box-sizing: content-box;
       }
-      &.active {
-        color: var(--o-color-brand1);
+      &:hover, &.active {
+        .lang-item {
+          color: var(--o-color-brand1);
+          font-weight: 500;
+        }
       }
     }
   }
