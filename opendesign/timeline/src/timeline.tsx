@@ -100,8 +100,7 @@ export default defineComponent({
     return () => {
       return (
         <div class="o-timeline">
-          {leftArrow &&
-          leftArrow.value &&
+          {leftArrow.value &&
           timeList.value[0] !== leftThreshold ? (
             <IconLeft
               onClick={() => useClickLeft()}
@@ -111,7 +110,7 @@ export default defineComponent({
             ''
           )}
           <ul class="o-timeline-list">
-            {timeList &&
+            {timeList.value &&
               timeList.value.map((item, index) => {
                 return (
                   <li
@@ -131,8 +130,7 @@ export default defineComponent({
                 );
               })}
           </ul>
-          {rightArrow &&
-          rightArrow.value &&
+          {rightArrow.value &&
           timeList.value[5] !== rightThreshold.value ? (
             <IconRight
               class="o-timeline-right-arrow"

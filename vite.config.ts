@@ -64,6 +64,37 @@ export default defineConfig({
     },
   },
   server: {
-    proxy: {},
+    proxy: {
+      '/api-dsapi/': {
+        target: 'https://dsapi.test.osinfra.cn/',
+        changeOrigin: true,
+        headers: {
+          'X-Forwarded-For': '$http_x_real_ip',
+        },
+        rewrite(path) {
+          return path.replace(/^\/api-issues/, '');
+        },
+      },
+      '/api-omapi/': {
+        target: 'https://omapi.test.osinfra.cn/',
+        changeOrigin: true,
+        headers: {
+          'X-Forwarded-For': '$http_x_real_ip',
+        },
+        rewrite(path) {
+          return path.replace(/^\/api-issues/, '');
+        },
+      },
+      '/api-issues/': {
+        target: 'https://ipb.test.osinfra.cn/',
+        changeOrigin: true,
+        headers: {
+          'X-Forwarded-For': '$http_x_real_ip',
+        },
+        rewrite(path) {
+          return path.replace(/^\/api-issues/, '');
+        },
+      },
+    },
   },
 });
