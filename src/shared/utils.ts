@@ -8,11 +8,13 @@ export function isValidKey(
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
-export function scrollToTop() {
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
-}
-
+export const scrollToTop = (top: number = 0, smooth: boolean = true) => {
+  const dom = document.querySelector('#app > .o-scroller > .o-scroller-container');
+  dom?.scrollTo({
+    top,
+    behavior: smooth ? 'smooth' : 'auto',
+  });
+};
 /**
  * 获取指定时区偏移量的年份
  * @param {number} offset - 时区偏移量（单位：小时）。例如，UTC+8 时区，传入 8。

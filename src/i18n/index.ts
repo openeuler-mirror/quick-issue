@@ -5,6 +5,7 @@ import sig from './sig';
 import common from './common';
 import quickIssue from './quick-issue';
 import cookie from './cookie';
+import feedback from './feedback';
 
 const messages = {
   zh: {
@@ -12,12 +13,14 @@ const messages = {
     sig: sig.zh,
     quickIssue: quickIssue.zh,
     cookie: cookie.zh,
+    feedback: feedback.zh,
   },
   en: {
     common: common.en,
     sig: sig.en,
     quickIssue: quickIssue.en,
     cookie: cookie.en,
+    feedback: feedback.en,
   },
 };
 

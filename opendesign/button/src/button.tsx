@@ -22,6 +22,7 @@ export default defineComponent({
     }));
 
     const onClick = (e: MouseEvent) => {
+      if (disabled.value) return;
       emit('click', e);
     };
 

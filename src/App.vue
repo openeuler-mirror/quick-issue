@@ -11,6 +11,7 @@ import AppFooter from '@/components/AppFooter.vue';
 
 import { refreshInfo } from '@/shared/login';
 import CookieNotice from './components/CookieNotice.vue';
+import FloatingButton from '@/components/FloatingButton.vue';
 
 refreshInfo();
 const { locale } = useI18n();
@@ -34,6 +35,7 @@ watch(
   <main><RouterView></RouterView></main>
   <CookieNotice />
   <footer><AppFooter /></footer>
+  <FloatingButton />
 </template>
 
 <style lang="scss">
