@@ -117,3 +117,5 @@ export const linksData2 = {
 
 export const defaultIssueRepo = 'openeuler/community-issue';
 export const giteeUrl = 'https://gitee.com';
+
+export const SERVICE_FORUM_URL = 'https://forum.openeuler.org'

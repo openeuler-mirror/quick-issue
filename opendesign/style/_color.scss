@@ -178,4 +178,13 @@
   --o-color-fill5: var(
     --o-color-white
   ); // SL5 弹出阴影容器背景，应用于模态弹窗投影
+
+  --o-radius-xs: 4px;
+  --o-shadow-2: 0 4px 24px rgba(0, 0, 0, 0.1);
+  --o-duration-m1: 250ms;
+  --o-easing-standard-in: cubic-bezier(0, 0, 0, 1);
+  --o-font_size-h1: 32px;
+  --o-font_size-tip1: 14px;
+  --o-font_size-tip2: 12px;
+  --o-color-control4-light: rgb(var(--o-gray-3));
 }

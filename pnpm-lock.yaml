@@ -22,6 +22,12 @@ importers:
       '@opensig/open-analytics':
         specifier: ^0.0.9
         version: 0.0.9
+      '@opensig/opendesign':
+        specifier: 0.0.68
+        version: 0.0.68(vue@3.3.4)
+      '@vueuse/core':
+        specifier: 9.12.0
+        version: 9.12.0(vue@3.3.4)
       axios:
         specifier: 1.8.2
         version: 1.8.2
@@ -115,7 +121,7 @@ importers:
         version: 4.9.5
       unplugin-auto-import:
         specifier: ^0.11.5
-        version: 0.11.5(@vueuse/core@9.13.0(vue@3.3.4))(rollup@2.79.1)
+        version: 0.11.5(@vueuse/core@9.12.0(vue@3.3.4))(rollup@2.79.1)
       unplugin-element-plus:
         specifier: ^0.4.1
         version: 0.4.1(esbuild@0.21.5)(rollup@2.79.1)(vite@3.2.6(@types/node@18.16.19)(sass@1.62.1))
@@ -632,6 +638,11 @@ packages:
   '@opensig/open-analytics@0.0.9':
     resolution: {integrity: sha512-D+4VWxgBc1ABsQjWEjWfBfoBQ4PQbc1lNZeEYpQXkTJLLFcj6nSa+LwcYZFXtZdGz9dzOhhbwRwXv66WFw2qJw==}
 
+  '@opensig/opendesign@0.0.68':
+    resolution: {integrity: sha512-eWiZTVWEGSsM/BuWWNJKFiYl6NnGVONjKlIYT7ja6BMd0aLfIBKV4ElhfYrnT21lzygnFbLW5ompRPdT24t2tQ==}
+    peerDependencies:
+      vue: ^3.1.0
+
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
@@ -1032,14 +1043,14 @@ packages:
   '@vuepress/shared-utils@1.9.10':
     resolution: {integrity: sha512-M9A3DocPih+V8dKK2Zg9FJQ/f3JZrYsdaM/vQ9F48l8bPlzxw5NvqXIYMK4kKcGEyerQNTWCudoCpLL5uiU0hg==}
 
-  '@vueuse/core@9.13.0':
-    resolution: {integrity: sha512-pujnclbeHWxxPRqXWmdkKV5OX4Wk4YeK7wusHqRwU0Q7EFusHoqNA/aPhB6KCh9hEqJkLAJo7bb0Lh9b+OIVzw==}
+  '@vueuse/core@9.12.0':
+    resolution: {integrity: sha512-h/Di8Bvf6xRcvS/PvUVheiMYYz3U0tH3X25YxONSaAUBa841ayMwxkuzx/DGUMCW/wHWzD8tRy2zYmOC36r4sg==}
 
-  '@vueuse/metadata@9.13.0':
-    resolution: {integrity: sha512-gdU7TKNAUVlXXLbaF+ZCfte8BjRJQWPCa2J55+7/h+yDtzw3vOoGQDRXzI6pyKyo6bXFT5/QoPE4hAknExjRLQ==}
+  '@vueuse/metadata@9.12.0':
+    resolution: {integrity: sha512-9oJ9MM9lFLlmvxXUqsR1wLt1uF7EVbP5iYaHJYqk+G2PbMjY6EXvZeTjbdO89HgoF5cI6z49o2zT/jD9SVoNpQ==}
 
-  '@vueuse/shared@9.13.0':
-    resolution: {integrity: sha512-UrnhU+Cnufu4S6JLCPZnkWh0WwZGUp72ktOF2DFptMlOs3TOdVv8xJN53zhHGARmVOsz5KqOls09+J1NR6sBKw==}
+  '@vueuse/shared@9.12.0':
+    resolution: {integrity: sha512-TWuJLACQ0BVithVTRbex4Wf1a1VaRuSpVeyEd4vMUWl54PzlE0ciFUshKCXnlLuD0lxIaLK4Ypj3NXYzZh4+SQ==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -1487,6 +1498,10 @@ packages:
   data-urls@5.0.0:
     resolution: {integrity: sha512-ZYP5VBHshaDAiVZxjbRVcFJpc+4xGgT0bK3vzy1HLN8jTO975HEbuYzZJcHoQEY5K1a0z8YayJkyVETa08eNTg==}
     engines: {node: '>=18'}
+
+  date-fns@2.30.0:
+    resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
+    engines: {node: '>=0.11'}
 
   dayjs@1.11.7:
     resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
@@ -4042,6 +4057,11 @@ snapshots:
       uuid: 10.0.0
       web-vitals: 4.2.4
 
+  '@opensig/opendesign@0.0.68(vue@3.3.4)':
+    dependencies:
+      date-fns: 2.30.0
+      vue: 3.3.4
+
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
@@ -4506,19 +4526,19 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vueuse/core@9.13.0(vue@3.3.4)':
+  '@vueuse/core@9.12.0(vue@3.3.4)':
     dependencies:
       '@types/web-bluetooth': 0.0.16
-      '@vueuse/metadata': 9.13.0
-      '@vueuse/shared': 9.13.0(vue@3.3.4)
+      '@vueuse/metadata': 9.12.0
+      '@vueuse/shared': 9.12.0(vue@3.3.4)
       vue-demi: 0.14.5(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
 
-  '@vueuse/metadata@9.13.0': {}
+  '@vueuse/metadata@9.12.0': {}
 
-  '@vueuse/shared@9.13.0(vue@3.3.4)':
+  '@vueuse/shared@9.12.0(vue@3.3.4)':
     dependencies:
       vue-demi: 0.14.5(vue@3.3.4)
     transitivePeerDependencies:
@@ -4984,6 +5004,10 @@ snapshots:
       whatwg-mimetype: 4.0.0
       whatwg-url: 14.2.0
 
+  date-fns@2.30.0:
+    dependencies:
+      '@babel/runtime': 7.24.6
+
   dayjs@1.11.7: {}
 
   debug@2.6.9:
@@ -5061,7 +5085,7 @@ snapshots:
       '@popperjs/core': '@sxzz/popperjs-es@2.11.7'
       '@types/lodash': 4.14.194
       '@types/lodash-es': 4.17.7
-      '@vueuse/core': 9.13.0(vue@3.3.4)
+      '@vueuse/core': 9.12.0(vue@3.3.4)
       async-validator: 4.2.5
       dayjs: 1.11.7
       escape-html: 1.0.3
@@ -6781,7 +6805,7 @@ snapshots:
 
   universalify@0.2.0: {}
 
-  unplugin-auto-import@0.11.5(@vueuse/core@9.13.0(vue@3.3.4))(rollup@2.79.1):
+  unplugin-auto-import@0.11.5(@vueuse/core@9.12.0(vue@3.3.4))(rollup@2.79.1):
     dependencies:
       '@antfu/utils': 0.7.2
       '@rollup/pluginutils': 5.0.2(rollup@2.79.1)
@@ -6790,7 +6814,7 @@ snapshots:
       unimport: 1.3.0(rollup@2.79.1)
       unplugin: 1.3.1
     optionalDependencies:
-      '@vueuse/core': 9.13.0(vue@3.3.4)
+      '@vueuse/core': 9.12.0(vue@3.3.4)
     transitivePeerDependencies:
       - rollup
 

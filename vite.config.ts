@@ -42,7 +42,10 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@use "@/shared/styles/element-plus/index.scss" as *;`,
+        additionalData: `
+        @use "@/shared/styles/element-plus/index.scss" as *;
+        @use "@/shared/styles/mixin.scss" as *;
+        `,
       },
     },
   },
@@ -72,7 +75,7 @@ export default defineConfig({
           'X-Forwarded-For': '$http_x_real_ip',
         },
         rewrite(path) {
-          return path.replace(/^\/api-issues/, '');
+          return path.replace(/^\/api-dsapi/, '');
         },
       },
       '/api-omapi/': {
@@ -82,7 +85,7 @@ export default defineConfig({
           'X-Forwarded-For': '$http_x_real_ip',
         },
         rewrite(path) {
-          return path.replace(/^\/api-issues/, '');
+          return path.replace(/^\/api-omapi/, '');
         },
       },
       '/api-issues/': {
