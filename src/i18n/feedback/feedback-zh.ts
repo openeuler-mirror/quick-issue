@@ -1,6 +1,6 @@
 export default {
   title1: '您对',
-  title2: ' 社区板块 ',
+  title2: ' 社区版块 ',
   title3: '的整体满意度如何？',
   grade1: '0-不满意',
   grade2: '10-非常满意',
