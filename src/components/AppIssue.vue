@@ -11,7 +11,7 @@ import {
   getReposData,
 } from '@/api/api-quick-issue';
 import { OptionList } from '@/shared/@types/type-quick-issue';
-
+import { type CheckboxValueType } from 'element-plus'
 import IconTraingleUp from '~icons/app/icon-arrow-traingle-up.svg';
 import IconTraingleDown from '~icons/app/icon-arrow-traingle-down.svg';
 import IconFilter from '~icons/app/icon-filter.svg';
@@ -57,7 +57,7 @@ const total = ref(0);
 const currentPage = ref(1);
 const totalPage = ref(0);
 const checkAll = ref(false);
-const isIndeterminate = ref(true);
+const isIndeterminate = ref(false);
 const layout = ref('sizes, prev, pager, next, slot, jumper');
 
 const keyArr = [
@@ -216,7 +216,7 @@ const queryUserData = () => {
   }
 };
 queryUserData();
-const handleCheckedValueChange = (value: string[]) => {
+const handleCheckedValueChange = (value: CheckboxValueType[]) => {
   const checkedCount = value.length;
   checkAll.value = checkedCount === ISSUE_CONFIG.ISSUE_STATE.length;
   isIndeterminate.value =
@@ -228,7 +228,7 @@ const handleSizeChange = (val: number) => {
   totalPage.value = Math.ceil(total.value / val);
 };
 
-const handleCheckAllChange = (val: string[]) => {
+const handleCheckAllChange = (val: CheckboxValueType) => {
   queryData.issue_state = val ? ISSUE_CONFIG.ISSUE_STATE : [];
   isIndeterminate.value = false;
 };
