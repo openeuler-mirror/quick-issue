@@ -5,25 +5,12 @@ import { useI18n } from 'vue-i18n';
 
 import { useLangStore } from '@/stores';
 import { GroupInfo } from '@/shared/@types/type-sig';
-import {
-  getUrlParam,
-  handleUploadImage,
-  rules,
-  emailRules,
-  privacyRules,
-  codeRules,
-} from '@/shared';
+import { getUrlParam, handleUploadImage, rules, emailRules, privacyRules, codeRules } from '@/shared';
 
-import {
-  getReposData,
-  getIssueSelectOption,
-  createIssue,
-  reqGet,
-  reqCheck,
-} from '@/api/api-quick-issue';
+import { getReposData, getIssueSelectOption, createIssue, reqGet, reqCheck } from '@/api/api-quick-issue';
 
 import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
-import { defaultIssueRepo, giteeUrl } from '@/config';
+import { defaultIssueRepo, gitcodeUrl } from '@/config';
 
 import { getSigLandscape } from '@/api/api-sig';
 
@@ -35,7 +22,7 @@ import OIcon from 'opendesign/icon/OIcon.vue';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, TabsPaneContext } from 'element-plus';
 
-import IconGitee from '~icons/app/icon-gitee.svg';
+import IconGitcode from '~icons/app/icon-gitcode.svg';
 import IconSearch from '~icons/app/icon-search.svg';
 import { oaReport } from '@/shared/analytics';
 
@@ -125,7 +112,7 @@ const issueData: IssueData = reactive({
   code: '',
   description: '',
   privacy: [],
-  isGiteeUser: true,
+  isGitcodeUser: true,
 });
 
 function getSigValue(val: string) {
@@ -206,11 +193,9 @@ function sendVerifyEmail() {
   });
 }
 
-const issueTypeId = computed(() =>
-  Number(issueData.issue_type_id?.toString().split('__').at(-1))
-);
-
-async function goGitee(verify: FormInstance | undefined) {
+const issueTypeId = computed(() => Number(issueData.issue_type_id?.toString().split('__').at(-1)));
+// TODO
+async function goGitcode(verify: FormInstance | undefined) {
   if (!verify) {
     return;
   }
@@ -219,12 +204,10 @@ async function goGitee(verify: FormInstance | undefined) {
   rules.privacy = [];
   verify.validate(async (res: boolean) => {
     if (res) {
-      const url = `${giteeUrl}/${issueData.repo}/issues/new?title=${
-        issueData.title
-      }&issue%5Bissue_type_id%5D=${
+      const url = `${gitcodeUrl}/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${
         issueTypeId.value
       }&issue%5Bdescription%5D=${encodeURIComponent(issueData.description)}`;
-      oaReport('toGiteeCreateIssue', {
+      oaReport('toGitcodeCreateIssue', {
         $utm_source: 'quick_issue',
         jump_url: url,
       });
@@ -233,10 +216,7 @@ async function goGitee(verify: FormInstance | undefined) {
   });
 }
 
-async function submitForm(
-  verify: FormInstance | undefined,
-  isGoGitee: boolean
-) {
+async function submitForm(verify: FormInstance | undefined, isGoGitcode: boolean) {
   if (!verify) {
     return;
   }
@@ -252,32 +232,26 @@ async function submitForm(
         code: issueData.code,
         repo: issueData.repo,
         description: issueData.description,
-        privacy:
-          Array.isArray(issueData.privacy) && issueData.privacy.length
-            ? true
-            : false,
+        privacy: !!(Array.isArray(issueData.privacy) && issueData.privacy.length),
       };
-      handelCreatIssue(parmes, isGoGitee, verify);
+      handelCreatIssue(parmes, isGoGitcode, verify);
     } else {
       verify.scrollToField('title');
     }
   });
 }
 
-function handelCreatIssue(
-  parmes: IssueData,
-  isGoGitee: boolean,
-  verify: FormInstance
-) {
+// TODO
+function handelCreatIssue(parmes: IssueData, isGoGitcode: boolean, verify: FormInstance) {
   createIssue(parmes).then(async (res) => {
     if (res.code === 200) {
-      const jump_url = `${giteeUrl}/${issueData.repo}/issues/${res.data.number}`;
-      oaReport('noGiteeCreateIssue', {
+      const jump_url = `${gitcodeUrl}/${issueData.repo}/issues/${res.data.number}`;
+      oaReport('noGitcodeCreateIssue', {
         $utm_source: 'quick_issue',
         jump_url,
         quick_issue_email: parmes.email,
       });
-      if (isGoGitee) {
+      if (isGoGitcode) {
         window.open(jump_url);
       }
       // 重置表单
@@ -316,9 +290,7 @@ function sigValueChange(val: string) {
 
 function getNextPage() {
   if (reposList.value.total) {
-    reposList.value.total > repoParams.page * repoParams.per_page
-      ? repoParams.page++
-      : '';
+    reposList.value.total > repoParams.page * repoParams.per_page ? repoParams.page++ : '';
   }
 }
 function changeState(stash: boolean) {
@@ -338,8 +310,7 @@ function scrollClick(tab: TabsPaneContext) {
   });
 }
 function handleTypeChange(val: number) {
-  issueData.description =
-    typesList.value?.find((item) => item.id === val)?.template || '';
+  issueData.description = typesList.value?.find((item) => item.id === val)?.template || '';
 }
 
 const debounceEvent = debounce(
@@ -370,8 +341,8 @@ onMounted(async () => {
     await getIssueSelectOption('types', null).then((res) => {
       // 手动筛选，只留两个场景 【开发|使用openEuler】
       const sceneDescMap: Record<string, string> = {
-        '开发openEuler': '如构建场景/测试场景/发布场景/分析场景/其他场景',
-        '使用openEuler': '如下载场景/使用文档场景/安装及迁移场景/其他场景',
+        开发openEuler: '如构建场景/测试场景/发布场景/分析场景/其他场景',
+        使用openEuler: '如下载场景/使用文档场景/安装及迁移场景/其他场景',
       };
       typesList.value = res.data
         .filter((v: TypesList) => !!sceneDescMap[v.name])
@@ -412,59 +383,25 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
   <AppContent class="submit-issue">
     <div class="inline-box">
       <h1 id="create-issue">{{ t('quickIssue.ISSUE_TITLE') }}</h1>
-      <el-form
-        ref="formRef"
-        :model="issueData"
-        :rules="rules"
-        label-position="left"
-        class="issue-form"
-        :class="lang === 'en' ? 'en-form' : ''"
-      >
-        <div class="form-liner is-gitee-user-radio">
-          <el-form-item
-            :label="t('quickIssue.IS_GITEE_USER')"
-            prop="isGiteeUser"
-            required
-          >
-            <ORadioGroup v-model="issueData.isGiteeUser">
+      <el-form ref="formRef" :model="issueData" :rules="rules" label-position="left" class="issue-form" :class="lang === 'en' ? 'en-form' : ''">
+        <div class="form-liner is-gitcode-user-radio">
+          <el-form-item :label="t('quickIssue.IS_GITCODE_USER')" prop="isGitcodeUser" required>
+            <ORadioGroup v-model="issueData.isGitcodeUser">
               <ORadio :value="true">{{ t('quickIssue.YES') }}</ORadio>
               <ORadio :value="false">{{ t('quickIssue.NO') }}</ORadio>
             </ORadioGroup>
           </el-form-item>
         </div>
         <div class="form-liner">
-          <el-form-item
-            :label="t('quickIssue.TITLE')"
-            prop="title"
-            class="left-form-item"
-          >
-            <OInput
-              v-model="issueData.title"
-              :placeholder="t('quickIssue.INPUT')"
-            ></OInput>
+          <el-form-item :label="t('quickIssue.TITLE')" prop="title" class="left-form-item">
+            <OInput v-model="issueData.title" :placeholder="t('quickIssue.INPUT')"></OInput>
           </el-form-item>
-          <el-form-item
-            :label="t('quickIssue.SCENARIO')"
-            prop="issue_type_id"
-            class="right-form-item"
-          >
-            <OSelect
-              v-model.string="issueData.issue_type_id"
-              :placeholder="t('quickIssue.SELECT')"
-              placement="bottom-end"
-              @change="handleTypeChange"
-            >
-              <ElOption
-                v-for="item in typesList"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              >
+          <el-form-item :label="t('quickIssue.SCENARIO')" prop="issue_type_id" class="right-form-item">
+            <OSelect v-model.string="issueData.issue_type_id" :placeholder="t('quickIssue.SELECT')" placement="bottom-end" @change="handleTypeChange">
+              <ElOption v-for="item in typesList" :key="item.id" :label="item.name" :value="item.id">
                 <div class="scene-item">
                   <span class="scene-name">{{ item.name }}</span>
-                  <span v-if="item.desc" class="scene-desc"
-                    >({{ item.desc }})</span
-                  >
+                  <span v-if="item.desc" class="scene-desc">({{ item.desc }})</span>
                 </div>
               </ElOption>
             </OSelect>
@@ -472,25 +409,11 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
         </div>
         <div class="form-liner">
           <el-form-item label="SIG" prop="sig" class="left-form-item">
-            <OInput
-              v-model="issueData.sig"
-              :placeholder="t('quickIssue.INPUT')"
-              @change="sigValueChange"
-            ></OInput>
-            <OButton
-              class="select-sig-btn"
-              type="primary"
-              size="small"
-              @click="isMenuShown = true"
-              >{{ t('quickIssue.SELECT_SIG') }}</OButton
-            >
+            <OInput v-model="issueData.sig" :placeholder="t('quickIssue.INPUT')" @change="sigValueChange"></OInput>
+            <OButton class="select-sig-btn" type="primary" size="small" @click="isMenuShown = true">{{ t('quickIssue.SELECT_SIG') }}</OButton>
           </el-form-item>
           <!-- 仓库查询 -->
-          <el-form-item
-            :label="t('quickIssue.REPO_NAME')"
-            prop="repo"
-            class="right-form-item"
-          >
+          <el-form-item :label="t('quickIssue.REPO_NAME')" prop="repo" class="right-form-item">
             <OSelect
               v-model="issueData.repo"
               :listener-scorll="true"
@@ -502,87 +425,43 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
                 <OIcon><IconSearch /></OIcon>
               </template>
               <div class="search-box">
-                <OSearch
-                  v-model="reposList.keyword"
-                  :placeholder="t('quickIssue.SEARCH_PLACEHOLDER')"
-                  style="padding: 0 8px"
-                  @input="debounceEvent"
-                ></OSearch>
+                <OSearch v-model="reposList.keyword" :placeholder="t('quickIssue.SEARCH_PLACEHOLDER')" style="padding: 0 8px" @input="debounceEvent"></OSearch>
               </div>
               <el-scrollbar>
-                <ElOption
-                  v-if="!reposList.data.length"
-                  label=""
-                  value=""
-                  :disabled="true"
-                  style="text-align: center"
-                >
+                <ElOption v-if="!reposList.data.length" label="" value="" :disabled="true" style="text-align: center">
                   <span>no data</span>
                 </ElOption>
-                <ElOption
-                  v-for="item in reposList.data"
-                  :key="item.repo"
-                  :label="item.repo"
-                  :value="item.repo"
-                />
+                <ElOption v-for="item in reposList.data" :key="item.repo" :label="item.repo" :value="item.repo" />
               </el-scrollbar>
             </OSelect>
           </el-form-item>
         </div>
         <transition-group name="fadeHeight">
-          <div v-if="issueData.isGiteeUser" class="gitee-user">
-            <OButton size="small" @click="goGitee(formRef)">
+          <div v-if="issueData.isGitcodeUser" class="gitcode-user">
+            <OButton size="small" @click="goGitcode(formRef)">
               <template #prefixIcon>
                 <OIcon>
-                  <IconGitee />
+                  <IconGitcode />
                 </OIcon>
               </template>
-              {{ t('quickIssue.GITTE_USER') }}
+              {{ t('quickIssue.GITCODE_USER') }}
             </OButton>
           </div>
-          <div v-else class="not-gitee-user">
+          <div v-else class="not-gitcode-user">
             <div class="form-liner editor">
-              <el-form-item
-                :label="t('quickIssue.DESCRIPTIVE')"
-                class="fill-width"
-              >
-                <AppEditor
-                  v-model="issueData.description"
-                  @upload-image="handleUploadImage"
-                >
-                </AppEditor>
+              <el-form-item :label="t('quickIssue.DESCRIPTIVE')" class="fill-width">
+                <AppEditor v-model="issueData.description" @upload-image="handleUploadImage"> </AppEditor>
               </el-form-item>
             </div>
             <div class="form-liner verify-email">
-              <el-form-item
-                :label="t('quickIssue.EMAIL')"
-                prop="email"
-                required
-                class="left-form-item email"
-              >
-                <OInput
-                  v-model="issueData.email"
-                  :placeholder="t('quickIssue.INPUT')"
-                  @input="changeEmail()"
-                ></OInput>
+              <el-form-item :label="t('quickIssue.EMAIL')" prop="email" required class="left-form-item email">
+                <OInput v-model="issueData.email" :placeholder="t('quickIssue.INPUT')" @input="changeEmail()"></OInput>
               </el-form-item>
-              <el-form-item
-                :label="t('quickIssue.CODE')"
-                prop="code"
-                class="verify-code-form"
-              >
-                <OInput
-                  v-model="issueData.code"
-                  :placeholder="t('quickIssue.INPUT')"
-                ></OInput>
-                <OButton
-                  class="select-sig-btn"
-                  type="primary"
-                  size="small"
-                  :disabled="totalTime !== 60"
-                  @click="getCodeByEmail(formRef)"
-                  >{{ content }}</OButton
-                >
+              <el-form-item :label="t('quickIssue.CODE')" prop="code" class="verify-code-form">
+                <OInput v-model="issueData.code" :placeholder="t('quickIssue.INPUT')"></OInput>
+                <OButton class="select-sig-btn" type="primary" size="small" :disabled="totalTime !== 60" @click="getCodeByEmail(formRef)">{{
+                  content
+                }}</OButton>
               </el-form-item>
             </div>
             <div class="form-liner form-radio">
@@ -590,28 +469,14 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
                 <OCheckboxGroup v-model="issueData.privacy">
                   <OCheckbox value="true">
                     {{ t('quickIssue.PRIVACY_TEXT') }}
-                    <a
-                      :href="`${domainUrl}/${lang}/other/privacy/`"
-                      target="_blank"
-                      >{{ t('quickIssue.PRIVACY') }}</a
-                    >
+                    <a :href="`${domainUrl}/${lang}/other/privacy/`" target="_blank">{{ t('quickIssue.PRIVACY') }}</a>
                   </OCheckbox>
                 </OCheckboxGroup>
               </el-form-item>
             </div>
             <div class="obuton-box">
-              <OButton
-                size="small"
-                type="primary"
-                @click="submitForm(formRef, true)"
-                >{{ t('quickIssue.CREATE') }}</OButton
-              >
-              <OButton
-                size="small"
-                class="center-button"
-                @click="submitForm(formRef, false)"
-                >{{ t('quickIssue.CONTINUE') }}</OButton
-              >
+              <OButton size="small" type="primary" @click="submitForm(formRef, true)">{{ t('quickIssue.CREATE') }}</OButton>
+              <OButton size="small" class="center-button" @click="submitForm(formRef, false)">{{ t('quickIssue.CONTINUE') }}</OButton>
               <RouterLink :to="`/${lang}/issues/`">
                 <OButton size="small">{{ t('quickIssue.CANCEL') }}</OButton>
               </RouterLink>
@@ -626,23 +491,10 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
   <ODialog v-model="isMenuShown" class="menu-dialog" :show-close="true">
     <h1 id="tech"></h1>
     <OTabs v-model="tabType" @tab-click="scrollClick">
-      <OTab-pane
-        v-for="item in titleList"
-        :key="item.key"
-        :label="item.value"
-        :name="item.key"
-      >
-      </OTab-pane>
-      <div
-        v-for="(group, index) in landscapeInfo"
-        :key="group.groupName"
-        class="landscape-group"
-      >
+      <OTab-pane v-for="item in titleList" :key="item.key" :label="item.value" :name="item.key"> </OTab-pane>
+      <div v-for="(group, index) in landscapeInfo" :key="group.groupName" class="landscape-group">
         <h1 :id="titleList[index].key"></h1>
-        <SigLandscapeFeature
-          :info="group?.features"
-          @sig-click="getSigValue"
-        ></SigLandscapeFeature>
+        <SigLandscapeFeature :info="group?.features" @sig-click="getSigValue"></SigLandscapeFeature>
       </div>
     </OTabs>
   </ODialog>
@@ -782,9 +634,9 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
         width: 44%;
       }
 
-      &.is-gitee-user-radio {
+      &.is-gitcode-user-radio {
         .el-form-item__label {
-          width: 161px;
+          width: 180px;
         }
         .o-radio-label {
           font-size: 16px;
@@ -830,13 +682,13 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
         margin: 0 var(--o-spacing-h4);
       }
     }
-    .gitee-user {
+    .gitcode-user {
       margin-top: var(--o-spacing-h2);
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .is-gitee-user {
+    .is-gitcode-user {
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -848,7 +700,7 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
         align-items: center;
         justify-content: center;
       }
-      .gitee-user {
+      .gitcode-user {
         position: relative;
         padding: 1px;
         overflow: hidden;
@@ -864,14 +716,7 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
           left: 0;
           width: 300%;
           height: 100%;
-          background: linear-gradient(
-            115deg,
-            #fc756cff,
-            #a767e5,
-            #002fa7ff,
-            rgb(232, 169, 164),
-            #fc756cff
-          );
+          background: linear-gradient(115deg, #fc756cff, #a767e5, #002fa7ff, rgb(232, 169, 164), #fc756cff);
           background-size: 50% 100%;
           animation: rainbowSlide 6s linear infinite;
 
@@ -909,9 +754,9 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
           width: 120px;
         }
       }
-      &.is-gitee-user-radio {
+      &.is-gitcode-user-radio {
         .el-form-item__label {
-          width: 246px;
+          width: 270px;
         }
         .o-radio-label {
           font-size: 16px;
