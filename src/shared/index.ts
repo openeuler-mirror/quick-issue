@@ -29,8 +29,16 @@ export function getUrlParam(paraName: string) {
 export async function handleUploadImage(
   event: Event,
   insertImage: any,
-  files: [File]
+  files: [File],
+  repo?: string,
 ) {
+  if (!repo) {
+    ElMessage({
+      message: t('quickIssue.SELECT_REPO'),
+      type: 'error',
+    });
+    return
+  }
   // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
   const file = files[0];
   if (file.size / 1024 / 1024 > 2) {
@@ -44,9 +52,10 @@ export async function handleUploadImage(
   const formData = new FormData();
   let url = '';
   formData.append('file', file);
+  formData.append('repoName', repo)
   await uploadIssueImage(formData).then((res) => {
-    if (res.code === 200 && res.data?.url) {
-      url = res.data?.url;
+    if (res.code === 200 && res.data) {
+      url = res.data;
       insertImage({
         url: url,
         desc: '输入图片说明',

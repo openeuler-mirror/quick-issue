@@ -52,6 +52,7 @@ export default {
   SEND_CODE: '发送验证码',
   MANDATORY: '必选项',
   MANDATORY1: '必填项',
+  SELECT_REPO: '请选择仓库',
   TITLE_LIMIT: '标题长度不超过191字符',
   EMAIL_ADRESS: '请填写邮箱',
   RIGHT_EMAIL_ADRESS: '请输入正确格式邮箱',

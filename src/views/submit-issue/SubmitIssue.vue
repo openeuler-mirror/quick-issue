@@ -450,7 +450,7 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
           <div v-else class="not-gitcode-user">
             <div class="form-liner editor">
               <el-form-item :label="t('quickIssue.DESCRIPTIVE')" class="fill-width">
-                <AppEditor v-model="issueData.description" @upload-image="handleUploadImage"> </AppEditor>
+                <AppEditor v-model="issueData.description" @upload-image="(event, insertImage, files) => handleUploadImage(event, insertImage, files, issueData.repo)"> </AppEditor>
               </el-form-item>
             </div>
             <div class="form-liner verify-email">

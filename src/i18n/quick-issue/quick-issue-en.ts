@@ -52,6 +52,7 @@ export default {
   MANDATORY: 'Mandatory',
   MANDATORY1: 'Mandatory',
   EMAIL_ADRESS: 'Enter an email address',
+  SELECT_REPO: 'Select a Repo',
   TITLE_LIMIT: 'Title cannot exceed 191 characters',
   RIGHT_EMAIL_ADRESS: 'Enter a valid email address',
   VER_CODE: 'Enter the verification code',
