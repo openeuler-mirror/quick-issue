@@ -31,5 +31,5 @@ export interface IssueData {
   code: string;
   description: string;
   privacy: Array<string> | boolean;
-  isGitcodeUser?: boolean;
+  isAtomGitUser?: boolean;
 }

@@ -10,7 +10,7 @@ import { getUrlParam, handleUploadImage, rules, emailRules, privacyRules, codeRu
 import { getReposData, getIssueSelectOption, createIssue, reqGet, reqCheck } from '@/api/api-quick-issue';
 
 import { OptionList, IssueData } from '@/shared/@types/type-quick-issue';
-import { defaultIssueRepo, gitcodeUrl } from '@/config';
+import { defaultIssueRepo, atomgitUrl } from '@/config';
 
 import { getSigLandscape } from '@/api/api-sig';
 
@@ -22,7 +22,7 @@ import OIcon from 'opendesign/icon/OIcon.vue';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, TabsPaneContext } from 'element-plus';
 
-import IconGitcode from '~icons/app/icon-gitcode.svg';
+import IconAtomGit from '~icons/app/icon-atomgit.svg';
 import IconSearch from '~icons/app/icon-search.svg';
 import { oaReport } from '@/shared/analytics';
 
@@ -112,7 +112,7 @@ const issueData: IssueData = reactive({
   code: '',
   description: '',
   privacy: [],
-  isGitcodeUser: true,
+  isAtomGitUser: true,
 });
 
 function getSigValue(val: string) {
@@ -195,7 +195,7 @@ function sendVerifyEmail() {
 
 const issueTypeId = computed(() => Number(issueData.issue_type_id?.toString().split('__').at(-1)));
 // TODO
-async function goGitcode(verify: FormInstance | undefined) {
+async function goAtomGit(verify: FormInstance | undefined) {
   if (!verify) {
     return;
   }
@@ -204,10 +204,8 @@ async function goGitcode(verify: FormInstance | undefined) {
   rules.privacy = [];
   verify.validate(async (res: boolean) => {
     if (res) {
-      const url = `${gitcodeUrl}/${issueData.repo}/issues/new?title=${issueData.title}&issue%5Bissue_type_id%5D=${
-        issueTypeId.value
-      }&issue%5Bdescription%5D=${encodeURIComponent(issueData.description)}`;
-      oaReport('toGitcodeCreateIssue', {
+      const url = `${atomgitUrl}/${issueData.repo}/issues/new?title=${issueData.title}&body=${encodeURIComponent(issueData.description)}`;
+      oaReport('toAtomGitCreateIssue', {
         $utm_source: 'quick_issue',
         jump_url: url,
       });
@@ -216,7 +214,7 @@ async function goGitcode(verify: FormInstance | undefined) {
   });
 }
 
-async function submitForm(verify: FormInstance | undefined, isGoGitcode: boolean) {
+async function submitForm(verify: FormInstance | undefined, isGoAtomGit: boolean) {
   if (!verify) {
     return;
   }
@@ -234,7 +232,7 @@ async function submitForm(verify: FormInstance | undefined, isGoGitcode: boolean
         description: issueData.description,
         privacy: !!(Array.isArray(issueData.privacy) && issueData.privacy.length),
       };
-      handelCreatIssue(parmes, isGoGitcode, verify);
+      handelCreatIssue(parmes, isGoAtomGit, verify);
     } else {
       verify.scrollToField('title');
     }
@@ -242,16 +240,16 @@ async function submitForm(verify: FormInstance | undefined, isGoGitcode: boolean
 }
 
 // TODO
-function handelCreatIssue(parmes: IssueData, isGoGitcode: boolean, verify: FormInstance) {
+function handelCreatIssue(parmes: IssueData, isGoAtomGit: boolean, verify: FormInstance) {
   createIssue(parmes).then(async (res) => {
     if (res.code === 200) {
-      const jump_url = `${gitcodeUrl}/${issueData.repo}/issues/${res.data.number}`;
-      oaReport('noGitcodeCreateIssue', {
+      const jump_url = `${atomgitUrl}/${issueData.repo}/issues/${res.data.number}`;
+      oaReport('noAtomGitCreateIssue', {
         $utm_source: 'quick_issue',
         jump_url,
         quick_issue_email: parmes.email,
       });
-      if (isGoGitcode) {
+      if (isGoAtomGit) {
         window.open(jump_url);
       }
       // 重置表单
@@ -384,9 +382,9 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
     <div class="inline-box">
       <h1 id="create-issue">{{ t('quickIssue.ISSUE_TITLE') }}</h1>
       <el-form ref="formRef" :model="issueData" :rules="rules" label-position="left" class="issue-form" :class="lang === 'en' ? 'en-form' : ''">
-        <div class="form-liner is-gitcode-user-radio">
-          <el-form-item :label="t('quickIssue.IS_GITCODE_USER')" prop="isGitcodeUser" required>
-            <ORadioGroup v-model="issueData.isGitcodeUser">
+        <div class="form-liner is-atomgit-user-radio">
+          <el-form-item :label="t('quickIssue.IS_ATOMGIT_USER')" prop="isAtomGitUser" required>
+            <ORadioGroup v-model="issueData.isAtomGitUser">
               <ORadio :value="true">{{ t('quickIssue.YES') }}</ORadio>
               <ORadio :value="false">{{ t('quickIssue.NO') }}</ORadio>
             </ORadioGroup>
@@ -437,17 +435,17 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
           </el-form-item>
         </div>
         <transition-group name="fadeHeight">
-          <div v-if="issueData.isGitcodeUser" class="gitcode-user">
-            <OButton size="small" @click="goGitcode(formRef)">
+          <div v-if="issueData.isAtomGitUser" class="atomgit-user">
+            <OButton size="small" @click="goAtomGit(formRef)">
               <template #prefixIcon>
                 <OIcon>
-                  <IconGitcode />
+                  <IconAtomGit />
                 </OIcon>
               </template>
-              {{ t('quickIssue.GITCODE_USER') }}
+              {{ t('quickIssue.ATOMGIT_USER') }}
             </OButton>
           </div>
-          <div v-else class="not-gitcode-user">
+          <div v-else class="not-atomgit-user">
             <div class="form-liner editor">
               <el-form-item :label="t('quickIssue.DESCRIPTIVE')" class="fill-width">
                 <AppEditor v-model="issueData.description" @upload-image="(event, insertImage, files) => handleUploadImage(event, insertImage, files, issueData.repo)"> </AppEditor>
@@ -634,9 +632,9 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
         width: 44%;
       }
 
-      &.is-gitcode-user-radio {
+      &.is-atomgit-user-radio {
         .el-form-item__label {
-          width: 180px;
+          width: 200px;
         }
         .o-radio-label {
           font-size: 16px;
@@ -682,13 +680,13 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
         margin: 0 var(--o-spacing-h4);
       }
     }
-    .gitcode-user {
+    .atomgit-user {
       margin-top: var(--o-spacing-h2);
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .is-gitcode-user {
+    .is-atomgit-user {
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -700,7 +698,7 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
         align-items: center;
         justify-content: center;
       }
-      .gitcode-user {
+      .atomgit-user {
         position: relative;
         padding: 1px;
         overflow: hidden;
@@ -754,7 +752,7 @@ const domainUrl = ref(import.meta.env.VITE_MAIN_DOMAIN_URL);
           width: 120px;
         }
       }
-      &.is-gitcode-user-radio {
+      &.is-atomgit-user-radio {
         .el-form-item__label {
           width: 270px;
         }

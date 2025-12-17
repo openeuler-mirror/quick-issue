@@ -23,7 +23,7 @@ import ODropdown from 'opendesign/dropdown/ODropdown.vue';
 import OIcon from 'opendesign/icon/OIcon.vue';
 
 import { ElOption } from 'element-plus';
-import { gitcodeUrl } from '@/config';
+import { atomgitUrl } from '@/config';
 
 const props = defineProps({
   issueType: {
@@ -763,7 +763,7 @@ watch(
               <a
                 v-else-if="scope.row.author"
                 :key="scope.row.author"
-                :href="`${gitcodeUrl}/${scope.row.author}`"
+                :href="`${atomgitUrl}/${scope.row.author}`"
                 :title="scope.row.author"
                 class="link"
                 target="_blank"
@@ -834,7 +834,7 @@ watch(
               <a
                 v-if="scope.row.assignee"
                 :key="scope.row.assignee"
-                :href="`${gitcodeUrl}/${scope.row.assignee}`"
+                :href="`${atomgitUrl}/${scope.row.assignee}`"
                 :title="scope.row.assignee"
                 class="link"
                 target="_blank"

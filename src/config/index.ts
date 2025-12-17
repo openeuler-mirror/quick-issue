@@ -116,6 +116,6 @@ export const linksData2 = {
 };
 
 export const defaultIssueRepo = 'openeuler/community-issue';
-export const gitcodeUrl = 'https://gitcode.com';
+export const atomgitUrl = 'https://atomgit.com';
 
 export const SERVICE_FORUM_URL = 'https://forum.openeuler.org'

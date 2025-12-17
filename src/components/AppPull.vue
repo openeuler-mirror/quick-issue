@@ -20,7 +20,7 @@ import IconSetting from '~icons/app/icon-setting';
 
 import ODropdown from 'opendesign/dropdown/ODropdown.vue';
 import OIcon from 'opendesign/icon/OIcon.vue';
-import { gitcodeUrl } from '@/config';
+import { atomgitUrl } from '@/config';
 
 const props = defineProps({
   issueType: {
@@ -674,7 +674,7 @@ watch(
           <span class="detail-page">
             <a
               :key="scope.row.author"
-              :href="`${gitcodeUrl}/${scope.row.author}`"
+              :href="`${atomgitUrl}/${scope.row.author}`"
               :title="scope.row.author"
               target="_blank"
             >
@@ -739,7 +739,7 @@ watch(
             <a
               v-for="item in scope.row.assignees?.split(',')"
               :key="item"
-              :href="`${gitcodeUrl}/${item}`"
+              :href="`${atomgitUrl}/${item}`"
               :class="item === queryData.assignee ? 'active' : ''"
               :title="item"
               class="link"

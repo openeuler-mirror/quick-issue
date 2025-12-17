@@ -14,7 +14,7 @@ import IconDown from '~icons/app/icon-chevron-down.svg';
 import IconLogin from '~icons/app/icon-login.svg';
 import IconLocale from '~icons/app/icon-locale.svg';
 import OButton from 'opendesign/button/src/button';
-import { gitcodeUrl } from '@/config';
+import { atomgitUrl } from '@/config';
 
 const { t, locale } = useI18n();
 
@@ -118,7 +118,7 @@ const jumpToUserZone = () => {
         </div>
       </div>
       <a
-        :href="`${gitcodeUrl}/openeuler/infrastructure/blob/master/docs/quickIssue/quickissue_api.md`"
+        :href="`${atomgitUrl}/openeuler/infrastructure/blob/master/docs/quickIssue/quickissue_api.md`"
         class="api-docs"
         rel="noopener noreferrer"
         target="_blank"
