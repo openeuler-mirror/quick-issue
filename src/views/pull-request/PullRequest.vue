@@ -22,11 +22,11 @@ const isPersonalShown = computed(() => {
 
 function getNameList(arr: [IdentitiesT]) {
   try {
-    const giteeName = arr?.filter((item: IdentitiesT) => {
-      return item.identity === 'gitee';
+    const atomgitName = arr?.filter((item: IdentitiesT) => {
+      return item.identity === 'atomgit';
     })[0]?.login_name;
-    if (giteeName) {
-      return giteeName;
+    if (atomgitName) {
+      return atomgitName;
     }
   } catch (error) {
     return '';
