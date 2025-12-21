@@ -25,6 +25,8 @@ import OIcon from 'opendesign/icon/OIcon.vue';
 import { ElOption } from 'element-plus';
 import { atomgitUrl } from '@/config';
 
+import { dealLink } from '@/shared/utils';
+
 const props = defineProps({
   issueType: {
     type: String,
@@ -435,6 +437,7 @@ watch(
     deep: true,
   }
 );
+
 </script>
 
 <template>
@@ -537,7 +540,7 @@ watch(
           </template>
           <template #default="scope">
             <span class="detail-page">
-              <a :href="scope.row.link" target="_blank">{{
+              <a :href="dealLink(scope.row.link, scope.row.created_at)" target="_blank">{{
                 scope.row.title
               }}</a>
             </span>
@@ -763,7 +766,7 @@ watch(
               <a
                 v-else-if="scope.row.author"
                 :key="scope.row.author"
-                :href="`${atomgitUrl}/${scope.row.author}`"
+                :href="dealLink(`${atomgitUrl}/${scope.row.author}`, scope.row.created_at)"
                 :title="scope.row.author"
                 class="link"
                 target="_blank"
@@ -1213,6 +1216,7 @@ watch(
   position: relative;
 }
 .table-content {
+  margin-bottom: 40px;
   .table-title {
     flex-shrink: 0;
     font-weight: 300;
@@ -1231,7 +1235,6 @@ watch(
   }
 }
 .login-style {
-  margin-bottom: 40px;
   padding: 40px;
   background-color: var(--o-color-bg2);
   .input-container {

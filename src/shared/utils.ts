@@ -63,3 +63,26 @@ export function setCookie(
 export function removeCookie(key: string) {
   Cookies.remove(key);
 }
+
+/**
+ * 统一处理仓库跳转链接
+ * @param link 原始链接
+ * @param created_at 创建时间，2025-12-20 09:40:00之前的数据走gitee
+ */
+export const dealLink = (link: string, created_at: string) => {
+  const giteeOrigin = 'https://gitee.com'
+  const atomgitOrigin = 'https://atomgit.com'
+  const gitcodeOrigin = 'https://gitcode.com'
+  const placeholder = '__ORIGIN__'
+  const updateTime = '2025-12-20 09:40:00'
+
+  let result = link.replace(gitcodeOrigin, placeholder);
+  result = result.replace(atomgitOrigin, placeholder);
+  result = result.replace(giteeOrigin, placeholder);
+  if (new Date(created_at).getTime() > new Date(updateTime).getTime()) {
+    result = result.replace(placeholder, atomgitOrigin)
+  } else {
+    result = result.replace(placeholder, giteeOrigin)
+  }
+  return result
+}
