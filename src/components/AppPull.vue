@@ -6,7 +6,7 @@ import { debounce } from 'lodash-es';
 import ISSUE_CONFIG from '@/data/quick-issue/quick-issue';
 import { getPrSelectOption, getRepoPull } from '@/api/api-quick-issue';
 import { OptionList } from '@/shared/@types/type-quick-issue';
-import { isValidKey, dealLink } from '@/shared/utils';
+import { isValidKey } from '@/shared/utils';
 import { useLabelColor } from '@/stores/index';
 
 import { ElOption } from 'element-plus';
@@ -513,7 +513,7 @@ watch(
         </template>
         <template #default="scope">
           <span class="detail-page">
-            <a :href="dealLink(scope.row.link, scope.row.created_at)" target="_blank">{{ scope.row.title }}</a>
+            <a :href="scope.row.link" target="_blank">{{ scope.row.title }}</a>
           </span>
         </template>
       </el-table-column>
@@ -673,13 +673,15 @@ watch(
         <template #default="scope">
           <span class="detail-page">
             <a
+              v-if="scope.row.author_link"
               :key="scope.row.author"
-              :href="dealLink(`${atomgitUrl}/${scope.row.author}`, scope.row.created_at)"
+              :href="scope.row.author_link"
               :title="scope.row.author"
               target="_blank"
             >
               {{ scope.row.author }}
             </a>
+            <span v-else>{{ scope.row.author }}</span>
           </span>
         </template>
       </el-table-column>

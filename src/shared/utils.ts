@@ -1,10 +1,7 @@
 import Cookies from 'js-cookie';
 
 // TS 对象key合法检查
-export function isValidKey(
-  key: string | number | symbol,
-  object: object
-): key is keyof typeof object {
+export function isValidKey(key: string | number | symbol, object: object): key is keyof typeof object {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
@@ -47,12 +44,7 @@ export function getCookie(key: string) {
  * @param value cookie的值
  * @param day cookie的过期时间 默认1天
  */
-export function setCookie(
-  key: string,
-  value: string,
-  day = 1,
-  domain: string = location.hostname
-) {
+export function setCookie(key: string, value: string, day = 1, domain: string = location.hostname) {
   Cookies.set(key, value, { expires: day, domain });
 }
 
@@ -62,27 +54,4 @@ export function setCookie(
  */
 export function removeCookie(key: string) {
   Cookies.remove(key);
-}
-
-/**
- * 统一处理仓库跳转链接
- * @param link 原始链接
- * @param created_at 创建时间，2025-12-20 09:40:00之前的数据走gitee
- */
-export const dealLink = (link: string, created_at: string) => {
-  const giteeOrigin = 'https://gitee.com'
-  const atomgitOrigin = 'https://atomgit.com'
-  const gitcodeOrigin = 'https://gitcode.com'
-  const placeholder = '__ORIGIN__'
-  const updateTime = '2025-12-20 09:40:00'
-
-  let result = link.replace(gitcodeOrigin, placeholder);
-  result = result.replace(atomgitOrigin, placeholder);
-  result = result.replace(giteeOrigin, placeholder);
-  if (new Date(created_at).getTime() > new Date(updateTime).getTime()) {
-    result = result.replace(placeholder, atomgitOrigin)
-  } else {
-    result = result.replace(placeholder, giteeOrigin)
-  }
-  return result
 }
