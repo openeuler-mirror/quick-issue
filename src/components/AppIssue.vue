@@ -836,15 +836,16 @@ watch(
           <template #default="scope">
             <span class="detail-page">
               <a
-                v-if="scope.row.assignee"
+                v-if="scope.row.assignee_link"
                 :key="scope.row.assignee"
-                :href="`${atomgitUrl}/${scope.row.assignee}`"
+                :href="scope.row.assignee_link"
                 :title="scope.row.assignee"
                 class="link"
                 target="_blank"
               >
-                {{ scope.row.assignee }}
-              </a>
+                  {{ scope.row.assignee }}
+                </a>
+                <span v-else>{{ scope.row.assignee }}</span>
             </span>
           </template>
         </el-table-column>
