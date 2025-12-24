@@ -737,19 +737,11 @@ watch(
           </ODropdown>
         </template>
         <template #default="scope">
-          <span class="detail-page">
-            <a
-              v-for="item in scope.row.assignees?.split(',')"
-              :key="item"
-              :href="`${atomgitUrl}/${item}`"
-              :class="item === queryData.assignee ? 'active' : ''"
-              :title="item"
-              class="link"
-              target="_blank"
-            >
+          <div class="detail-page">
+            <p v-for="item in scope.row.assignees?.split(',')" :key="item">
               {{ item }}
-            </a>
-          </span>
+            </p>
+          </div>
         </template>
       </el-table-column>
       <el-table-column
