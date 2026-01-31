@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@kangc/v-md-editor": "^2.3.18",
-    "@opendesign-plus/components": "0.0.1-rc.5",
+    "@opendesign-plus/components": "0.0.1-rc.6",
     "@opendesign-plus/plugins": "0.0.1-rc.2",
     "@opensig/open-analytics": "^0.0.9",
     "@opensig/opendesign": "0.0.68",

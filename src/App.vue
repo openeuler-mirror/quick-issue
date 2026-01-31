@@ -32,6 +32,7 @@ watch(
 );
 
 const cookieNoticeVisible = ref(false);
+const COOKIE_DOMAIN = import.meta.env.VITE_COOKIE_DOMAIN;
 const MAIN_URL = import.meta.env.VITE_MAIN_DOMAIN_URL;
 const cookieRef = ref();
 const route = useRoute();
@@ -48,7 +49,7 @@ watch(
   <header><AppHeader /></header>
   <main><RouterView></RouterView></main>
   <OPlusConfigProvider :locale="langStore.lang">
-    <OElCookieNotice ref="cookieRef" v-model:visible="cookieNoticeVisible" community="openEuler" :detail-url="`${MAIN_URL}/${langStore.lang}/other/cookies/`" />
+    <OElCookieNotice ref="cookieRef" v-model:visible="cookieNoticeVisible" community="openEuler" :detail-url="`${MAIN_URL}/${langStore.lang}/other/cookies/`" :cookie-domain="COOKIE_DOMAIN" />
   </OPlusConfigProvider>
   <footer><AppFooter /></footer>
   <FloatingButton />
