@@ -10,7 +10,6 @@ import { useI18n } from 'vue-i18n';
 import { showGuard, logout, getUserAuth, useStoreData } from '@/shared/login';
 import communityLogoWhite from '@/assets/openeuler-logo.png';
 import QuickIssueLogo from '@/assets/quickissue-logo.png';
-import IconDown from '~icons/app/icon-chevron-down.svg';
 import IconLogin from '~icons/app/icon-login.svg';
 import IconLocale from '~icons/app/icon-locale.svg';
 import OButton from 'opendesign/button/src/button';

@@ -18,7 +18,6 @@ export type RadioGroupProps = ExtractDefaultPropTypes<typeof radioGroupProps>;
 interface RadioGroupInjection {
   modelValue: Ref<string | number | boolean>;
   disabled: Ref<boolean>;
-  // eslint-disable-next-line no-unused-vars
   onChange: (val: string | number | boolean) => void;
 }
 

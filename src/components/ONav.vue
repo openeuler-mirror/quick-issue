@@ -7,7 +7,7 @@ const route = useRoute();
 
 const props = defineProps({
   navItems: {
-    type: Object,
+    type: Array,
     default() {
       return [];
     },

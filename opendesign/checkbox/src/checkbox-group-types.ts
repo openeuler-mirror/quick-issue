@@ -20,7 +20,6 @@ export type CheckboxGroupProps = ExtractDefaultPropTypes<
 interface CheckboxGroupInjection {
   modelValue: Ref<Array<string | number | boolean>>;
   disabled: Ref<boolean>;
-  // eslint-disable-next-line no-unused-vars
   onChange: (val: Array<string | number | boolean>) => void;
 }
 
