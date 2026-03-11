@@ -1,6 +1,6 @@
 import { it, describe, expect } from 'vitest';
 
-import { isValidKey } from './utils';
+import { getYearByOffset, isValidKey } from './utils';
 
 describe('isValidKey', () => {
   const obj = {
@@ -15,3 +15,9 @@ describe('isValidKey', () => {
 
 });
 
+
+describe('getYearByOffset', ()=> {
+  it('latest', () => {
+    expect(getYearByOffset()).toBeGreaterThanOrEqual(2026)
+  })
+})

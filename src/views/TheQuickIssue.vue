@@ -27,7 +27,7 @@ function getNameList(arr: [IdentitiesT]) {
     if (atomgitName) {
       return atomgitName;
     }
-  } catch (error) {
+  } catch {
     return '';
   }
 }

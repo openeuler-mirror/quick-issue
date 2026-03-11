@@ -23,7 +23,6 @@ import ODropdown from 'opendesign/dropdown/ODropdown.vue';
 import OIcon from 'opendesign/icon/OIcon.vue';
 
 import { ElOption } from 'element-plus';
-import { atomgitUrl } from '@/config';
 
 const props = defineProps({
   issueType: {

@@ -20,7 +20,6 @@ import IconSetting from '~icons/app/icon-setting';
 
 import ODropdown from 'opendesign/dropdown/ODropdown.vue';
 import OIcon from 'opendesign/icon/OIcon.vue';
-import { atomgitUrl } from '@/config';
 
 const props = defineProps({
   issueType: {
