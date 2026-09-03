@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { useLangStore } from '@/stores';
 
+// 路由列表：如有增删改，请同步更新 build/sitemap-robots.ts 中的 SEO_ROUTE_PATHS，
+// 否则 sitemap.xml 会与实际可访问页面脱节。
 export const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/zh/issues' },
   { path: '/zh/', redirect: '/zh/issues' },
