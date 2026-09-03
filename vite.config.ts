@@ -11,6 +11,8 @@ import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import ElementPlus from 'unplugin-element-plus/vite';
 
+import { sitemapRobotsPlugin } from './build/sitemap-robots';
+
 export default defineConfig({
   base: process.env.NODE_ENV === 'development' ? './' : '/',
   resolve: {
@@ -21,6 +23,7 @@ export default defineConfig({
   },
 
   plugins: [
+    sitemapRobotsPlugin(),
     vue(),
     vueJsx({}),
     AutoImport({
