@@ -1,8 +1,11 @@
 import js from '@eslint/js';
 import vue from 'eslint-plugin-vue';
-import typescript from '@vue/eslint-config-typescript';
-import prettierSkip from '@vue/eslint-config-prettier/skip-formatting';
-import tseslint from 'typescript-eslint';
+import { FlatCompat } from '@eslint/eslintrc';
+import vueTsEslintConfig from '@vue/eslint-config-typescript';
+import tsParser from '@typescript-eslint/parser';
+import prettierSkip from '@vue/eslint-config-prettier/skip-formatting.js';
+
+const compat = new FlatCompat({ baseDirectory: import.meta.dirname });
 
 export default [
   // 基础 JavaScript 推荐规则
@@ -11,13 +14,20 @@ export default [
   // Vue 3 推荐规则
   ...vue.configs['flat/essential'],
 
-  // TypeScript 规则
-  ...typescript({
-    extends: ['base']
-  }),
+  // TypeScript 规则（eslintrc 风格配置经 FlatCompat 桥接）
+  ...compat.config(vueTsEslintConfig),
+
+  // 独立 .ts 文件显式使用 TS 解析器（compat 桥接的 parser 映射仅覆盖 .vue 内嵌 script）
+  {
+    files: ['**/*.{ts,tsx,mts,cts}'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: { extraFileExtensions: ['.vue'] },
+    },
+  },
 
   // Prettier 规则（跳过格式化）
-  prettierSkip,
+  ...compat.config(prettierSkip),
 
   // 项目特定配置
   {
